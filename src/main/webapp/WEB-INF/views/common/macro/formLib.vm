@@ -1,0 +1,138 @@
+###########################
+#macro(formlayoutedit $__formid $__formaction $__formmethod $__formattr)
+#validateBegin("$__formid")
+    #parse("/common/form/formedit.layout.vm")
+    #cleanformrequired()
+#validateEnd("$__formid")
+#end
+
+#macro(formlayoutshow)
+    #parse("/common/form/formshow.layout.vm")
+#end
+
+#macro(formlayoutfield $__class)
+    #parse("/common/form/formfield.layout.vm")
+#end
+
+#macro(formlayoutbutton $__class)
+    #parse("/common/form/formbutton.layout.vm")
+#end
+###########################
+#macro(filterInputattr $__name $__inputatt)
+    $!__inputatt #validateValue($__name)
+#end
+#macro(callFormParse $__templatename $__name $__inputatt $__id)
+    #parse($__templatename)
+#end
+#macro(formhidden $__name $__value $__class $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formhidden.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formtext $__name $__value $__class $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formtext.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formpassword $__name $__value $__class $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formpassword.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formdate $__name $__value $__class $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formdate.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formfile $__name $__value $__class $__title $__holder $__uploadurl $__filename $__options $__inputatt $__id)
+#usePluploadPlugin()
+    #callFormParse("/common/form/formfile.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
+    #parse("/common/form/formfilemulti.vm")
+#end
+
+#macro(formfilemultyonline $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__tabtitle $__url)
+    #parse("/common/form/formfilemultionline.vm")
+#end
+
+#macro(formtextarea $__name $__value $__class $__rows $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formtextarea.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formselectsingle $__name $__value $__class $__options $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formselectsingle.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formselectmultiple $__name $__value $__class $__options $__size $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formselectmultiple.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formradio $__name $__value $__class $__options $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formradio.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+#macro(formcheckbox $__name $__value $__class $__options $__title $__holder $__inputatt $__id)
+    #callFormParse("/common/form/formcheckbox.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+#macro(formtitleline $__title $__class)
+    #parse("/common/form/formtitleline.vm")
+#end
+
+#macro(formshowtext $__title $__showtext $__class)
+    #parse("/common/form/formshowtext.vm")
+#end
+
+#macro(formshowfile $__title $__showtext $__url $__class)
+    #parse("/common/form/formshowfile.vm")
+#end
+
+#macro(cleanformrequired)
+#if($__formrequiredmap)
+#set($__formrequiredmap={})
+#end
+#end
+
+#macro(formrequired $__name $__message)
+#if(!$__formrequiredmap)
+#set($__formrequiredmap={})
+#end
+#set($__dummy=$__formrequiredmap.put("$!__name", true))
+#validateRequired($__name, $__message)
+#end
+
+#macro(callformrequired)
+    #parse("/common/form/formrequired.vm")
+#end
+
+###########################
+#macro(callButtonParse $__templatename $__formid)
+    #parse($__templatename)
+#end
+#macro(formsubmitbutton $__formid $__name $__title $__btnclass $__iconclass $__url $__inputatt $__id)
+    #callButtonParse("/common/form/formsubmitbutton.vm" $__formid)
+#end
+#macro(formbutton $__formid $__name $__title $__btnclass $__iconclass $__url $__inputatt $__id)
+    #parse("/common/form/formbutton.vm")
+#end
+#macro(formerror $__messages)
+    #parse("/common/form/formerror.vm")
+#end
+
+
+###########################
+#macro(selectdepartment $__name $__value $__class $__title $__showvalue $__holder $__inputatt $__id)
+#useArtDialog()
+    #callFormParse("/common/form/selectdepartment.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+#macro(selectuser $__name $__value $__class $__title $__showvalue $__holder $__inputatt $__id)
+#useArtDialog()
+    #callFormParse("/common/form/selectuser.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+#macro(selectmutiuser $__name $__value $__class $__title $__showvalue $__holder $__inputatt $__id)
+#useArtDialog()
+    #callFormParse("/common/form/selectmutiuser.vm", $__name, "#filterInputattr($__name, $__inputatt)", "#filterId($__name, $__id)")
+#end
+
+
+####################################
+##  easyui使用的宏
+##
+###################################
+#macro(formoption $__value $__options)
+    #parse("/common/form/formoption.vm")
+#end
+#macro(formVlidate $__name $__className)
+    #parse("/common/validate/validteforeasyui.vm")
+#end

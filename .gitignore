@@ -1,0 +1,10 @@
+/target/
+/.settings/
+/.project
+/.classpath
+rebel.xml
+*.bak
+/.springBeans
+/.externalToolBuilders/
+/bin/
+/src/main/webapp/www

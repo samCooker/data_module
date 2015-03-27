@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tools>
+    <data type="boolean" key="CUSTOM_TOOLS_AVAILABLE" value="true" />
+
+    <data type="string" key="__headtitle" value="食品药品安全信息平台"/>
+
+    <toolbox scope="application" createSession="false" >
+        <tool class="cn.com.chaochuang.common.security.util.UserTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.PowerTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.DictionaryTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.QueryConditionTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.LookUpTool" />
+        <tool class="cn.com.chaochuang.common.velocity.view.StringTool" />
+    </toolbox>
+
+    <toolbox scope="request" createSession="false" >
+        <tool class="cn.com.chaochuang.common.velocity.view.LinkTool" />
+    </toolbox>
+
+</tools>
