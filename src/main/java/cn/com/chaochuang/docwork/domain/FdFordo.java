@@ -36,7 +36,7 @@ public class FdFordo extends LongIdEntity {
     /** URL */
     private String      url;
     /** 发送人编号 */
-    private Long        sender;
+    private Long        senderId;
     /** 发送时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date        sendTime;
@@ -55,7 +55,7 @@ public class FdFordo extends LongIdEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date        readTime;
     /** 待办明细接收人编号 */
-    private String      recipientId;
+    private Long        recipientId;
     /** 紧急程度 */
     private String      emergencyLevel;
     /** 发送人所在部门 */
@@ -64,6 +64,8 @@ public class FdFordo extends LongIdEntity {
     private String      secretLevel;
     /** 远程系统待办编号 */
     private String      rmPendingId;
+    /** 远程系统待办明细编号 */
+    private String      rmPendingItemId;
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date        inputDate;
@@ -99,18 +101,18 @@ public class FdFordo extends LongIdEntity {
     }
 
     /**
-     * @return the sender
+     * @return the senderId
      */
-    public Long getSender() {
-        return sender;
+    public Long getSenderId() {
+        return senderId;
     }
 
     /**
-     * @param sender
-     *            the sender to set
+     * @param senderId
+     *            the senderId to set
      */
-    public void setSender(Long sender) {
-        this.sender = sender;
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 
     /**
@@ -206,7 +208,7 @@ public class FdFordo extends LongIdEntity {
     /**
      * @return the recipientId
      */
-    public String getRecipientId() {
+    public Long getRecipientId() {
         return recipientId;
     }
 
@@ -214,7 +216,7 @@ public class FdFordo extends LongIdEntity {
      * @param recipientId
      *            the recipientId to set
      */
-    public void setRecipientId(String recipientId) {
+    public void setRecipientId(Long recipientId) {
         this.recipientId = recipientId;
     }
 
@@ -291,6 +293,21 @@ public class FdFordo extends LongIdEntity {
      */
     public void setInputDate(Date inputDate) {
         this.inputDate = inputDate;
+    }
+
+    /**
+     * @return the rmPendingItemId
+     */
+    public String getRmPendingItemId() {
+        return rmPendingItemId;
+    }
+
+    /**
+     * @param rmPendingItemId
+     *            the rmPendingItemId to set
+     */
+    public void setRmPendingItemId(String rmPendingItemId) {
+        this.rmPendingItemId = rmPendingItemId;
     }
 
 }

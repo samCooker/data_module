@@ -48,6 +48,8 @@ public class DepLinkman extends LongIdEntity {
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date   inputDate;
+    /** 原系统通讯录编号 */
+    private Long   rmLinkmanId;
 
     /**
      * @return the staffName
@@ -212,6 +214,21 @@ public class DepLinkman extends LongIdEntity {
      */
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    /**
+     * @return the rmLinkmanId
+     */
+    public Long getRmLinkmanId() {
+        return rmLinkmanId;
+    }
+
+    /**
+     * @param rmLinkmanId
+     *            the rmLinkmanId to set
+     */
+    public void setRmLinkmanId(Long rmLinkmanId) {
+        this.rmLinkmanId = rmLinkmanId;
     }
 
 }

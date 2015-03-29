@@ -23,28 +23,18 @@ public interface ITransferOAService {
     String TRANS_RESULT = "true";
 
     /**
-     * 获取通讯录数据
-     *
-     * @param receivePhone
-     * @param content
-     * @return
-     */
-    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
-    @WebMethod
-    String sendSms(String receivePhone, String content);
-
-    /**
      * 获取待办事宜信息
      *
      * @param forDoId
+     * @param oaPendingHandleDtsId
      * @return
      */
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
-    String getPendingItemInfo(Long pendingId);
+    String selectPendingItemInfo(String lastOutputTime, String oaPendingHandleDtsId);
 
     /**
-     * 获取公文数据
+     * 获取公文办理数据
      *
      * @param jsonStr
      *            参数Json
@@ -52,7 +42,7 @@ public interface ITransferOAService {
      */
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
-    String setDocumentTransact(String jsonStr);
+    String getDocTransactInfo(String lastOutputTime);
 
     /**
      * 提交公文办理数据
@@ -66,14 +56,25 @@ public interface ITransferOAService {
     String setDocTransactInfo(String jsonStr);
 
     /**
-     * 重置用户密码
+     * 获取公共通讯录数据
      *
-     * @param jsonStr
-     *            参数Json
      * @return
      */
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
-    String setSysMessageInfo(String jsonStr);
+    String getDepLinkmanInfo();
+
+    /**
+     * 重置用户密码
+     *
+     * @param userId
+     *            用户编号
+     * @param newPass
+     *            新密码
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String setUserPassInfo(Long userId, String newPass);
 
 }

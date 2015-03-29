@@ -8,8 +8,11 @@
 
 package cn.com.chaochuang.docwork.service;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.docwork.domain.FdFordo;
+import cn.com.chaochuang.task.bean.PendingCommandInfo;
 
 /**
  * @author LLM
@@ -17,4 +20,17 @@ import cn.com.chaochuang.docwork.domain.FdFordo;
  */
 public interface FdFordoService extends CrudRestService<FdFordo, Long> {
 
+    /**
+     * 获取最大的数据导入时间
+     *
+     * @return
+     */
+    PendingCommandInfo selectMaxInputDate();
+
+    /**
+     * 批量插入待办事宜数据
+     *
+     * @param pendingItems
+     */
+    void insertFdFordos(List<PendingCommandInfo> pendingItems);
 }

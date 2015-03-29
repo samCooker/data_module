@@ -9,7 +9,7 @@
 
     <jaxws:client
         id="ITransferOAServiceClientFactory"
-        serviceClass="com.spower.webservice.server.ITransferOAService"
+        serviceClass="cn.com.chaochuang.webservice.server.ITransferOAService"
         address="${nnccoa.webservice.url}"
     >
     </jaxws:client>
