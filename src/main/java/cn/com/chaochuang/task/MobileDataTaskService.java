@@ -37,29 +37,41 @@ public class MobileDataTaskService {
     @Autowired
     private FdFordoService     fdFordoService;
 
+    private static boolean     isRunning = false;
+
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
     @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
-        // 获取当前待办表中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
-        PendingCommandInfo info = this.fdFordoService.selectMaxInputDate();
-        // 若lastOutputTime无效则不做下一步
-        if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
+        if (isRunning) {
             return;
         }
-        // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-        String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingItemId());
-        // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+        isRunning = true;
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            PendingCommandInfo.class);
-            List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(json, javaType);
-            this.fdFordoService.insertFdFordos(datas);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            // 获取当前待办表中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
+            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate();
+            // 若lastOutputTime无效则不做下一步
+            if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
+                return;
+            }
+            // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
+            String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(),
+                            info.getRmPendingItemId());
+            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                PendingCommandInfo.class);
+                List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(json, javaType);
+                this.fdFordoService.insertFdFordos(datas);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        } finally {
+            isRunning = false;
         }
+
     }
 
     /**
