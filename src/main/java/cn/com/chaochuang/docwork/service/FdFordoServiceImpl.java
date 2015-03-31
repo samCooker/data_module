@@ -24,6 +24,7 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.domain.FdFordo;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
 import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
@@ -72,10 +73,10 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
     }
 
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#insertFdFordos(java.util.List)
+     * @see cn.com.chaochuang.docwork.service.FdFordoService#insertFdFordos(java.util.List, FordoSource)
      */
     @Override
-    public void insertFdFordos(List<PendingCommandInfo> pendingItems) {
+    public void insertFdFordos(List<PendingCommandInfo> pendingItems, FordoSource fordoSource) {
         List datas = new ArrayList();
         FdFordo fdFordo;
         Date currentDate = new Date();
@@ -87,6 +88,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             }
             fdFordo = new FdFordo();
             BeanUtils.copyProperties(item, fdFordo);
+            fdFordo.setFordoSource(fordoSource);
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
             } else {

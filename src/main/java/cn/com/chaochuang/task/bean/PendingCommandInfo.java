@@ -39,6 +39,8 @@ public class PendingCommandInfo {
     private String senderDeptName;
     /** 最后的发送时间 */
     private String lastSendTime;
+    /** URL */
+    private String url;
 
     /**
      * @return the rmPendingId
@@ -218,6 +220,21 @@ public class PendingCommandInfo {
      */
     public void setLastSendTime(String lastSendTime) {
         this.lastSendTime = lastSendTime;
+    }
+
+    /**
+     * @return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param url
+     *            the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

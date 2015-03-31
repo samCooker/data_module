@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
@@ -64,7 +65,7 @@ public class MobileDataTaskService {
                 JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
                                 PendingCommandInfo.class);
                 List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(json, javaType);
-                this.fdFordoService.insertFdFordos(datas);
+                this.fdFordoService.insertFdFordos(datas, FordoSource.公文);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
