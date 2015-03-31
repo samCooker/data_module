@@ -17,7 +17,9 @@ import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.reference.FordoSource;
+import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
+import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
@@ -37,6 +39,9 @@ public class MobileDataTaskService {
     /** fdFordoService */
     @Autowired
     private FdFordoService     fdFordoService;
+
+    @Autowired
+    private DocFileService     fileService;
 
     private static boolean     isRunning = false;
 
@@ -80,6 +85,26 @@ public class MobileDataTaskService {
      */
     // @Scheduled(cron = "0 1/2 * * * ?")
     public void getDeplinkmanDataTask() {
+
+    }
+
+    /**
+     * 向OA获取公文数据 每1分钟进行一次数据获取
+     */
+    @Scheduled(cron = "0 1/1 * * * ?")
+    public void getDocFileDataTask() {
+        String lastInputTime = this.fileService.getDocFileMaxInputDate();
+        if (!Tools.isEmptyString(lastInputTime)) {
+            String json = this.transferOAService.getDocTransactInfo(lastInputTime);
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
+                List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
+                fileService.saveDocFilesDatas(datas);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
 
     }
 

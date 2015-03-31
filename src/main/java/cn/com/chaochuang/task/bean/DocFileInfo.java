@@ -1,85 +1,55 @@
 /*
- * FileName:    DocFile.java
+ * FileName:    DocFileInfo.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月19日 (LLM) 1.0 Create
+ * History:     2015年3月28日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.docwork.domain;
+package cn.com.chaochuang.task.bean;
 
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.EmergencyLevel;
-import cn.com.chaochuang.docwork.reference.EmergencyLevelConverter;
-import cn.com.chaochuang.docwork.reference.SecrectLevel;
-import cn.com.chaochuang.docwork.reference.SecrectLevelConverter;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
- * @author LLM
+ * @author Shicx
  *
  */
-@Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "file_id")) })
-public class DocFile extends LongIdEntity {
+public class DocFileInfo {
+
+    /** 公文标题 */
+    private String                  title;
+    /** 文号 */
+    private String                  docNumber;
+    /** 紧急程度 */
+    private String                  emergencyLevel;
+    /** 密级 */
+    private String                  secretLevel;
+    /** 来文单位 */
+    private String                  sourceDept;
+    /** 办理期限 */
+    private Date                    limitDate;
+    /** 公文类别 */
+    private String                  docType;
+    /** 原系统公文编号 */
+    private String                  instanceId;
+    /** 流程编号 */
+    private String                  flowId;
+    /** 创建时间 */
+    private Date                    createDate;
+    /** 数据导入时间 */
+    private Date                    inputDate;
+    /** 公文附件集合 */
+    private List<DocFileAttachInfo> remoteDocfileAttach;
+    /** 流程集合 */
+    private List<FlowNodeBeanInfo>  remoteFlowNodes;
 
     /**
      *
      */
-    private static final long   serialVersionUID = 1L;
-    /** 公文标题 */
-    private String              title;
-    /** 文号 */
-    private String              docNumber;
-    /** 紧急程度 */
-    @Convert(converter = EmergencyLevelConverter.class)
-    private EmergencyLevel      emergencyLevel;
-    /** 密级 */
-    @Convert(converter = SecrectLevelConverter.class)
-    private SecrectLevel        secretLevel;
-    /** 来文单位 */
-    private String              sourceDept;
-    /** 办理期限 */
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date                limitDate;
-    /** 公文类别 */
-    private String              docType;
-    /** 原系统公文编号 */
-    private String              instanceId;
-    /** 流程编号 */
-    private String              flowId;
-    /** 创建时间 */
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date                createDate;
-    /** 数据导入时间 */
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date                inputDate;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @JoinColumn(name = "fileId")
-    /** 公文附件集合 */
-    private List<DocFileAttach> docFileAttachments;
-    /** 流程集合 */
-    @OneToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
-    @JoinColumn(name = "fileId")
-    private List<FlowNodeInfo>  flowNodes;
+    public DocFileInfo() {
+        super();
+    }
 
     /**
      * @return the title
@@ -109,6 +79,21 @@ public class DocFile extends LongIdEntity {
      */
     public void setDocNumber(String docNumber) {
         this.docNumber = docNumber;
+    }
+
+    /**
+     * @return the emergencyLevel
+     */
+    public String getEmergencyLevel() {
+        return emergencyLevel;
+    }
+
+    /**
+     * @param emergencyLevel
+     *            the emergencyLevel to set
+     */
+    public void setEmergencyLevel(String emergencyLevel) {
+        this.emergencyLevel = emergencyLevel;
     }
 
     /**
@@ -217,33 +202,48 @@ public class DocFile extends LongIdEntity {
     }
 
     /**
-     * @return the docFileAttachments
+     * @return the remoteDocfileAttach
      */
-    public List<DocFileAttach> getDocFileAttachments() {
-        return docFileAttachments;
+    public List<DocFileAttachInfo> getRemoteDocfileAttach() {
+        return remoteDocfileAttach;
     }
 
     /**
-     * @param docFileAttachments
-     *            the docFileAttachments to set
+     * @param remoteDocfileAttach
+     *            the remoteDocfileAttach to set
      */
-    public void setDocFileAttachments(List<DocFileAttach> docFileAttachments) {
-        this.docFileAttachments = docFileAttachments;
+    public void setRemoteDocfileAttach(List<DocFileAttachInfo> remoteDocfileAttach) {
+        this.remoteDocfileAttach = remoteDocfileAttach;
     }
 
     /**
-     * @return the flowNodes
+     * @return the remoteFlowNodes
      */
-    public List<FlowNodeInfo> getFlowNodes() {
-        return flowNodes;
+    public List<FlowNodeBeanInfo> getRemoteFlowNodes() {
+        return remoteFlowNodes;
     }
 
     /**
-     * @param flowNodes
-     *            the flowNodes to set
+     * @param remoteFlowNodes
+     *            the remoteFlowNodes to set
      */
-    public void setFlowNodes(List<FlowNodeInfo> flowNodes) {
-        this.flowNodes = flowNodes;
+    public void setRemoteFlowNodes(List<FlowNodeBeanInfo> remoteFlowNodes) {
+        this.remoteFlowNodes = remoteFlowNodes;
+    }
+
+    /**
+     * @return the secretLevel
+     */
+    public String getSecretLevel() {
+        return secretLevel;
+    }
+
+    /**
+     * @param secretLevel
+     *            the secretLevel to set
+     */
+    public void setSecretLevel(String secretLevel) {
+        this.secretLevel = secretLevel;
     }
 
 }

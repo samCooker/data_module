@@ -21,10 +21,11 @@ public interface FdFordoRepository extends SimpleDomainRepository<FdFordo, Long>
 
     /**
      * 根据原系统的待办编号和接收人编号查询待办事宜记录
-     * 
+     *
      * @param rmPendingId
      * @param recipientId
      * @return
      */
     List<FdFordo> findByRmPendingIdAndRecipientId(String rmPendingId, Long recipientId);
+
 }

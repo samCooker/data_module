@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import cn.com.chaochuang.common.dictionary.EnumDictionaryBuilder;
 
 /**
- * @author Shicx
+ * @author LLM
  *
  */
 @Component
-public class FordoSourceEnumDictionaryBuilder extends EnumDictionaryBuilder<EmergencyLevel> {
+public class EmergencyLevelEnumDictionaryBuilder extends EnumDictionaryBuilder<FordoSource> {
 
 }

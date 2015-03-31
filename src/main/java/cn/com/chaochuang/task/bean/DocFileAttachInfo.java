@@ -1,52 +1,50 @@
 /*
- * FileName:    DocFileAttach.java
+ * FileName:    FlowNodeInfo.java
  * Description:
- * Company:     南宁超创信息工程有限公司
+ * Company:     ����������Ϣ�������޹�˾
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月19日 (LLM) 1.0 Create
+ * History:     2015��3��28�� (Shicx) 1.0 Create
  */
-
-package cn.com.chaochuang.docwork.domain;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
+package cn.com.chaochuang.task.bean;
 
 /**
- * @author LLM
+ * @author Shicx
  *
  */
-@Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "attach_id")) })
-public class DocFileAttach extends LongIdEntity {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    /** 公文id */
-    private Long              fileId;
+public class DocFileAttachInfo {
     /** 附件保存名 */
-    private String            saveName;
+    private String saveName;
     /** 附件大小 */
-    private Long              fileSize;
+    private Long   fileSize;
     /** 附件原名 */
-    private String            trueName;
+    private String trueName;
     /** 附件保存路径 */
-    private String            savePath;
+    private String savePath;
     /** 是否为图片公告 */
-    private String            isImage;
+    private String isImage;
     /** 原远程附件id */
-    private String            rmAttachId;
+    private String rmAttachId;
 
     /**
      * @return the saveName
      */
     public String getSaveName() {
         return saveName;
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "DocFileAttachInfo [saveName=" + saveName + ", fileSize=" + fileSize + ", trueName=" + trueName
+                        + ", savePath=" + savePath + ", isImage=" + isImage + ", rmAttachId=" + rmAttachId
+                        + ", getSaveName()=" + getSaveName() + ", getFileSize()=" + getFileSize() + ", getTrueName()="
+                        + getTrueName() + ", getSavePath()=" + getSavePath() + ", getIsImage()=" + getIsImage()
+                        + ", getRmAttachId()=" + getRmAttachId() + ", getClass()=" + getClass() + ", hashCode()="
+                        + hashCode() + ", toString()=" + super.toString() + "]";
     }
 
     /**
@@ -132,18 +130,4 @@ public class DocFileAttach extends LongIdEntity {
         this.rmAttachId = rmAttachId;
     }
 
-    /**
-     * @return the fileId
-     */
-    public Long getFileId() {
-        return fileId;
-    }
-
-    /**
-     * @param fileId
-     *            the fileId to set
-     */
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
 }

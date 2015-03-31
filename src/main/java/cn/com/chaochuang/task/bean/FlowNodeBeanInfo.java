@@ -1,71 +1,52 @@
 /*
  * FileName:    FlowNodeInfo.java
  * Description:
- * Company:     南宁超创信息工程有限公司
+ * Company:     ����������Ϣ�������޹�˾
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月19日 (LLM) 1.0 Create
+ * History:     2015��3��28�� (Shicx) 1.0 Create
  */
-
-package cn.com.chaochuang.docwork.domain;
+package cn.com.chaochuang.task.bean;
 
 import java.util.Date;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.IsSubmitData;
-
 /**
- * @author LLM
+ * @author Shicx
  *
  */
-@Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "node_info_id")) })
-public class FlowNodeInfo extends LongIdEntity {
+public class FlowNodeBeanInfo {
+
+    /** 原实例编号 inst_id */
+    private String instanceId;
+    /** 环节编号 node_id */
+    private String nodeId;
+    /** 环节名称 node_name */
+    private String nodeName;
+    /** 办理意见 表wf_data_text>item_id=lw_nbld... */
+    private String opinions;
+    /** 办理人 根据cur_man查找user表获取name */
+    private String transactName;
+    /** 办理人id cur_man */
+    private Long   transactId;
+    /** 办理部门 id 根据cur_man查找user表获取 */
+    private Long   transactDeptId;
+    /** 办理部门 根据cur_man查找user表获取 */
+    private String transactDeptName;
+    /** 办理时间 */
+    private Date   transactDate;
+    /** 当前环节 */
+    private Long   rmInstnoId;
 
     /**
      *
      */
-    private static final long serialVersionUID = 1L;
-    /** 公文id */
-    private Long              fileId;
-    /** 原实例编号 */
-    private String            instanceId;
-    /** 环节编号 */
-    private String            nodeId;
-    /** 环节名称 */
-    private String            nodeName;
-    /** 办理意见 */
-    private String            opinions;
-    /** 办理人 */
-    private String            transactName;
-    /** 办理人id */
-    private Long              transactId;
-    /** 办理部门 id */
-    private Long              transactDeptId;
-    /** 办理部门 */
-    private String            transactDeptName;
-    /** 办理时间 */
-    private Date              transactDate;
-    /** 当前环节 */
-    private Long              rmInstnoId;
-    /** 是否提交数据 */
-    private IsSubmitData      submitData;
-
-    /**
-            *
-            */
-    public FlowNodeInfo() {
+    public FlowNodeBeanInfo() {
         super();
     }
 
     /**
      * @param instanceId
      */
-    public FlowNodeInfo(String instanceId) {
+    public FlowNodeBeanInfo(String instanceId) {
         super();
         this.instanceId = instanceId;
     }
@@ -191,21 +172,6 @@ public class FlowNodeInfo extends LongIdEntity {
     }
 
     /**
-     * @return the fileId
-     */
-    public Long getFileId() {
-        return fileId;
-    }
-
-    /**
-     * @param fileId
-     *            the fileId to set
-     */
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
-
-    /**
      * @return the opinions
      */
     public String getOpinions() {
@@ -218,21 +184,6 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     public void setOpinions(String opinions) {
         this.opinions = opinions;
-    }
-
-    /**
-     * @return the submitData
-     */
-    public IsSubmitData getSubmitData() {
-        return submitData;
-    }
-
-    /**
-     * @param submitData
-     *            the submitData to set
-     */
-    public void setSubmitData(IsSubmitData submitData) {
-        this.submitData = submitData;
     }
 
     /**
