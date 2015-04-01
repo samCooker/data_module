@@ -26,9 +26,6 @@ public class SysDepartment extends PersistEntity {
     /** 部门名称 */
     private String             depName;
 
-    /** 部门编码 */
-    private String             depCode;
-
     /** 父部门编号 */
     private Long               parentDep;
 
@@ -38,20 +35,11 @@ public class SysDepartment extends PersistEntity {
     /** 排序号 */
     private Long               orderNum;
 
-    /** 联系电话 */
-    private String             telephone;
-
-    /** 备注 */
-    private String             remark;
-
-    /** 发布类型 */
-    private String             unitFlag;
-
     /** 部门别名 */
     private String             depAlias;
-
-    /** ws认证标志 */
-    private String             wsAuthoriFlag;
+    private String             depLead;
+    private String             depRank;
+    private String             delFlag;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -68,107 +56,156 @@ public class SysDepartment extends PersistEntity {
     public boolean isLeaf() {
         if (null != subDepartment && subDepartment.size() > 0) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
+    /**
+     * @return the depName
+     */
     public String getDepName() {
         return depName;
     }
 
+    /**
+     * @param depName
+     *            the depName to set
+     */
     public void setDepName(String depName) {
         this.depName = depName;
     }
 
-    public String getDepCode() {
-        return depCode;
-    }
-
-    public void setDepCode(String depCode) {
-        this.depCode = depCode;
-    }
-
+    /**
+     * @return the parentDep
+     */
     public Long getParentDep() {
         return parentDep;
     }
 
+    /**
+     * @param parentDep
+     *            the parentDep to set
+     */
     public void setParentDep(Long parentDep) {
         this.parentDep = parentDep;
     }
 
+    /**
+     * @return the ancestorDep
+     */
     public Long getAncestorDep() {
         return ancestorDep;
     }
 
+    /**
+     * @param ancestorDep
+     *            the ancestorDep to set
+     */
     public void setAncestorDep(Long ancestorDep) {
         this.ancestorDep = ancestorDep;
     }
 
+    /**
+     * @return the orderNum
+     */
     public Long getOrderNum() {
         return orderNum;
     }
 
+    /**
+     * @param orderNum
+     *            the orderNum to set
+     */
     public void setOrderNum(Long orderNum) {
         this.orderNum = orderNum;
     }
 
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public Set<SysDepartment> getSubDepartment() {
-        return subDepartment;
-    }
-
-    public void setSubDepartment(Set<SysDepartment> subDepartment) {
-        this.subDepartment = subDepartment;
-    }
-
-    public String getUnitFlag() {
-        return unitFlag;
-    }
-
-    public void setUnitFlag(String unitFlag) {
-        this.unitFlag = unitFlag;
-    }
-
+    /**
+     * @return the depAlias
+     */
     public String getDepAlias() {
         return depAlias;
     }
 
+    /**
+     * @param depAlias
+     *            the depAlias to set
+     */
     public void setDepAlias(String depAlias) {
         this.depAlias = depAlias;
     }
 
-    public String getWsAuthoriFlag() {
-        return wsAuthoriFlag;
+    /**
+     * @return the depLead
+     */
+    public String getDepLead() {
+        return depLead;
     }
 
-    public void setWsAuthoriFlag(String wsAuthoriFlag) {
-        this.wsAuthoriFlag = wsAuthoriFlag;
+    /**
+     * @param depLead
+     *            the depLead to set
+     */
+    public void setDepLead(String depLead) {
+        this.depLead = depLead;
     }
 
+    /**
+     * @return the depRank
+     */
+    public String getDepRank() {
+        return depRank;
+    }
+
+    /**
+     * @param depRank
+     *            the depRank to set
+     */
+    public void setDepRank(String depRank) {
+        this.depRank = depRank;
+    }
+
+    /**
+     * @return the delFlag
+     */
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    /**
+     * @param delFlag
+     *            the delFlag to set
+     */
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    /**
+     * @return the subDepartment
+     */
+    public Set<SysDepartment> getSubDepartment() {
+        return subDepartment;
+    }
+
+    /**
+     * @param subDepartment
+     *            the subDepartment to set
+     */
+    public void setSubDepartment(Set<SysDepartment> subDepartment) {
+        this.subDepartment = subDepartment;
+    }
+
+    /**
+     * @return the parentDepartment
+     */
     public SysDepartment getParentDepartment() {
         return parentDepartment;
     }
 
+    /**
+     * @param parentDepartment
+     *            the parentDepartment to set
+     */
     public void setParentDepartment(SysDepartment parentDepartment) {
         this.parentDepartment = parentDepartment;
     }

@@ -65,7 +65,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             }
         }
         if (result.getRmPendingItemId() == null) {
-            Date sendTime = Tools.diffDate(new Date(), -30);
+            Date sendTime = Tools.diffDate(new Date(), -2);
             result.setLastSendTime(Tools.DATE_TIME_FORMAT.format(sendTime));
             result.setRmPendingItemId("");
         }

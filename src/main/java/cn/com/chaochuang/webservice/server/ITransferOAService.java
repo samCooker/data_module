@@ -77,4 +77,14 @@ public interface ITransferOAService {
     @WebMethod
     String setUserPassInfo(Long userId, String newPass);
 
+    /**
+     * 获取OA公告信息
+     *
+     * @param lastOutputTime
+     *            最后数据导入时间
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getPublicDataInfo(String lastOutputTime);
 }

@@ -38,8 +38,6 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
         u.setUserName(user.getUserName());
         u.setSex(user.getSex());
         u.setMobile(user.getMobile());
-        u.setAddress(user.getAddress());
-        u.setEmail(user.getEmail());
         repository.save(u);
         return u;
     }
