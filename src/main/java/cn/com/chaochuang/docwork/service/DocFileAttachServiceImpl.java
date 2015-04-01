@@ -37,6 +37,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
         return repository;
     }
 
+    /** 保存从远程取出的附件信息 */
     @Override
     public void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId) throws Exception {
         if (datas == null) {
@@ -46,7 +47,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
         for (DocFileAttachInfo attachmentInfo : datas) {
             DocFileAttach attachment = new DocFileAttach();
             BeanUtils.copyProperties(attachment, attachmentInfo);
-            attachment.setFileId(fileId);
+            attachment.setDocId(fileId);
             attachmentsList.add(attachment);
         }
         repository.save(attachmentsList);

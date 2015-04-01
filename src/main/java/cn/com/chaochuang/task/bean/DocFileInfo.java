@@ -11,6 +11,8 @@ package cn.com.chaochuang.task.bean;
 import java.util.Date;
 import java.util.List;
 
+import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
+
 /**
  * @author Shicx
  *
@@ -43,6 +45,8 @@ public class DocFileInfo {
     private List<DocFileAttachInfo> remoteDocfileAttach;
     /** 流程集合 */
     private List<FlowNodeBeanInfo>  remoteFlowNodes;
+    /** 流程意见集合 */
+    private List<FlowNodeOpinions>  remoteFlowOpinions;
 
     /**
      *
@@ -244,6 +248,21 @@ public class DocFileInfo {
      */
     public void setSecretLevel(String secretLevel) {
         this.secretLevel = secretLevel;
+    }
+
+    /**
+     * @return the remoteFlowOpinions
+     */
+    public List<FlowNodeOpinions> getRemoteFlowOpinions() {
+        return remoteFlowOpinions;
+    }
+
+    /**
+     * @param remoteFlowOpinions
+     *            the remoteFlowOpinions to set
+     */
+    public void setRemoteFlowOpinions(List<FlowNodeOpinions> remoteFlowOpinions) {
+        this.remoteFlowOpinions = remoteFlowOpinions;
     }
 
 }

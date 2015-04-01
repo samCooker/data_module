@@ -28,7 +28,7 @@ public class DocFileAttach extends LongIdEntity {
      */
     private static final long serialVersionUID = 1L;
     /** 公文id */
-    private Long              fileId;
+    private Long              docId;
     /** 附件保存名 */
     private String            saveName;
     /** 附件大小 */
@@ -133,17 +133,18 @@ public class DocFileAttach extends LongIdEntity {
     }
 
     /**
-     * @return the fileId
+     * @return the docId
      */
-    public Long getFileId() {
-        return fileId;
+    public Long getDocId() {
+        return docId;
     }
 
     /**
-     * @param fileId
-     *            the fileId to set
+     * @param docId
+     *            the docId to set
      */
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
+    public void setDocId(Long docId) {
+        this.docId = docId;
     }
+
 }

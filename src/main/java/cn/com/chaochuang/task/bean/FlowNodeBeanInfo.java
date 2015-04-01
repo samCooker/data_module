@@ -9,32 +9,38 @@ package cn.com.chaochuang.task.bean;
 
 import java.util.Date;
 
+import cn.com.chaochuang.docwork.reference.IsSubmitData;
+
 /**
  * @author Shicx
  *
  */
 public class FlowNodeBeanInfo {
 
-    /** 原实例编号 inst_id */
-    private String instanceId;
+    /** 公文id */
+    private Long         docId;
+    /** 原实例编号 */
+    private String       rmInstanceId;
+    /** 原系统流程环节实例编号 */
+    private Long         rmInstnoId;
+    /** 原系统前驱流程环节实例编号 */
+    private Long         rmPreInstnoId;
+    /** 前驱环节编号 */
+    private String       preNodeId;
     /** 环节编号 node_id */
-    private String nodeId;
+    private String       nodeId;
     /** 环节名称 node_name */
-    private String nodeName;
-    /** 办理意见 表wf_data_text>item_id=lw_nbld... */
-    private String opinions;
-    /** 办理人 根据cur_man查找user表获取name */
-    private String transactName;
-    /** 办理人id cur_man */
-    private Long   transactId;
-    /** 办理部门 id 根据cur_man查找user表获取 */
-    private Long   transactDeptId;
-    /** 办理部门 根据cur_man查找user表获取 */
-    private String transactDeptName;
-    /** 办理时间 */
-    private Date   transactDate;
-    /** 当前环节 */
-    private Long   rmInstnoId;
+    private String       nodeName;
+    /** 当前办理人姓名 */
+    private String       transactName;
+    /** 当前办理人id */
+    private Long         transactId;
+    /** 到达时间 */
+    private Date         arriveTime;
+    /** 完成时间 */
+    private Date         finishTime;
+    /** 是否提交数据 */
+    private IsSubmitData submitData;
 
     /**
      *
@@ -44,26 +50,78 @@ public class FlowNodeBeanInfo {
     }
 
     /**
-     * @param instanceId
+     * @return the docId
      */
-    public FlowNodeBeanInfo(String instanceId) {
-        super();
-        this.instanceId = instanceId;
+    public Long getDocId() {
+        return docId;
     }
 
     /**
-     * @return the instanceId
+     * @param docId
+     *            the docId to set
      */
-    public String getInstanceId() {
-        return instanceId;
+    public void setDocId(Long docId) {
+        this.docId = docId;
     }
 
     /**
-     * @param instanceId
-     *            the instanceId to set
+     * @return the rmInstanceId
      */
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
+    }
+
+    /**
+     * @return the rmInstnoId
+     */
+    public Long getRmInstnoId() {
+        return rmInstnoId;
+    }
+
+    /**
+     * @param rmInstnoId
+     *            the rmInstnoId to set
+     */
+    public void setRmInstnoId(Long rmInstnoId) {
+        this.rmInstnoId = rmInstnoId;
+    }
+
+    /**
+     * @return the rmPreInstnoId
+     */
+    public Long getRmPreInstnoId() {
+        return rmPreInstnoId;
+    }
+
+    /**
+     * @param rmPreInstnoId
+     *            the rmPreInstnoId to set
+     */
+    public void setRmPreInstnoId(Long rmPreInstnoId) {
+        this.rmPreInstnoId = rmPreInstnoId;
+    }
+
+    /**
+     * @return the preNodeId
+     */
+    public String getPreNodeId() {
+        return preNodeId;
+    }
+
+    /**
+     * @param preNodeId
+     *            the preNodeId to set
+     */
+    public void setPreNodeId(String preNodeId) {
+        this.preNodeId = preNodeId;
     }
 
     /**
@@ -127,78 +185,48 @@ public class FlowNodeBeanInfo {
     }
 
     /**
-     * @return the transactDeptId
+     * @return the arriveTime
      */
-    public Long getTransactDeptId() {
-        return transactDeptId;
+    public Date getArriveTime() {
+        return arriveTime;
     }
 
     /**
-     * @param transactDeptId
-     *            the transactDeptId to set
+     * @param arriveTime
+     *            the arriveTime to set
      */
-    public void setTransactDeptId(Long transactDeptId) {
-        this.transactDeptId = transactDeptId;
+    public void setArriveTime(Date arriveTime) {
+        this.arriveTime = arriveTime;
     }
 
     /**
-     * @return the transactDeptName
+     * @return the finishTime
      */
-    public String getTransactDeptName() {
-        return transactDeptName;
+    public Date getFinishTime() {
+        return finishTime;
     }
 
     /**
-     * @param transactDeptName
-     *            the transactDeptName to set
+     * @param finishTime
+     *            the finishTime to set
      */
-    public void setTransactDeptName(String transactDeptName) {
-        this.transactDeptName = transactDeptName;
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
     }
 
     /**
-     * @return the transactDate
+     * @return the submitData
      */
-    public Date getTransactDate() {
-        return transactDate;
+    public IsSubmitData getSubmitData() {
+        return submitData;
     }
 
     /**
-     * @param transactDate
-     *            the transactDate to set
+     * @param submitData
+     *            the submitData to set
      */
-    public void setTransactDate(Date transactDate) {
-        this.transactDate = transactDate;
-    }
-
-    /**
-     * @return the opinions
-     */
-    public String getOpinions() {
-        return opinions;
-    }
-
-    /**
-     * @param opinions
-     *            the opinions to set
-     */
-    public void setOpinions(String opinions) {
-        this.opinions = opinions;
-    }
-
-    /**
-     * @return the rmInstnoId
-     */
-    public Long getRmInstnoId() {
-        return rmInstnoId;
-    }
-
-    /**
-     * @param rmInstnoId
-     *            the rmInstnoId to set
-     */
-    public void setRmInstnoId(Long rmInstnoId) {
-        this.rmInstnoId = rmInstnoId;
+    public void setSubmitData(IsSubmitData submitData) {
+        this.submitData = submitData;
     }
 
 }

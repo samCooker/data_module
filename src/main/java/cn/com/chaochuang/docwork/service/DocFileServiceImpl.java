@@ -35,16 +35,19 @@ import cn.com.chaochuang.task.bean.DocFileInfo;
 public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> implements DocFileService {
 
     @Autowired
-    private DocFileRepository    repository;
+    private DocFileRepository       repository;
 
     @Autowired
-    private DocFileAttachService attachmentsService;
+    private DocFileAttachService    attachmentsService;
 
     @Autowired
-    private FlowNodeInfoService  flowNodeInfoService;
+    private FlowNodeInfoService     flowNodeInfoService;
+
+    @Autowired
+    private FlowNodeOpinionsService flowNodeOpinionsService;
 
     @PersistenceContext
-    private EntityManager        entityManager;
+    private EntityManager           entityManager;
 
     @Override
     public SimpleDomainRepository<DocFile, Long> getRepository() {
@@ -63,10 +66,13 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             DocFile file = new DocFile();
             BeanUtils.copyProperties(file, fileInfo);
             file = repository.save(file);
-            // 保存流程信息
-            flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
             // 保存附件信息
             attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
+            // 保存流程信息
+            flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
+            // 保存意见信息
+            flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
+
         }
 
     }

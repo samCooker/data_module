@@ -35,51 +35,56 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  */
 @Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "file_id")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "doc_id")) })
 public class DocFile extends LongIdEntity {
 
     /**
      *
      */
-    private static final long   serialVersionUID = 1L;
+    private static final long      serialVersionUID = 1L;
     /** 公文标题 */
-    private String              title;
+    private String                 title;
     /** 文号 */
-    private String              docNumber;
+    private String                 docNumber;
     /** 紧急程度 */
     @Convert(converter = EmergencyLevelConverter.class)
-    private EmergencyLevel      emergencyLevel;
+    private EmergencyLevel         emergencyLevel;
     /** 密级 */
     @Convert(converter = SecrectLevelConverter.class)
-    private SecrectLevel        secretLevel;
+    private SecrectLevel           secretLevel;
     /** 来文单位 */
-    private String              sourceDept;
+    private String                 sourceDept;
     /** 办理期限 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date                limitDate;
+    private Date                   limitDate;
     /** 公文类别 */
-    private String              docType;
+    private String                 docType;
     /** 原系统公文编号 */
-    private String              instanceId;
+    private String                 instanceId;
     /** 流程编号 */
-    private String              flowId;
+    private String                 flowId;
     /** 创建时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date                createDate;
+    private Date                   createDate;
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date                inputDate;
+    private Date                   inputDate;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "fileId")
     /** 公文附件集合 */
-    private List<DocFileAttach> docFileAttachments;
+    private List<DocFileAttach>    docFileAttachments;
     /** 流程集合 */
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "fileId")
-    private List<FlowNodeInfo>  flowNodes;
+    private List<FlowNodeInfo>     flowNodes;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "fileId")
+    /** 流程意见集合 */
+    private List<FlowNodeOpinions> remoteFlowOpinions;
 
     /**
      * @return the title

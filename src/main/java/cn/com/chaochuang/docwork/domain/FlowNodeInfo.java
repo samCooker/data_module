@@ -14,6 +14,8 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.docwork.reference.IsSubmitData;
@@ -31,27 +33,29 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     private static final long serialVersionUID = 1L;
     /** 公文id */
-    private Long              fileId;
+    private Long              docId;
     /** 原实例编号 */
-    private String            instanceId;
-    /** 环节编号 */
-    private String            nodeId;
-    /** 环节名称 */
-    private String            nodeName;
-    /** 办理意见 */
-    private String            opinions;
-    /** 办理人 */
-    private String            transactName;
-    /** 办理人id */
-    private Long              transactId;
-    /** 办理部门 id */
-    private Long              transactDeptId;
-    /** 办理部门 */
-    private String            transactDeptName;
-    /** 办理时间 */
-    private Date              transactDate;
-    /** 当前环节 */
+    private String            rmInstanceId;
+    /** 原系统流程环节实例编号 */
     private Long              rmInstnoId;
+    /** 原系统前驱流程环节实例编号 */
+    private Long              rmPreInstnoId;
+    /** 前驱环节编号 */
+    private String            preNodeId;
+    /** 环节编号 node_id */
+    private String            nodeId;
+    /** 环节名称 node_name */
+    private String            nodeName;
+    /** 当前办理人姓名 */
+    private String            transactName;
+    /** 当前办理人id */
+    private Long              transactId;
+    /** 到达时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date              arriveTime;
+    /** 完成时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date              finishTime;
     /** 是否提交数据 */
     private IsSubmitData      submitData;
 
@@ -63,26 +67,78 @@ public class FlowNodeInfo extends LongIdEntity {
     }
 
     /**
-     * @param instanceId
+     * @return the docId
      */
-    public FlowNodeInfo(String instanceId) {
-        super();
-        this.instanceId = instanceId;
+    public Long getDocId() {
+        return docId;
     }
 
     /**
-     * @return the instanceId
+     * @param docId
+     *            the docId to set
      */
-    public String getInstanceId() {
-        return instanceId;
+    public void setDocId(Long docId) {
+        this.docId = docId;
     }
 
     /**
-     * @param instanceId
-     *            the instanceId to set
+     * @return the rmInstanceId
      */
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
+    }
+
+    /**
+     * @return the rmInstnoId
+     */
+    public Long getRmInstnoId() {
+        return rmInstnoId;
+    }
+
+    /**
+     * @param rmInstnoId
+     *            the rmInstnoId to set
+     */
+    public void setRmInstnoId(Long rmInstnoId) {
+        this.rmInstnoId = rmInstnoId;
+    }
+
+    /**
+     * @return the rmPreInstnoId
+     */
+    public Long getRmPreInstnoId() {
+        return rmPreInstnoId;
+    }
+
+    /**
+     * @param rmPreInstnoId
+     *            the rmPreInstnoId to set
+     */
+    public void setRmPreInstnoId(Long rmPreInstnoId) {
+        this.rmPreInstnoId = rmPreInstnoId;
+    }
+
+    /**
+     * @return the preNodeId
+     */
+    public String getPreNodeId() {
+        return preNodeId;
+    }
+
+    /**
+     * @param preNodeId
+     *            the preNodeId to set
+     */
+    public void setPreNodeId(String preNodeId) {
+        this.preNodeId = preNodeId;
     }
 
     /**
@@ -146,78 +202,33 @@ public class FlowNodeInfo extends LongIdEntity {
     }
 
     /**
-     * @return the transactDeptId
+     * @return the arriveTime
      */
-    public Long getTransactDeptId() {
-        return transactDeptId;
+    public Date getArriveTime() {
+        return arriveTime;
     }
 
     /**
-     * @param transactDeptId
-     *            the transactDeptId to set
+     * @param arriveTime
+     *            the arriveTime to set
      */
-    public void setTransactDeptId(Long transactDeptId) {
-        this.transactDeptId = transactDeptId;
+    public void setArriveTime(Date arriveTime) {
+        this.arriveTime = arriveTime;
     }
 
     /**
-     * @return the transactDeptName
+     * @return the finishTime
      */
-    public String getTransactDeptName() {
-        return transactDeptName;
+    public Date getFinishTime() {
+        return finishTime;
     }
 
     /**
-     * @param transactDeptName
-     *            the transactDeptName to set
+     * @param finishTime
+     *            the finishTime to set
      */
-    public void setTransactDeptName(String transactDeptName) {
-        this.transactDeptName = transactDeptName;
-    }
-
-    /**
-     * @return the transactDate
-     */
-    public Date getTransactDate() {
-        return transactDate;
-    }
-
-    /**
-     * @param transactDate
-     *            the transactDate to set
-     */
-    public void setTransactDate(Date transactDate) {
-        this.transactDate = transactDate;
-    }
-
-    /**
-     * @return the fileId
-     */
-    public Long getFileId() {
-        return fileId;
-    }
-
-    /**
-     * @param fileId
-     *            the fileId to set
-     */
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
-    }
-
-    /**
-     * @return the opinions
-     */
-    public String getOpinions() {
-        return opinions;
-    }
-
-    /**
-     * @param opinions
-     *            the opinions to set
-     */
-    public void setOpinions(String opinions) {
-        this.opinions = opinions;
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
     }
 
     /**
@@ -233,21 +244,6 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     public void setSubmitData(IsSubmitData submitData) {
         this.submitData = submitData;
-    }
-
-    /**
-     * @return the rmInstnoId
-     */
-    public Long getRmInstnoId() {
-        return rmInstnoId;
-    }
-
-    /**
-     * @param rmInstnoId
-     *            the rmInstnoId to set
-     */
-    public void setRmInstnoId(Long rmInstnoId) {
-        this.rmInstnoId = rmInstnoId;
     }
 
 }

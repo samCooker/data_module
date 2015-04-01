@@ -37,6 +37,7 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
         return repository;
     }
 
+    /** 保存从远程取出的附件信息 */
     @Override
     public void saveRemoteFlowNodeInfo(List<FlowNodeBeanInfo> datas, Long fileId) throws Exception {
         if (datas == null) {
@@ -46,7 +47,7 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
         for (FlowNodeBeanInfo nodeInfo : datas) {
             FlowNodeInfo node = new FlowNodeInfo();
             BeanUtils.copyProperties(node, nodeInfo);
-            node.setFileId(fileId);
+            node.setDocId(fileId);
             node.setSubmitData(IsSubmitData.已提交数据);
             nodesList.add(node);
         }
