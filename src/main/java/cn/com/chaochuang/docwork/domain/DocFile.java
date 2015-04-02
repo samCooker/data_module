@@ -14,7 +14,6 @@ import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -23,10 +22,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.EmergencyLevel;
-import cn.com.chaochuang.docwork.reference.EmergencyLevelConverter;
-import cn.com.chaochuang.docwork.reference.SecrectLevel;
-import cn.com.chaochuang.docwork.reference.SecrectLevelConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -47,11 +42,9 @@ public class DocFile extends LongIdEntity {
     /** 文号 */
     private String                 docNumber;
     /** 紧急程度 */
-    @Convert(converter = EmergencyLevelConverter.class)
-    private EmergencyLevel         emergencyLevel;
+    private String                 emergencyLevel;
     /** 密级 */
-    @Convert(converter = SecrectLevelConverter.class)
-    private SecrectLevel           secretLevel;
+    private String                 secretLevel;
     /** 来文单位 */
     private String                 sourceDept;
     /** 办理期限 */
@@ -79,12 +72,12 @@ public class DocFile extends LongIdEntity {
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "fileId")
-    private List<FlowNodeInfo>     flowNodes;
+    private List<FlowNodeInfo>     flowNodeInfos;
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "fileId")
     /** 流程意见集合 */
-    private List<FlowNodeOpinions> remoteFlowOpinions;
+    private List<FlowNodeOpinions> FlowNodeOpinions;
 
     /**
      * @return the title
@@ -114,6 +107,36 @@ public class DocFile extends LongIdEntity {
      */
     public void setDocNumber(String docNumber) {
         this.docNumber = docNumber;
+    }
+
+    /**
+     * @return the emergencyLevel
+     */
+    public String getEmergencyLevel() {
+        return emergencyLevel;
+    }
+
+    /**
+     * @param emergencyLevel
+     *            the emergencyLevel to set
+     */
+    public void setEmergencyLevel(String emergencyLevel) {
+        this.emergencyLevel = emergencyLevel;
+    }
+
+    /**
+     * @return the secretLevel
+     */
+    public String getSecretLevel() {
+        return secretLevel;
+    }
+
+    /**
+     * @param secretLevel
+     *            the secretLevel to set
+     */
+    public void setSecretLevel(String secretLevel) {
+        this.secretLevel = secretLevel;
     }
 
     /**
@@ -159,6 +182,21 @@ public class DocFile extends LongIdEntity {
      */
     public void setDocType(String docType) {
         this.docType = docType;
+    }
+
+    /**
+     * @return the rmInstanceId
+     */
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
     }
 
     /**
@@ -222,33 +260,33 @@ public class DocFile extends LongIdEntity {
     }
 
     /**
-     * @return the flowNodes
+     * @return the flowNodeInfos
      */
-    public List<FlowNodeInfo> getFlowNodes() {
-        return flowNodes;
+    public List<FlowNodeInfo> getFlowNodeInfos() {
+        return flowNodeInfos;
     }
 
     /**
-     * @param flowNodes
-     *            the flowNodes to set
+     * @param flowNodeInfos
+     *            the flowNodeInfos to set
      */
-    public void setFlowNodes(List<FlowNodeInfo> flowNodes) {
-        this.flowNodes = flowNodes;
+    public void setFlowNodeInfos(List<FlowNodeInfo> flowNodeInfos) {
+        this.flowNodeInfos = flowNodeInfos;
     }
 
     /**
-     * @return the rmInstanceId
+     * @return the flowNodeOpinions
      */
-    public String getRmInstanceId() {
-        return rmInstanceId;
+    public List<FlowNodeOpinions> getFlowNodeOpinions() {
+        return FlowNodeOpinions;
     }
 
     /**
-     * @param rmInstanceId
-     *            the rmInstanceId to set
+     * @param flowNodeOpinions
+     *            the flowNodeOpinions to set
      */
-    public void setRmInstanceId(String rmInstanceId) {
-        this.rmInstanceId = rmInstanceId;
+    public void setFlowNodeOpinions(List<FlowNodeOpinions> flowNodeOpinions) {
+        FlowNodeOpinions = flowNodeOpinions;
     }
 
 }
