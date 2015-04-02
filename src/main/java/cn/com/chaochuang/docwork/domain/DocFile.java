@@ -60,7 +60,7 @@ public class DocFile extends LongIdEntity {
     /** 公文类别 */
     private String                 docType;
     /** 原系统公文编号 */
-    private String                 instanceId;
+    private String                 rmInstanceId;
     /** 流程编号 */
     private String                 flowId;
     /** 创建时间 */
@@ -162,21 +162,6 @@ public class DocFile extends LongIdEntity {
     }
 
     /**
-     * @return the instanceId
-     */
-    public String getInstanceId() {
-        return instanceId;
-    }
-
-    /**
-     * @param instanceId
-     *            the instanceId to set
-     */
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
-    /**
      * @return the flowId
      */
     public String getFlowId() {
@@ -249,6 +234,21 @@ public class DocFile extends LongIdEntity {
      */
     public void setFlowNodes(List<FlowNodeInfo> flowNodes) {
         this.flowNodes = flowNodes;
+    }
+
+    /**
+     * @return the rmInstanceId
+     */
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
     }
 
 }

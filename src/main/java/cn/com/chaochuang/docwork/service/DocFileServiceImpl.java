@@ -79,7 +79,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
 
     @Override
     public String getDocFileMaxInputDate() {
-        StringBuffer sql = new StringBuffer(" select Max(inputDate) from ").append(DocFile.class.getName());
+        StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(DocFile.class.getName());
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {

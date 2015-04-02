@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author LLM
@@ -41,6 +42,8 @@ public class DocFileAttach extends LongIdEntity {
     private String            isImage;
     /** 原远程附件id */
     private String            rmAttachId;
+    /** 是否本地数据 */
+    private IsLocalData       localData;
 
     /**
      * @return the saveName
@@ -145,6 +148,21 @@ public class DocFileAttach extends LongIdEntity {
      */
     public void setDocId(Long docId) {
         this.docId = docId;
+    }
+
+    /**
+     * @return the localData
+     */
+    public IsLocalData getLocalData() {
+        return localData;
+    }
+
+    /**
+     * @param localData
+     *            the localData to set
+     */
+    public void setLocalData(IsLocalData localData) {
+        this.localData = localData;
     }
 
 }

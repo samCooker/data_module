@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
+import cn.com.chaochuang.docwork.reference.IsLocalData;
 import cn.com.chaochuang.docwork.repository.DocFileAttachRepository;
 import cn.com.chaochuang.task.bean.DocFileAttachInfo;
 
@@ -48,6 +49,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
             DocFileAttach attachment = new DocFileAttach();
             BeanUtils.copyProperties(attachment, attachmentInfo);
             attachment.setDocId(fileId);
+            attachment.setLocalData(IsLocalData.非本地数据);
             attachmentsList.add(attachment);
         }
         repository.save(attachmentsList);
