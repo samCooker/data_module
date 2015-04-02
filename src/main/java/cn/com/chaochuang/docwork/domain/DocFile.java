@@ -77,7 +77,22 @@ public class DocFile extends LongIdEntity {
     @JsonIgnore
     @JoinColumn(name = "fileId")
     /** 流程意见集合 */
-    private List<FlowNodeOpinions> FlowNodeOpinions;
+    private List<FlowNodeOpinions> flowNodeOpinions;
+
+    /**
+     * @return the flowNodeOpinions
+     */
+    public List<FlowNodeOpinions> getFlowNodeOpinions() {
+        return flowNodeOpinions;
+    }
+
+    /**
+     * @param flowNodeOpinions
+     *            the flowNodeOpinions to set
+     */
+    public void setFlowNodeOpinions(List<FlowNodeOpinions> flowNodeOpinions) {
+        this.flowNodeOpinions = flowNodeOpinions;
+    }
 
     /**
      * @return the title
@@ -272,21 +287,6 @@ public class DocFile extends LongIdEntity {
      */
     public void setFlowNodeInfos(List<FlowNodeInfo> flowNodeInfos) {
         this.flowNodeInfos = flowNodeInfos;
-    }
-
-    /**
-     * @return the flowNodeOpinions
-     */
-    public List<FlowNodeOpinions> getFlowNodeOpinions() {
-        return FlowNodeOpinions;
-    }
-
-    /**
-     * @param flowNodeOpinions
-     *            the flowNodeOpinions to set
-     */
-    public void setFlowNodeOpinions(List<FlowNodeOpinions> flowNodeOpinions) {
-        FlowNodeOpinions = flowNodeOpinions;
     }
 
 }
