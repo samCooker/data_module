@@ -67,7 +67,7 @@ public class DocFile extends LongIdEntity {
     @JsonIgnore
     @JoinColumn(name = "fileId")
     /** 公文附件集合 */
-    private List<DocFileAttach>    docFileAttachments;
+    private List<DocFileAttach>    docFileAttachs;
     /** 流程集合 */
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -260,18 +260,18 @@ public class DocFile extends LongIdEntity {
     }
 
     /**
-     * @return the docFileAttachments
+     * @return the docFileAttachs
      */
-    public List<DocFileAttach> getDocFileAttachments() {
-        return docFileAttachments;
+    public List<DocFileAttach> getDocFileAttachs() {
+        return docFileAttachs;
     }
 
     /**
-     * @param docFileAttachments
-     *            the docFileAttachments to set
+     * @param docFileAttachs
+     *            the docFileAttachs to set
      */
-    public void setDocFileAttachments(List<DocFileAttach> docFileAttachments) {
-        this.docFileAttachments = docFileAttachments;
+    public void setDocFileAttachs(List<DocFileAttach> docFileAttachs) {
+        this.docFileAttachs = docFileAttachs;
     }
 
     /**
