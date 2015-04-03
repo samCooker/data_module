@@ -39,10 +39,6 @@ public class DataUpdate extends LongIdEntity {
     private OperationType operationType;
     /** 更新内容 */
     private String        content;
-    /** MD5校验值 */
-    private String        md5Value;
-    /** 相关用户编号 */
-    private Long          userId;
     /** 数据输入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date          inputDate;
@@ -90,36 +86,6 @@ public class DataUpdate extends LongIdEntity {
      */
     public void setContent(String content) {
         this.content = content;
-    }
-
-    /**
-     * @return the md5Value
-     */
-    public String getMd5Value() {
-        return md5Value;
-    }
-
-    /**
-     * @param md5Value
-     *            the md5Value to set
-     */
-    public void setMd5Value(String md5Value) {
-        this.md5Value = md5Value;
-    }
-
-    /**
-     * @return the userId
-     */
-    public Long getUserId() {
-        return userId;
-    }
-
-    /**
-     * @param userId
-     *            the userId to set
-     */
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     /**

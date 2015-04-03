@@ -108,4 +108,19 @@ public class MobileDataTaskService {
 
     }
 
+    /**
+     * 提交公文修改数据
+     */
+    // @Scheduled(cron = "0 1/1 * * * ?")
+    public void commintDocFileDataTask() {
+        // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
+
+        // 每次仅处理列表的第一条记录
+
+        // 将DataUpdate的centent字符串转成DocFileUpdate对象，补全webservice所需的条件字段
+
+        // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
+
+        // 删除DataUpdate对象
+    }
 }
