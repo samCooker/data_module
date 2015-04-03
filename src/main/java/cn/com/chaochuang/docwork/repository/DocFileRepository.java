@@ -17,4 +17,6 @@ import cn.com.chaochuang.docwork.domain.DocFile;
  */
 public interface DocFileRepository extends SimpleDomainRepository<DocFile, Long> {
 
+    DocFile findByRmInstanceId(String rmInstanceId);
+
 }
