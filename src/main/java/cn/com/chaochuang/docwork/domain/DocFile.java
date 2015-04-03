@@ -65,17 +65,17 @@ public class DocFile extends LongIdEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "fileId")
+    @JoinColumn(name = "docId")
     /** 公文附件集合 */
     private List<DocFileAttach>    docFileAttachs;
     /** 流程集合 */
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "fileId")
+    @JoinColumn(name = "docId")
     private List<FlowNodeInfo>     flowNodeInfos;
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    @JoinColumn(name = "fileId")
+    @JoinColumn(name = "docId")
     /** 流程意见集合 */
     private List<FlowNodeOpinions> flowNodeOpinions;
 
