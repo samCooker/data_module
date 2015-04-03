@@ -58,6 +58,8 @@ public class FlowNodeInfo extends LongIdEntity {
     private Date              finishTime;
     /** 是否提交数据 */
     private IsSubmitData      submitData;
+    /** 办理部门id */
+    private Long              transactDeptId;
 
     /**
             *
@@ -244,6 +246,21 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     public void setSubmitData(IsSubmitData submitData) {
         this.submitData = submitData;
+    }
+
+    /**
+     * @return the transactDeptId
+     */
+    public Long getTransactDeptId() {
+        return transactDeptId;
+    }
+
+    /**
+     * @param transactDeptId
+     *            the transactDeptId to set
+     */
+    public void setTransactDeptId(Long transactDeptId) {
+        this.transactDeptId = transactDeptId;
     }
 
 }

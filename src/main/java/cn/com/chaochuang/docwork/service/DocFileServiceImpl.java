@@ -63,16 +63,19 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             return;
         }
         for (DocFileInfo fileInfo : datas) {
-            DocFile file = new DocFile();
-            BeanUtils.copyProperties(file, fileInfo);
-            file = repository.save(file);
-            // 保存附件信息
-            attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
-            // 保存流程信息
-            flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
-            // 保存意见信息
-            flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
-
+            // 查找该公文记录是否已存在，不存在则写入
+            DocFile existFile = repository.findByRmInstanceId(fileInfo.getRmInstanceId());
+            if (existFile == null) {
+                DocFile file = new DocFile();
+                BeanUtils.copyProperties(file, fileInfo);
+                file = repository.save(file);
+                // 保存附件信息
+                attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
+                // 保存流程信息
+                flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
+                // 保存意见信息
+                flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
+            }
         }
 
     }
