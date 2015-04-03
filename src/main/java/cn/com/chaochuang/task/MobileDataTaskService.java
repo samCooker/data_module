@@ -91,7 +91,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getDocFileDataTask() {
         String lastInputTime = this.fileService.getDocFileMaxInputDate();
         if (!Tools.isEmptyString(lastInputTime)) {
