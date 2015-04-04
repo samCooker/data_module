@@ -11,6 +11,8 @@ package cn.com.chaochuang.docwork.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
  *
  */
 @Service
+@Transactional
 public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNodeInfo> implements FlowNodeInfoService {
 
     @Autowired

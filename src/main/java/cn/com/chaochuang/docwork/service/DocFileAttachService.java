@@ -23,4 +23,18 @@ public interface DocFileAttachService extends CrudRestService<DocFileAttach, Lon
     /** 保存从远程取出的附件信息 */
     void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId) throws Exception;
 
+    /**
+     * 获取未移到本地的附件列表
+     *
+     * @return
+     */
+    List<DocFileAttach> selectUnLocalAttach();
+
+    /**
+     * 修改指定附件的路径和本地标识
+     * 
+     * @param attachId
+     * @param newFilePath
+     */
+    void saveDocFileAttachForLocal(Long attachId, String newFilePath);
 }

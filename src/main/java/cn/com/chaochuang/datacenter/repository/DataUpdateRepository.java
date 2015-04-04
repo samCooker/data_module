@@ -8,13 +8,24 @@
 
 package cn.com.chaochuang.datacenter.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.OperationType;
+import cn.com.chaochuang.datacenter.reference.WorkType;
 
 /**
  * @author LLM
  *
  */
 public interface DataUpdateRepository extends SimpleDomainRepository<DataUpdate, Long> {
-
+    /**
+     * 查询DataUpdate记录
+     *
+     * @param workType
+     * @param operationType
+     * @return
+     */
+    List<DataUpdate> findByWorkTypeAndOperationType(WorkType workType, OperationType operationType);
 }

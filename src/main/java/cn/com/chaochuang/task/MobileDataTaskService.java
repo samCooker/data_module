@@ -8,15 +8,25 @@
 
 package cn.com.chaochuang.task;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.reference.FordoSource;
+import cn.com.chaochuang.docwork.service.DocFileAttachService;
 import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
@@ -35,20 +45,34 @@ public class MobileDataTaskService {
 
     /** webservice 函数库 */
     @Autowired
-    private ITransferOAService transferOAService;
+    private ITransferOAService   transferOAService;
     /** fdFordoService */
     @Autowired
-    private FdFordoService     fdFordoService;
+    private FdFordoService       fdFordoService;
 
     @Autowired
-    private DocFileService     fileService;
+    private DocFileService       fileService;
 
-    private static boolean     isRunning = false;
+    @Autowired
+    private DataUpdateService    dataUpdateService;
+
+    @Autowired
+    private DocFileAttachService docFileAttachService;
+
+    /** 附件存放根路径 */
+    @Value("${upload.rootpath}")
+    private String               rootPath;
+
+    /** 公文附件存放相对路径 */
+    @Value("${docfile.attach.path}")
+    private String               docFileAttachPath;
+
+    private static boolean       isRunning = false;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isRunning) {
             return;
@@ -113,14 +137,79 @@ public class MobileDataTaskService {
      */
     // @Scheduled(cron = "0 1/1 * * * ?")
     public void commintDocFileDataTask() {
-        // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
+        if (isRunning) {
+            return;
+        }
+        isRunning = true;
+        try {
+            // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate();
+            // 每次仅处理列表的第一条记录
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            DataUpdate dataUpdate = (DataUpdate) datas.get(0);
+            // 将DataUpdate的centent字符串转成DocFileUpdate对象，补全webservice所需的条件字段
+            ObjectMapper mapper = new ObjectMapper();
+            DocFileUpdate docFileUpdate = mapper.readValue(dataUpdate.getContent(), DocFileUpdate.class);
+            // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
+            String updateInfoJson = mapper.writeValueAsString(docFileUpdate);
+            transferOAService.setDocTransactInfo(updateInfoJson);
+            // 删除DataUpdate对象
+            this.dataUpdateService.delete(dataUpdate);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            isRunning = false;
+        }
+    }
 
-        // 每次仅处理列表的第一条记录
-
-        // 将DataUpdate的centent字符串转成DocFileUpdate对象，补全webservice所需的条件字段
-
-        // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
-
-        // 删除DataUpdate对象
+    /**
+     * 获取公文的附件，拉到本地存储
+     */
+    @Scheduled(cron = "0 1/1 * * * ?")
+    public void getDocFileAttachTask() {
+        if (isRunning) {
+            return;
+        }
+        isRunning = true;
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            String localFilePath = this.rootPath + this.docFileAttachPath;
+            // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
+            List<DocFileAttach> datas = this.docFileAttachService.selectUnLocalAttach();
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            DocFileAttach attach = (DocFileAttach) datas.get(0);
+            String localFileName = localFilePath + attach.getSaveName();
+            String remoteFileName = attach.getSavePath();
+            File file = new File(localFileName);
+            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+            // 调用ITransferOAService的setDocTransactInfo的uploadStreamAttachFile方法
+            Long offset = Long.valueOf(0);
+            int uploadBlockSize = 10240;
+            byte[] buffer = this.transferOAService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            while (buffer.length > 0) {
+                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                offset += buffer.length;
+                buffer = new byte[uploadBlockSize];
+                buffer = this.transferOAService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            }
+            // 将附件localData标志置为本地数据("1")
+            this.docFileAttachService.saveDocFileAttachForLocal(attach.getId(), localFileName);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (bufferedOutputStream != null) {
+                try {
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                } catch (IOException exf) {
+                    throw new RuntimeException(exf);
+                }
+            }
+            isRunning = false;
+        }
     }
 }

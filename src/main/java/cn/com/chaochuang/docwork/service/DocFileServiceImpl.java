@@ -15,6 +15,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import cn.com.chaochuang.task.bean.DocFileInfo;
  *
  */
 @Service
+@Transactional
 public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> implements DocFileService {
 
     @Autowired

@@ -11,6 +11,8 @@ package cn.com.chaochuang.docwork.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import cn.com.chaochuang.docwork.repository.FlowNodeOpinionsRepository;
  *
  */
 @Service
+@Transactional
 public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<FlowNodeOpinions> implements
                 FlowNodeOpinionsService {
 

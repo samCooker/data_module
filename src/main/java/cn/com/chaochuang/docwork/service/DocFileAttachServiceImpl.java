@@ -11,6 +11,8 @@ package cn.com.chaochuang.docwork.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import cn.com.chaochuang.task.bean.DocFileAttachInfo;
  *
  */
 @Service
+@Transactional
 public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFileAttach> implements
                 DocFileAttachService {
 
@@ -53,7 +56,26 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
             attachmentsList.add(attachment);
         }
         repository.save(attachmentsList);
+    }
 
+    /**
+     * @see cn.com.chaochuang.docwork.service.DocFileAttachService#selectUnLocalAttach()
+     */
+    @Override
+    public List<DocFileAttach> selectUnLocalAttach() {
+        return this.repository.findByLocalData(IsLocalData.非本地数据);
+    }
+
+    /**
+     * @see cn.com.chaochuang.docwork.service.DocFileAttachService#saveDocFileAttachForLocal(java.lang.Long,
+     *      java.lang.String)
+     */
+    @Override
+    public void saveDocFileAttachForLocal(Long attachId, String newFilePath) {
+        DocFileAttach attach = this.repository.findOne(attachId);
+        attach.setLocalData(IsLocalData.有本地数据);
+        attach.setSavePath(newFilePath);
+        this.repository.save(attach);
     }
 
 }

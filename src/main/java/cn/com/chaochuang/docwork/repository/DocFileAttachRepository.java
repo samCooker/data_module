@@ -8,8 +8,11 @@
 
 package cn.com.chaochuang.docwork.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
+import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author Shicx
@@ -17,4 +20,11 @@ import cn.com.chaochuang.docwork.domain.DocFileAttach;
  */
 public interface DocFileAttachRepository extends SimpleDomainRepository<DocFileAttach, Long> {
 
+    /**
+     * 查询未存到本地的附件数据
+     * 
+     * @param localDate
+     * @return
+     */
+    List<DocFileAttach> findByLocalData(IsLocalData localDate);
 }

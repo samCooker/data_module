@@ -87,4 +87,16 @@ public interface ITransferOAService {
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
     String getPublicDataInfo(String lastOutputTime);
+
+    /**
+     * 获取公文的附件
+     * 
+     * @param fileName
+     * @param offset
+     * @param reads
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
 }
