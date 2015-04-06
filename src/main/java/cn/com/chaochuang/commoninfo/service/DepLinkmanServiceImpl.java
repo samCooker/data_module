@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.commoninfo.service;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import cn.com.chaochuang.commoninfo.repository.DepLinkmanRepository;
  *
  */
 @Service
+@Transactional
 public class DepLinkmanServiceImpl extends SimpleLongIdCrudRestService<DepLinkman> implements DepLinkmanService {
     @Autowired
     private DepLinkmanRepository repository;
