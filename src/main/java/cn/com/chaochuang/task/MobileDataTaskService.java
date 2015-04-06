@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
@@ -31,6 +32,7 @@ import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
+import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -49,6 +51,9 @@ public class MobileDataTaskService {
     /** fdFordoService */
     @Autowired
     private FdFordoService       fdFordoService;
+
+    @Autowired
+    private PubInfoService       pubInfoService;
 
     @Autowired
     private DocFileService       fileService;
@@ -212,4 +217,29 @@ public class MobileDataTaskService {
             isRunning = false;
         }
     }
+
+    /**
+     * 向OA获取公告数据 每5分钟进行一次数据获取
+     */
+    @Scheduled(cron = "0 1/1 * * * ?")
+    public void getPubInfoDataTask() {
+        String lastInputTime = this.pubInfoService.selectMaxInputDate();
+        if (!Tools.isEmptyString(lastInputTime)) {
+            String json = this.transferOAService.getPublicDataInfo(lastInputTime);
+            if (json.equals("")) {
+                System.out.println("json为空");
+                return;
+            }
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
+                List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
+                pubInfoService.savePubInfoDatas(datas);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+    }
+
 }

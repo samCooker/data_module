@@ -14,6 +14,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author LLM
@@ -23,17 +24,19 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "attach_id")) })
 public class PubInfoAttach extends LongIdEntity {
     /** 附件保存名 */
-    private String saveName;
+    private String      saveName;
     /** 文件原名 */
-    private String trueName;
+    private String      trueName;
     /** 文件大小 */
-    private Long   fileSize;
+    private Long        fileSize;
     /** 是否是图片 */
-    private String isImage;
+    private String      isImage;
     /** 文件路径 */
-    private String savePath;
+    private String      savePath;
     /** 公共信息表编号 */
-    private Long   pubInfoId;
+    private Long        pubInfoId;
+    /** 是否本地数据 */
+    private IsLocalData localData;
 
     /**
      * @return the saveName
@@ -123,6 +126,21 @@ public class PubInfoAttach extends LongIdEntity {
      */
     public void setPubInfoId(Long pubInfoId) {
         this.pubInfoId = pubInfoId;
+    }
+
+    /**
+     * @return the localData
+     */
+    public IsLocalData getLocalData() {
+        return localData;
+    }
+
+    /**
+     * @param localData
+     *            the localData to set
+     */
+    public void setLocalData(IsLocalData localData) {
+        this.localData = localData;
     }
 
 }
