@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +174,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isRunning) {
             return;
@@ -224,6 +226,13 @@ public class MobileDataTaskService {
     @Scheduled(cron = "0 1/1 * * * ?")
     public void getPubInfoDataTask() {
         String lastInputTime = this.pubInfoService.selectMaxInputDate();
+        if (Tools.isEmptyString(lastInputTime)) {
+            Date date = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.MONTH, -6);
+            lastInputTime = Tools.DATE_TIME_FORMAT.format(calendar.getTime());
+        }
         if (!Tools.isEmptyString(lastInputTime)) {
             String json = this.transferOAService.getPublicDataInfo(lastInputTime);
             if (json.equals("")) {
