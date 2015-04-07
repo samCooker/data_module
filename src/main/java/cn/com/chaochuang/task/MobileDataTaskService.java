@@ -74,17 +74,21 @@ public class MobileDataTaskService {
     @Value("${docfile.attach.path}")
     private String               docFileAttachPath;
 
-    private static boolean       isRunning = false;
+    private static boolean       isFordoRunning          = false;
+    private static boolean       isGetDocFileRunning     = false;
+    private static boolean       isCommitDocFileRunning  = false;
+    private static boolean       isDownLoadAttachRunning = false;
+    private static boolean       isGetPubInfoDataRunning = false;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
     // @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
-        if (isRunning) {
+        if (isFordoRunning) {
             return;
         }
-        isRunning = true;
+        isFordoRunning = true;
         try {
             // 获取当前待办表中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
             PendingCommandInfo info = this.fdFordoService.selectMaxInputDate();
@@ -106,7 +110,7 @@ public class MobileDataTaskService {
                 throw new RuntimeException(ex);
             }
         } finally {
-            isRunning = false;
+            isFordoRunning = false;
         }
 
     }
@@ -124,17 +128,26 @@ public class MobileDataTaskService {
      */
     // @Scheduled(cron = "0 1/1 * * * ?")
     public void getDocFileDataTask() {
-        String lastInputTime = this.fileService.getDocFileMaxInputDate();
-        if (!Tools.isEmptyString(lastInputTime)) {
-            String json = this.transferOAService.getDocTransactInfo(lastInputTime);
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
-                List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
-                fileService.saveDocFilesDatas(datas);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+        if (isGetDocFileRunning) {
+            return;
+        }
+        isGetDocFileRunning = true;
+        try {
+            String lastInputTime = this.fileService.getDocFileMaxInputDate();
+            if (!Tools.isEmptyString(lastInputTime)) {
+                String json = this.transferOAService.getDocTransactInfo(lastInputTime);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                    DocFileInfo.class);
+                    List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
+                    fileService.saveDocFilesDatas(datas);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
+        } finally {
+            isGetDocFileRunning = false;
         }
 
     }
@@ -144,10 +157,10 @@ public class MobileDataTaskService {
      */
     // @Scheduled(cron = "0 1/1 * * * ?")
     public void commintDocFileDataTask() {
-        if (isRunning) {
+        if (isCommitDocFileRunning) {
             return;
         }
-        isRunning = true;
+        isCommitDocFileRunning = true;
         try {
             // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
             List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate();
@@ -167,7 +180,7 @@ public class MobileDataTaskService {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
-            isRunning = false;
+            isCommitDocFileRunning = false;
         }
     }
 
@@ -176,10 +189,10 @@ public class MobileDataTaskService {
      */
     // @Scheduled(cron = "0 1/1 * * * ?")
     public void getDocFileAttachTask() {
-        if (isRunning) {
+        if (isDownLoadAttachRunning) {
             return;
         }
-        isRunning = true;
+        isDownLoadAttachRunning = true;
         BufferedOutputStream bufferedOutputStream = null;
         try {
             String localFilePath = this.rootPath + this.docFileAttachPath;
@@ -216,7 +229,7 @@ public class MobileDataTaskService {
                     throw new RuntimeException(exf);
                 }
             }
-            isRunning = false;
+            isDownLoadAttachRunning = false;
         }
     }
 
@@ -225,30 +238,38 @@ public class MobileDataTaskService {
      */
     @Scheduled(cron = "0 1/1 * * * ?")
     public void getPubInfoDataTask() {
-        String lastInputTime = this.pubInfoService.selectMaxInputDate();
-        if (Tools.isEmptyString(lastInputTime)) {
-            Date date = new Date();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            calendar.add(Calendar.MONTH, -6);
-            lastInputTime = Tools.DATE_TIME_FORMAT.format(calendar.getTime());
+        if (isGetPubInfoDataRunning) {
+            return;
         }
-        if (!Tools.isEmptyString(lastInputTime)) {
-            String json = this.transferOAService.getPublicDataInfo(lastInputTime);
-            if (json.equals("")) {
-                System.out.println("json为空");
-                return;
+        isGetPubInfoDataRunning = true;
+        try {
+            String lastInputTime = this.pubInfoService.selectMaxInputDate();
+            if (Tools.isEmptyString(lastInputTime)) {
+                Date date = new Date();
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.add(Calendar.MONTH, -6);
+                lastInputTime = Tools.DATE_TIME_FORMAT.format(calendar.getTime());
             }
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
-                List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
-                pubInfoService.savePubInfoDatas(datas);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            if (!Tools.isEmptyString(lastInputTime)) {
+                String json = this.transferOAService.getPublicDataInfo(lastInputTime);
+                if (json.equals("")) {
+                    System.out.println("json为空");
+                    return;
+                }
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                    PubInfoBean.class);
+                    List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
+                    pubInfoService.savePubInfoDatas(datas);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
+        } finally {
+            isGetPubInfoDataRunning = false;
         }
-
     }
 
 }

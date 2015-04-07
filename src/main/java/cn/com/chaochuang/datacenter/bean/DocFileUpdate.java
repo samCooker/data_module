@@ -28,7 +28,7 @@ public class DocFileUpdate {
     /** 下一环节编号 */
     private String nextNodeId;
     /** 下一环节办理人 */
-    private Long   nextManId;
+    private String nextManId;
     /** 审批意见 */
     private String opinions;
     /** 环节标识（就是itemId） */
@@ -142,21 +142,6 @@ public class DocFileUpdate {
     }
 
     /**
-     * @return the nextManId
-     */
-    public Long getNextManId() {
-        return nextManId;
-    }
-
-    /**
-     * @param nextManId
-     *            the nextManId to set
-     */
-    public void setNextManId(Long nextManId) {
-        this.nextManId = nextManId;
-    }
-
-    /**
      * @return the opinions
      */
     public String getOpinions() {
@@ -199,5 +184,20 @@ public class DocFileUpdate {
      */
     public void setOprationType(String oprationType) {
         this.oprationType = oprationType;
+    }
+
+    /**
+     * @return the nextManId
+     */
+    public String getNextManId() {
+        return nextManId;
+    }
+
+    /**
+     * @param nextManId
+     *            the nextManId to set
+     */
+    public void setNextManId(String nextManId) {
+        this.nextManId = nextManId;
     }
 }
