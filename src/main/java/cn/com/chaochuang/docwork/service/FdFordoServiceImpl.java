@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.jpush.util.JPushUtils;
+import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
@@ -42,6 +45,9 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
 
     @Autowired
     private FdFordoRepository repository;
+
+    @Autowired
+    private SysUserRepository userRepository;
 
     @Override
     public SimpleDomainRepository<FdFordo, Long> getRepository() {
@@ -93,6 +99,12 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             fdFordo.setFordoSource(fordoSource);
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
+                // 未读数据添加消息推送
+                SysUser user = userRepository.findOne(fdFordo.getRecipientId());
+                // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
+                if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
+                    JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
+                }
             } else {
                 fdFordo.setStatus(FordoStatus.已读);
             }
