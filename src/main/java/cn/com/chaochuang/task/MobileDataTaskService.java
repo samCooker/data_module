@@ -74,10 +74,15 @@ public class MobileDataTaskService {
     @Value("${docfile.attach.path}")
     private String               docFileAttachPath;
 
+    /** 获取待办阻塞标识 */
     private static boolean       isFordoRunning          = false;
+    /** 获取公文阻塞标识 */
     private static boolean       isGetDocFileRunning     = false;
+    /** 提交公文阻塞标识 */
     private static boolean       isCommitDocFileRunning  = false;
+    /** 下载公文附件阻塞标识 */
     private static boolean       isDownLoadAttachRunning = false;
+    /** 获取公告阻塞标识 */
     private static boolean       isGetPubInfoDataRunning = false;
 
     /**
