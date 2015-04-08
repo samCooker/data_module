@@ -11,6 +11,7 @@ package cn.com.chaochuang.docwork.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
@@ -32,7 +33,15 @@ public interface FdFordoService extends CrudRestService<FdFordo, Long> {
      * 批量插入待办事宜数据
      *
      * @param pendingItems
-     * @param fordoSource TODO
+     * @param fordoSource
+     *            TODO
      */
     void insertFdFordos(List<PendingCommandInfo> pendingItems, FordoSource fordoSource);
+
+    /**
+     * 分析系统数据的处理
+     *
+     * @param dataChange
+     */
+    void analysisDataChange(SysDataChange dataChange);
 }

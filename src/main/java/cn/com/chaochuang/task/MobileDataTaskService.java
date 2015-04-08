@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,10 @@ import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.DocFileAttachService;
@@ -66,6 +70,9 @@ public class MobileDataTaskService {
     @Autowired
     private DocFileAttachService docFileAttachService;
 
+    @Autowired
+    private SysDataChangeService dataChangeService;
+
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
     private String               rootPath;
@@ -75,15 +82,19 @@ public class MobileDataTaskService {
     private String               docFileAttachPath;
 
     /** 获取待办阻塞标识 */
-    private static boolean       isFordoRunning          = false;
+    private static boolean       isFordoRunning             = false;
     /** 获取公文阻塞标识 */
-    private static boolean       isGetDocFileRunning     = false;
+    private static boolean       isGetDocFileRunning        = false;
     /** 提交公文阻塞标识 */
-    private static boolean       isCommitDocFileRunning  = false;
+    private static boolean       isCommitDocFileRunning     = false;
     /** 下载公文附件阻塞标识 */
-    private static boolean       isDownLoadAttachRunning = false;
+    private static boolean       isDownLoadAttachRunning    = false;
     /** 获取公告阻塞标识 */
-    private static boolean       isGetPubInfoDataRunning = false;
+    private static boolean       isGetPubInfoDataRunning    = false;
+    /** 获取公告阻塞标识 */
+    private static boolean       isGetSysDataChangeRunning  = false;
+    /** 获取处理系统数据更改阻塞标识 */
+    private static boolean       isDealSysDataChangeRunning = false;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
@@ -246,7 +257,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -279,6 +290,58 @@ public class MobileDataTaskService {
             }
         } finally {
             isGetPubInfoDataRunning = false;
+        }
+    }
+
+    /**
+     * 获取远程系统修改记录数据
+     */
+    // @Scheduled(cron = "0 1/1 * * * ?")
+    public void getOADataChange() {
+        if (isGetSysDataChangeRunning) {
+            return;
+        }
+        isGetSysDataChangeRunning = true;
+        try {
+            String json = this.transferOAService.getDataChange();
+            if (Tools.isEmptyString(json)) {
+                return;
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, SysDataChange.class);
+            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+            this.dataChangeService.saveSysDataChange(datas);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            isGetSysDataChangeRunning = false;
+        }
+    }
+
+    /**
+     * 处理远程系统更改数据
+     */
+    @Scheduled(cron = "0 1/1 * * * ?")
+    public void dealDataChange() {
+        if (isDealSysDataChangeRunning) {
+            return;
+        }
+        isDealSysDataChangeRunning = true;
+        try {
+            Page page = this.dataChangeService.findAllByPage(1, 10);
+            List<SysDataChange> datas = page.getContent();
+            for (SysDataChange item : datas) {
+                // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
+                if (DataChangeTable.公文待办事宜.getKey().equals(item.getChangeTableName())) {
+                    this.fdFordoService.analysisDataChange(item);
+                }
+                // 删除变更数据
+                this.dataChangeService.delete(item.getId());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isDealSysDataChangeRunning = false;
         }
     }
 }

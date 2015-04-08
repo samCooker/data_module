@@ -102,11 +102,11 @@ public interface ITransferOAService {
 
     /**
      * 获取OA的改变数据
-     * 
+     *
      * @param lastOutputTime
      * @return
      */
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
-    String getOADataChangeInfo(String lastOutputTime);
+    String getDataChange();
 }

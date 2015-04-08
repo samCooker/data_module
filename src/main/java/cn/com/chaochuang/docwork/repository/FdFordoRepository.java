@@ -28,4 +28,11 @@ public interface FdFordoRepository extends SimpleDomainRepository<FdFordo, Long>
      */
     List<FdFordo> findByRmPendingIdAndRecipientId(String rmPendingId, Long recipientId);
 
+    /**
+     * 根据原系统的待办明细编号查询待办事宜记录
+     *
+     * @param rmPendingItemId
+     * @return
+     */
+    FdFordo findByRmPendingItemId(String rmPendingItemId);
 }
