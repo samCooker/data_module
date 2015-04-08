@@ -90,7 +90,7 @@ public interface ITransferOAService {
 
     /**
      * 获取公文的附件
-     * 
+     *
      * @param fileName
      * @param offset
      * @param reads
@@ -99,4 +99,14 @@ public interface ITransferOAService {
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
     byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+
+    /**
+     * 获取OA的改变数据
+     * 
+     * @param lastOutputTime
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getOADataChangeInfo(String lastOutputTime);
 }

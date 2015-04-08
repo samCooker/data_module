@@ -200,16 +200,21 @@ public class MobileDataTaskService {
         isDownLoadAttachRunning = true;
         BufferedOutputStream bufferedOutputStream = null;
         try {
-            String localFilePath = this.rootPath + this.docFileAttachPath;
+            String localFilePath = this.rootPath + this.docFileAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
             List<DocFileAttach> datas = this.docFileAttachService.selectUnLocalAttach();
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }
             DocFileAttach attach = (DocFileAttach) datas.get(0);
+            File file = new File(localFilePath);
+            // 目录不存在则建立新目录
+            if (!file.exists()) {
+                file.mkdirs();
+            }
             String localFileName = localFilePath + attach.getSaveName();
             String remoteFileName = attach.getSavePath();
-            File file = new File(localFileName);
+            file = new File(localFileName);
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
             // 调用ITransferOAService的setDocTransactInfo的uploadStreamAttachFile方法
             Long offset = Long.valueOf(0);
@@ -276,5 +281,4 @@ public class MobileDataTaskService {
             isGetPubInfoDataRunning = false;
         }
     }
-
 }
