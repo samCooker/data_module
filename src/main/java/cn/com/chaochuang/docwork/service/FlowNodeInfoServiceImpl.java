@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
-import cn.com.chaochuang.docwork.reference.IsSubmitData;
 import cn.com.chaochuang.docwork.repository.FlowNodeInfoRepository;
 import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
 
@@ -48,11 +47,14 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
         }
         List<FlowNodeInfo> nodesList = new ArrayList<FlowNodeInfo>();
         for (FlowNodeBeanInfo nodeInfo : datas) {
-            FlowNodeInfo node = new FlowNodeInfo();
-            BeanUtils.copyProperties(node, nodeInfo);
-            node.setDocId(fileId);
-            node.setSubmitData(IsSubmitData.已提交数据);
-            nodesList.add(node);
+            FlowNodeInfo node = repository.findByRmInstnoId(nodeInfo.getRmInstnoId());
+            if (node == null) {
+                // 为空说明本地数据库无此信息，应添加
+                node = new FlowNodeInfo();
+                BeanUtils.copyProperties(node, nodeInfo);
+                node.setDocId(fileId);
+                nodesList.add(node);
+            }
         }
         repository.save(nodesList);
 

@@ -17,4 +17,8 @@ import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
  */
 public interface FlowNodeInfoRepository extends SimpleDomainRepository<FlowNodeInfo, Long> {
 
+    /**
+     * 通过rmInstnoId查找节点信息
+     * */
+    FlowNodeInfo findByRmInstnoId(Long rmInstnoId);
 }

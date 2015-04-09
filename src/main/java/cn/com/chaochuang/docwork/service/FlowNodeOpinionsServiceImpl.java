@@ -47,10 +47,14 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
         }
         List<FlowNodeOpinions> opinionsList = new ArrayList<FlowNodeOpinions>();
         for (FlowNodeOpinions nodeOp : datas) {
-            FlowNodeOpinions opinion = new FlowNodeOpinions();
-            BeanUtils.copyProperties(opinion, nodeOp);
-            opinion.setDocId(fileId);
-            opinionsList.add(opinion);
+            List<FlowNodeOpinions> preOpinionsList = repository.findByRmInstnoId(nodeOp.getRmInstnoId());
+            if (preOpinionsList == null || preOpinionsList.size() == 0) {
+                // 为空说明本地数据库无此信息，应添加
+                FlowNodeOpinions opinion = new FlowNodeOpinions();
+                BeanUtils.copyProperties(opinion, nodeOp);
+                opinion.setDocId(fileId);
+                opinionsList.add(opinion);
+            }
         }
         repository.save(opinionsList);
     }

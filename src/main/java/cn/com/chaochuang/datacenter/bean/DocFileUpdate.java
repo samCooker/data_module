@@ -35,6 +35,10 @@ public class DocFileUpdate {
     private String nodeFlag;
     /** 操纵标识：0：呈送；1：办结；2：退回 */
     private String oprationType;
+    /** 新建的节点InstnoId */
+    private String newFlowNodeInfoId;
+    /** 提交类型 */
+    private String submitAction;
 
     /**
      * @return the rmPendingItemId
@@ -199,5 +203,35 @@ public class DocFileUpdate {
      */
     public void setNextManId(String nextManId) {
         this.nextManId = nextManId;
+    }
+
+    /**
+     * @return the newFlowNodeInfoId
+     */
+    public String getNewFlowNodeInfoId() {
+        return newFlowNodeInfoId;
+    }
+
+    /**
+     * @param newFlowNodeInfoId
+     *            the newFlowNodeInfoId to set
+     */
+    public void setNewFlowNodeInfoId(String newFlowNodeInfoId) {
+        this.newFlowNodeInfoId = newFlowNodeInfoId;
+    }
+
+    /**
+     * @return the submitAction
+     */
+    public String getSubmitAction() {
+        return submitAction;
+    }
+
+    /**
+     * @param submitAction
+     *            the submitAction to set
+     */
+    public void setSubmitAction(String submitAction) {
+        this.submitAction = submitAction;
     }
 }

@@ -17,6 +17,6 @@ import cn.com.chaochuang.common.dictionary.EnumDictionaryBuilder;
  *
  */
 @Component
-public class IsSubmitDataEnumDictionaryBuilder extends EnumDictionaryBuilder<IsSubmitData> {
+public class SubmitActionEnumDictionaryBuilder extends EnumDictionaryBuilder<SubmitAction> {
 
 }

@@ -22,9 +22,15 @@ public interface DocFileAttachRepository extends SimpleDomainRepository<DocFileA
 
     /**
      * 查询未存到本地的附件数据
-     * 
+     *
      * @param localDate
      * @return
      */
     List<DocFileAttach> findByLocalData(IsLocalData localDate);
+
+    /**
+     * 通过原远程附件id查找附件信息
+     *
+     * */
+    DocFileAttach findByRmAttachId(String rmAttachId);
 }

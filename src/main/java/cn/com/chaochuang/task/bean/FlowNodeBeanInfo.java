@@ -9,7 +9,7 @@ package cn.com.chaochuang.task.bean;
 
 import java.util.Date;
 
-import cn.com.chaochuang.docwork.reference.IsSubmitData;
+import cn.com.chaochuang.docwork.reference.SubmitAction;
 
 /**
  * @author Shicx
@@ -40,7 +40,7 @@ public class FlowNodeBeanInfo {
     /** 完成时间 */
     private Date         finishTime;
     /** 是否提交数据 */
-    private IsSubmitData submitData;
+    private SubmitAction submitData;
     /** 办理部门id */
     private Long         transactDeptId;
 
@@ -219,7 +219,7 @@ public class FlowNodeBeanInfo {
     /**
      * @return the submitData
      */
-    public IsSubmitData getSubmitData() {
+    public SubmitAction getSubmitData() {
         return submitData;
     }
 
@@ -227,7 +227,7 @@ public class FlowNodeBeanInfo {
      * @param submitData
      *            the submitData to set
      */
-    public void setSubmitData(IsSubmitData submitData) {
+    public void setSubmitData(SubmitAction submitData) {
         this.submitData = submitData;
     }
 

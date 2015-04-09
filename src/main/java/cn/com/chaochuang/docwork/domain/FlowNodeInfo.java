@@ -18,7 +18,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.IsSubmitData;
 
 /**
  * @author LLM
@@ -56,8 +55,6 @@ public class FlowNodeInfo extends LongIdEntity {
     /** 完成时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              finishTime;
-    /** 是否提交数据 */
-    private IsSubmitData      submitData;
     /** 办理部门id */
     private Long              transactDeptId;
 
@@ -231,21 +228,6 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
-    }
-
-    /**
-     * @return the submitData
-     */
-    public IsSubmitData getSubmitData() {
-        return submitData;
-    }
-
-    /**
-     * @param submitData
-     *            the submitData to set
-     */
-    public void setSubmitData(IsSubmitData submitData) {
-        this.submitData = submitData;
     }
 
     /**

@@ -15,9 +15,9 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  * @author Shicx
  *
  */
-public enum IsSubmitData implements IDictionary {
+public enum SubmitAction implements IDictionary {
 
-    已提交数据("0"), 未提交数据("1");
+    签收("1"), 保存("2"), 提交("3"), 转办("4"), 退回("5"), 取回("6"), 撤单("7"), 特送("8"), 送正职领导审批("9"), 更换办文签("10"), 代填审批意见("11");
 
     private String key;
     private String value;
@@ -25,7 +25,7 @@ public enum IsSubmitData implements IDictionary {
     /**
      * @param key
      */
-    private IsSubmitData(String key) {
+    private SubmitAction(String key) {
         this(key, null);
         DictionaryRefresher.getInstance().refreshIDictionary(this);
     }
@@ -34,7 +34,7 @@ public enum IsSubmitData implements IDictionary {
      * @param key
      * @param value
      */
-    private IsSubmitData(String key, String value) {
+    private SubmitAction(String key, String value) {
         this.key = key;
         this.value = value;
         DictionaryRefresher.getInstance().refreshIDictionary(this);

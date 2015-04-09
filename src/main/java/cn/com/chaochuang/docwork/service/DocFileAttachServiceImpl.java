@@ -49,11 +49,15 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
         }
         List<DocFileAttach> attachmentsList = new ArrayList<DocFileAttach>();
         for (DocFileAttachInfo attachmentInfo : datas) {
-            DocFileAttach attachment = new DocFileAttach();
-            BeanUtils.copyProperties(attachment, attachmentInfo);
-            attachment.setDocId(fileId);
-            attachment.setLocalData(IsLocalData.非本地数据);
-            attachmentsList.add(attachment);
+            DocFileAttach attachment = repository.findByRmAttachId(attachmentInfo.getRmAttachId());
+            if (attachment == null) {
+                // 为空说明本地数据库无此附件信息，应添加
+                attachment = new DocFileAttach();
+                BeanUtils.copyProperties(attachment, attachmentInfo);
+                attachment.setDocId(fileId);
+                attachment.setLocalData(IsLocalData.非本地数据);
+                attachmentsList.add(attachment);
+            }
         }
         repository.save(attachmentsList);
     }

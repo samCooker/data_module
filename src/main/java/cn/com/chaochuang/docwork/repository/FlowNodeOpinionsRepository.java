@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.docwork.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 
@@ -16,5 +18,11 @@ import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
  *
  */
 public interface FlowNodeOpinionsRepository extends SimpleDomainRepository<FlowNodeOpinions, Long> {
+
+    /**
+     * 通过rmInstnoId查找意见信息
+     *
+     * */
+    List<FlowNodeOpinions> findByRmInstnoId(Long rmInstnoId);
 
 }

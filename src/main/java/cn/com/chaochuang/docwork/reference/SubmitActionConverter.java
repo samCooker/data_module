@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.EnumDictConverter;
  * @author Shicx
  *
  */
-public class IsSubmitDataConverter extends EnumDictConverter<IsSubmitData> implements
-                AttributeConverter<IsSubmitData, String> {
+public class SubmitActionConverter extends EnumDictConverter<SubmitAction> implements
+                AttributeConverter<SubmitAction, String> {
 
 }
