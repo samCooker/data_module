@@ -21,4 +21,6 @@ public interface FlowNodeInfoRepository extends SimpleDomainRepository<FlowNodeI
      * 通过rmInstnoId查找节点信息
      * */
     FlowNodeInfo findByRmInstnoId(Long rmInstnoId);
+
+    FlowNodeInfo findByRmInstanceIdAndNodeIdAndTransactId(String rmInstanceId, String nodeId, Long transactId);
 }

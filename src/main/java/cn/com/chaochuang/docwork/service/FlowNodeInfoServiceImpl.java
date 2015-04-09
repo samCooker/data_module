@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.datacenter.bean.BackData;
 import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.repository.FlowNodeInfoRepository;
 import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
@@ -39,7 +40,7 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
         return repository;
     }
 
-    /** 保存从远程取出的附件信息 */
+    /** 保存从远程取出的节点信息 */
     @Override
     public void saveRemoteFlowNodeInfo(List<FlowNodeBeanInfo> datas, Long fileId) throws Exception {
         if (datas == null) {
@@ -60,4 +61,15 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
 
     }
 
+    @Override
+    public void findAndUpdateFlowNodeInfo(List<BackData> backDataList) {
+        if (backDataList != null) {
+            for (BackData backData : backDataList) {
+                FlowNodeInfo nodeInfo = repository.findByRmInstanceIdAndNodeIdAndTransactId(backData.getInstanceId(),
+                                backData.getNodeId(), backData.getTransactId());
+                nodeInfo.setRmInstnoId(backData.getInstnoId());
+                repository.save(nodeInfo);
+            }
+        }
+    }
 }

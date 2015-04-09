@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
+import cn.com.chaochuang.datacenter.bean.BackData;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
@@ -36,6 +37,7 @@ import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.DocFileAttachService;
 import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
+import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
@@ -71,6 +73,9 @@ public class MobileDataTaskService {
     private DocFileAttachService docFileAttachService;
 
     @Autowired
+    private FlowNodeInfoService  flowNodeInfoService;
+
+    @Autowired
     private SysDataChangeService dataChangeService;
 
     /** 附件存放根路径 */
@@ -99,7 +104,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -142,7 +147,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "30/30 1/1 * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -171,7 +176,7 @@ public class MobileDataTaskService {
     /**
      * 提交公文修改数据
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "0 2/1 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -190,9 +195,15 @@ public class MobileDataTaskService {
             DocFileUpdate docFileUpdate = mapper.readValue(dataUpdate.getContent(), DocFileUpdate.class);
             // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
             String updateInfoJson = mapper.writeValueAsString(docFileUpdate);
-            transferOAService.setDocTransactInfo(updateInfoJson);
-            // 删除DataUpdate对象
-            this.dataUpdateService.delete(dataUpdate);
+            String backData = transferOAService.setDocTransactInfo(updateInfoJson);
+
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, BackData.class);
+            List<BackData> backDataList = (List<BackData>) mapper.readValue(backData, javaType);
+            if (backDataList != null && backDataList.size() > 0) {
+                flowNodeInfoService.findAndUpdateFlowNodeInfo(backDataList);
+                // 删除DataUpdate对象
+                this.dataUpdateService.delete(dataUpdate);
+            }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -321,7 +332,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
