@@ -139,7 +139,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取通讯录数据
      */
-    // @Scheduled(cron = "0 1/2 * * * ?")
+    @Scheduled(cron = "10/0 2/2 * * * ?")
     public void getDeplinkmanDataTask() {
 
     }
@@ -215,7 +215,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "50/50 1/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -269,7 +269,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "10/10 1/1 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -308,7 +308,7 @@ public class MobileDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "0 1/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -333,7 +333,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "10/10 1/1 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
