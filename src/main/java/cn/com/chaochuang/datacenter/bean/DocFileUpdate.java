@@ -28,7 +28,7 @@ public class DocFileUpdate {
     /** 下一环节编号 */
     private String nextNodeId;
     /** 下一环节办理人 */
-    private String nextManId;
+    private String receiveMans;
     /** 审批意见 */
     private String opinions;
     /** 环节标识（就是itemId） */
@@ -36,7 +36,7 @@ public class DocFileUpdate {
     /** 操纵标识：0：呈送；1：办结；2：退回 */
     private String oprationType;
     /** 新建的节点InstnoId */
-    private String newFlowNodeInfoId;
+    // private String newFlowNodeInfoId;
     /** 提交类型 */
     private String submitAction;
 
@@ -191,36 +191,6 @@ public class DocFileUpdate {
     }
 
     /**
-     * @return the nextManId
-     */
-    public String getNextManId() {
-        return nextManId;
-    }
-
-    /**
-     * @param nextManId
-     *            the nextManId to set
-     */
-    public void setNextManId(String nextManId) {
-        this.nextManId = nextManId;
-    }
-
-    /**
-     * @return the newFlowNodeInfoId
-     */
-    public String getNewFlowNodeInfoId() {
-        return newFlowNodeInfoId;
-    }
-
-    /**
-     * @param newFlowNodeInfoId
-     *            the newFlowNodeInfoId to set
-     */
-    public void setNewFlowNodeInfoId(String newFlowNodeInfoId) {
-        this.newFlowNodeInfoId = newFlowNodeInfoId;
-    }
-
-    /**
      * @return the submitAction
      */
     public String getSubmitAction() {
@@ -233,5 +203,20 @@ public class DocFileUpdate {
      */
     public void setSubmitAction(String submitAction) {
         this.submitAction = submitAction;
+    }
+
+    /**
+     * @return the receiveMans
+     */
+    public String getReceiveMans() {
+        return receiveMans;
+    }
+
+    /**
+     * @param receiveMans
+     *            the receiveMans to set
+     */
+    public void setReceiveMans(String receiveMans) {
+        this.receiveMans = receiveMans;
     }
 }

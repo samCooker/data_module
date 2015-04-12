@@ -201,9 +201,10 @@ public class MobileDataTaskService {
             List<BackData> backDataList = (List<BackData>) mapper.readValue(backData, javaType);
             if (backDataList != null && backDataList.size() > 0) {
                 flowNodeInfoService.findAndUpdateFlowNodeInfo(backDataList);
-                // 删除DataUpdate对象
-                this.dataUpdateService.delete(dataUpdate);
+
             }
+            // 删除DataUpdate对象
+            this.dataUpdateService.delete(dataUpdate);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
