@@ -65,13 +65,14 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             return;
         }
         for (DocFileInfo fileInfo : datas) {
-            // 查找该公文记录是否已存在，不存在则写入
+
             DocFile file = repository.findByRmInstanceId(fileInfo.getRmInstanceId());
             if (file == null) {
+                // 该公文记录不已存在，则添加
                 file = new DocFile();
-                BeanUtils.copyProperties(file, fileInfo);
-                file = repository.save(file);
             }
+            BeanUtils.copyProperties(file, fileInfo);
+            file = repository.save(file);
             // 保存附件信息
             attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
             // 保存流程信息

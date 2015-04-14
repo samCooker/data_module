@@ -139,7 +139,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取通讯录数据
      */
-    @Scheduled(cron = "10/0 2/2 * * * ?")
+    // @Scheduled(cron = "10/0 2/2 * * * ?")
     public void getDeplinkmanDataTask() {
 
     }
@@ -235,7 +235,7 @@ public class MobileDataTaskService {
             if (!file.exists()) {
                 file.mkdirs();
             }
-            String localFileName = localFilePath + attach.getSaveName();
+            String localFileName = localFilePath + "/" + attach.getSaveName();
             String remoteFileName = attach.getSavePath();
             file = new File(localFileName);
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
@@ -287,7 +287,7 @@ public class MobileDataTaskService {
             if (!Tools.isEmptyString(lastInputTime)) {
                 String json = this.transferOAService.getPublicDataInfo(lastInputTime);
                 if (json.equals("")) {
-                    System.out.println("json为空");
+                    // System.out.println("json为空");
                     return;
                 }
                 try {
@@ -308,7 +308,7 @@ public class MobileDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -333,7 +333,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "10/10 1/1 * * * ?")
+    // @Scheduled(cron = "10/10 1/1 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;

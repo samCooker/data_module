@@ -52,10 +52,10 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
             if (node == null) {
                 // 为空说明本地数据库无此信息，应添加
                 node = new FlowNodeInfo();
-                BeanUtils.copyProperties(node, nodeInfo);
-                node.setDocId(fileId);
-                nodesList.add(node);
             }
+            BeanUtils.copyProperties(node, nodeInfo);
+            node.setDocId(fileId);
+            nodesList.add(node);
         }
         repository.save(nodesList);
 
