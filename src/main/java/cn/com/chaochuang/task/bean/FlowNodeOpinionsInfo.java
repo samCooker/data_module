@@ -14,7 +14,7 @@ import java.util.Date;
  * @author Shicx
  *
  */
-public class FlowNodeOpinions {
+public class FlowNodeOpinionsInfo {
 
     /** 公文id */
     private Long   docId;

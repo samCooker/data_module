@@ -11,6 +11,7 @@ package cn.com.chaochuang.docwork.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 
@@ -25,5 +26,8 @@ public interface DocFileService extends CrudRestService<DocFile, Long> {
 
     /** 获取公文数据最大的导入时间 */
     String getDocFileMaxInputDate();
+
+    /** 将公文状态改为办结 */
+    void finishDocFile(SysDataChange item);
 
 }

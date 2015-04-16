@@ -343,10 +343,14 @@ public class MobileDataTaskService {
             Page page = this.dataChangeService.findAllByPage(1, 10);
             List<SysDataChange> datas = page.getContent();
             for (SysDataChange item : datas) {
-                // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
                 if (DataChangeTable.公文待办事宜.getKey().equals(item.getChangeTableName())) {
+                    // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
                     this.fdFordoService.analysisDataChange(item);
+                } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
+                    // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结
+                    fileService.finishDocFile(item);
                 }
+
                 // 删除变更数据
                 this.dataChangeService.delete(item.getId());
             }

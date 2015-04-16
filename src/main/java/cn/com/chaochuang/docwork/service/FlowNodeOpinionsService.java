@@ -12,6 +12,7 @@ import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
+import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 
 /**
  * @author Shicx
@@ -20,6 +21,6 @@ import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 public interface FlowNodeOpinionsService extends CrudRestService<FlowNodeOpinions, Long> {
 
     /** 保存远程获取的意见表 */
-    void saveRemoteFlowNodeOpinions(List<FlowNodeOpinions> datas, Long fileId) throws Exception;
+    void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId) throws Exception;
 
 }

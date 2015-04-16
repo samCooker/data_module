@@ -1,22 +1,23 @@
 /*
- * FileName:    DataChangeTable.java
+ * FileName:    EmergencyLevel.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年4月8日 (LLM) 1.0 Create
+ * History:     2015年3月30日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.datacenter.reference;
+package cn.com.chaochuang.docwork.reference;
 
 import cn.com.chaochuang.common.dictionary.IDictionary;
 import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
 
 /**
- * @author LLM
+ * @author Shicx
  *
  */
-public enum DataChangeTable implements IDictionary {
-    公文待办事宜("oa_pending_handle_dts"), 公文办结("wf_flo_hisno");
+public enum DocStatus implements IDictionary {
+
+    在办("0"), 办结("1");
 
     private String key;
     private String value;
@@ -24,7 +25,7 @@ public enum DataChangeTable implements IDictionary {
     /**
      * @param key
      */
-    private DataChangeTable(String key) {
+    private DocStatus(String key) {
         this(key, null);
         DictionaryRefresher.getInstance().refreshIDictionary(this);
     }
@@ -33,7 +34,7 @@ public enum DataChangeTable implements IDictionary {
      * @param key
      * @param value
      */
-    private DataChangeTable(String key, String value) {
+    private DocStatus(String key, String value) {
         this.key = key;
         this.value = value;
         DictionaryRefresher.getInstance().refreshIDictionary(this);
@@ -66,4 +67,5 @@ public enum DataChangeTable implements IDictionary {
     public String toString() {
         return this.key;
     }
+
 }

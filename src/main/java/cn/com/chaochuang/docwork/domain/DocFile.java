@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -22,6 +23,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.docwork.reference.DocStatus;
+import cn.com.chaochuang.docwork.reference.DocStatusConverter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -62,7 +65,9 @@ public class DocFile extends LongIdEntity {
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date                   inputDate;
-
+    /** 公文状态 */
+    @Convert(converter = DocStatusConverter.class)
+    private DocStatus              docStatus;
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "docId")
@@ -78,6 +83,21 @@ public class DocFile extends LongIdEntity {
     @JoinColumn(name = "docId")
     /** 流程意见集合 */
     private List<FlowNodeOpinions> flowNodeOpinions;
+
+    /**
+     * @return the docStatus
+     */
+    public DocStatus getDocStatus() {
+        return docStatus;
+    }
+
+    /**
+     * @param docStatus
+     *            the docStatus to set
+     */
+    public void setDocStatus(DocStatus docStatus) {
+        this.docStatus = docStatus;
+    }
 
     /**
      * @return the flowNodeOpinions

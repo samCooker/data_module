@@ -18,13 +18,16 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.DocFile;
+import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 
@@ -72,6 +75,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 file = new DocFile();
             }
             BeanUtils.copyProperties(file, fileInfo);
+            file.setDocStatus(DocStatus.在办);
             file = repository.save(file);
             // 保存附件信息
             attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
@@ -100,6 +104,20 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             }
         }
         return null;
+    }
+
+    @Override
+    public void finishDocFile(SysDataChange item) {
+        if (item != null && StringUtils.isNotEmpty(item.getChangeScript())) {
+            String[] items = item.getChangeScript().split("=");
+            if (items != null && items.length > 1) {
+                DocFile docFile = repository.findByRmInstanceId(items[1]);
+                if (docFile != null) {
+                    docFile.setDocStatus(DocStatus.办结);
+                    repository.save(docFile);
+                }
+            }
+        }
     }
 
 }

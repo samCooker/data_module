@@ -21,6 +21,7 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 import cn.com.chaochuang.docwork.repository.FlowNodeOpinionsRepository;
+import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 
 /**
  * @author Shicx
@@ -41,12 +42,12 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
 
     /** 保存远程获取的意见表 */
     @Override
-    public void saveRemoteFlowNodeOpinions(List<FlowNodeOpinions> datas, Long fileId) throws Exception {
+    public void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId) throws Exception {
         if (datas == null) {
             return;
         }
         List<FlowNodeOpinions> opinionsList = new ArrayList<FlowNodeOpinions>();
-        for (FlowNodeOpinions nodeOp : datas) {
+        for (FlowNodeOpinionsInfo nodeOp : datas) {
             List<FlowNodeOpinions> preOpinionsList = repository.findByRmInstnoId(nodeOp.getRmInstnoId());
             FlowNodeOpinions opinion = null;
             if (preOpinionsList == null || preOpinionsList.size() == 0) {

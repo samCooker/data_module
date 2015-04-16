@@ -11,8 +11,6 @@ package cn.com.chaochuang.task.bean;
 import java.util.Date;
 import java.util.List;
 
-import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
-
 /**
  * @author Shicx
  *
@@ -20,33 +18,33 @@ import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 public class DocFileInfo {
 
     /** 公文标题 */
-    private String                  title;
+    private String                     title;
     /** 文号 */
-    private String                  docNumber;
+    private String                     docNumber;
     /** 紧急程度 */
-    private String                  emergencyLevel;
+    private String                     emergencyLevel;
     /** 密级 */
-    private String                  secretLevel;
+    private String                     secretLevel;
     /** 来文单位 */
-    private String                  sourceDept;
+    private String                     sourceDept;
     /** 办理期限 */
-    private Date                    limitDate;
+    private Date                       limitDate;
     /** 公文类别 */
-    private String                  docType;
+    private String                     docType;
     /** 原系统公文编号 */
-    private String                  rmInstanceId;
+    private String                     rmInstanceId;
     /** 流程编号 */
-    private String                  flowId;
+    private String                     flowId;
     /** 创建时间 */
-    private Date                    createDate;
+    private Date                       createDate;
     /** 数据导入时间 */
-    private Date                    inputDate;
+    private Date                       inputDate;
     /** 公文附件集合 */
-    private List<DocFileAttachInfo> remoteDocfileAttach;
+    private List<DocFileAttachInfo>    remoteDocfileAttach;
     /** 流程集合 */
-    private List<FlowNodeBeanInfo>  remoteFlowNodes;
+    private List<FlowNodeBeanInfo>     remoteFlowNodes;
     /** 流程意见集合 */
-    private List<FlowNodeOpinions>  remoteFlowOpinions;
+    private List<FlowNodeOpinionsInfo> remoteFlowOpinions;
 
     /**
      *
@@ -238,7 +236,7 @@ public class DocFileInfo {
     /**
      * @return the remoteFlowOpinions
      */
-    public List<FlowNodeOpinions> getRemoteFlowOpinions() {
+    public List<FlowNodeOpinionsInfo> getRemoteFlowOpinions() {
         return remoteFlowOpinions;
     }
 
@@ -246,7 +244,7 @@ public class DocFileInfo {
      * @param remoteFlowOpinions
      *            the remoteFlowOpinions to set
      */
-    public void setRemoteFlowOpinions(List<FlowNodeOpinions> remoteFlowOpinions) {
+    public void setRemoteFlowOpinions(List<FlowNodeOpinionsInfo> remoteFlowOpinions) {
         this.remoteFlowOpinions = remoteFlowOpinions;
     }
 
