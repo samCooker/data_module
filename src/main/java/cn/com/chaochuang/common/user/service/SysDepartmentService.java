@@ -13,6 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.tree.DepartmentTreeNode;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 
 /**
  * @author LaoZhiYong
@@ -25,4 +26,10 @@ public interface SysDepartmentService extends CrudRestService<SysDepartment, Lon
 
     public List<SysDepartment> getSubDepartmentByParentId(Long parentId);
 
+    /**
+     * 分析系统数据的处理
+     *
+     * @param dataChange
+     */
+    void analysisDataChange(SysDataChange dataChange);
 }

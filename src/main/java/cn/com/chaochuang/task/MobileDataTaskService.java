@@ -23,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import cn.com.chaochuang.common.user.service.SysDepartmentService;
+import cn.com.chaochuang.common.user.service.SysUserServiceImpl;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.bean.BackData;
@@ -78,6 +80,12 @@ public class MobileDataTaskService {
     @Autowired
     private SysDataChangeService dataChangeService;
 
+    @Autowired
+    private SysDepartmentService departmentService;
+
+    @Autowired
+    private SysUserServiceImpl   userService;
+
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
     private String               rootPath;
@@ -104,7 +112,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -147,7 +155,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "30/30 1/1 * * * ?")
+    // @Scheduled(cron = "30/30 1/1 * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -176,7 +184,7 @@ public class MobileDataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "0 2/1 * * * ?")
+    // @Scheduled(cron = "0 2/1 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -215,7 +223,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "50/50 1/1 * * * ?")
+    // @Scheduled(cron = "50/50 1/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -269,7 +277,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "10/10 1/1 * * * ?")
+    // @Scheduled(cron = "10/10 1/1 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -308,7 +316,7 @@ public class MobileDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "1/5 1/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -333,7 +341,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    // @Scheduled(cron = "10/10 1/1 * * * ?")
+    @Scheduled(cron = "2/10 1/1 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -348,9 +356,14 @@ public class MobileDataTaskService {
                     this.fdFordoService.analysisDataChange(item);
                 } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
                     // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结
-                    fileService.finishDocFile(item);
+                    this.fileService.finishDocFile(item);
+                } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
+                    // 组织机构发生变更
+                    this.departmentService.analysisDataChange(item);
+                } else if (DataChangeTable.人员.getKey().equals(item.getChangeTableName())) {
+                    // 人员数据发生变更
+                    this.userService.analysisDataChange(item);
                 }
-
                 // 删除变更数据
                 this.dataChangeService.delete(item.getId());
             }

@@ -25,4 +25,13 @@ public interface SysDepartmentRepository extends SimpleDomainRepository<SysDepar
     public List<SysDepartment> findByParentDepAndValidOrderByOrderNumAsc(Long parentId, Integer valid);
 
     public List<SysDepartment> findByDepNameLike(String depName);
+
+    /**
+     * 根据原系统部门编号查找部门对象
+     *
+     * @param rmDepId
+     *            原系统部门编号
+     * @return
+     */
+    public SysDepartment findByRmDepId(Long rmDepId);
 }

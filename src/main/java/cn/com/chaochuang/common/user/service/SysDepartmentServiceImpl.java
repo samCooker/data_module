@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,11 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.repository.SysDepartmentRepository;
 import cn.com.chaochuang.common.user.tree.DepartmentTreeNode;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.OperationType;
+import cn.com.chaochuang.webservice.server.ITransferOAService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LaoZhiYong
@@ -35,9 +41,11 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     @Autowired
     private SysDepartmentRepository repository;
 
+    /** webservice 函数库 */
+    @Autowired
+    private ITransferOAService      transferOAService;
+
     /**
-     * (non-Javadoc)
-     *
      * @see cn.com.chaochuang.common.user.service.SysDepartmentService#getAllDepartment()
      */
     @Override
@@ -46,8 +54,6 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     }
 
     /**
-     * (non-Javadoc)
-     *
      * @see cn.com.chaochuang.common.user.service.SysDepartmentService#getSubDepartmentByParentId(java.lang.Long)
      */
     @Override
@@ -81,6 +87,47 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
             }
         }
         return node;
+    }
+
+    /**
+     * @see cn.com.chaochuang.common.user.service.SysDepartmentService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void analysisDataChange(SysDataChange dataChange) {
+        try {
+            // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
+            if (OperationType.修改.getKey().equals(dataChange.getOperationType())
+                            || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                // 从webservice获取json字符串
+                String json = this.transferOAService.getChangeDepartment(dataChange.getChangeScript());
+
+                // 将json转成department对象
+                ObjectMapper mapper = new ObjectMapper();
+                SysDepartment newDept = mapper.readValue(json, SysDepartment.class);
+                // 根据原系统部门编号查询变更数据是否存在
+                SysDepartment curDept = this.repository.findByRmDepId(newDept.getRmDepId());
+                if (curDept == null) {
+                    curDept = new SysDepartment();
+                } else {
+                    // 保证编号在BeanUtils.copyProperties后不被刷掉
+                    newDept.setId(curDept.getId());
+                }
+                // 变更数据存在则获取对象后覆盖再保存
+                BeanUtils.copyProperties(curDept, newDept);
+                this.repository.save(curDept);
+            } else if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+                String[] items = dataChange.getChangeScript().split("=");
+                if (items != null && items.length == 2) {
+                    // 根据原系统编号找出要删除的对象进行删除
+                    SysDepartment curDept = this.repository.findByRmDepId(Long.valueOf(items[1]));
+                    if (curDept != null) {
+                        this.repository.delete(curDept);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

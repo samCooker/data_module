@@ -30,6 +30,8 @@ public class SysDataChange extends LongIdEntity {
     private String changeScript;
     /** 记录填写时间 */
     private Date   changeDate;
+    /** 操作类型 */
+    private String operationType;
 
     /**
      * @return the changeTableName
@@ -74,6 +76,21 @@ public class SysDataChange extends LongIdEntity {
      */
     public void setChangeDate(Date changeDate) {
         this.changeDate = changeDate;
+    }
+
+    /**
+     * @return the operationType
+     */
+    public String getOperationType() {
+        return operationType;
+    }
+
+    /**
+     * @param operationType
+     *            the operationType to set
+     */
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
     }
 
 }

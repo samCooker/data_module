@@ -119,7 +119,7 @@
         <access-denied-handler error-page="/accessdenied" />
 
     </http>
-
+<!--
     <beans:bean
         id="PasswordEncoder"
         class="cn.com.chaochuang.common.security.util.AutoLoginMd5PasswordEncoder"
@@ -145,7 +145,8 @@
             <password-encoder ref="PasswordEncoder" />
         </authentication-provider>
     </authentication-manager>
-
+ -->
+    <authentication-manager alias="authenticationManager"/>
     <beans:bean
         id="access-decision-manager"
         class="org.springframework.security.access.vote.UnanimousBased"

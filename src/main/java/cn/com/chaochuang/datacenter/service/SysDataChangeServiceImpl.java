@@ -46,7 +46,11 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
             return;
         }
         for (SysDataChange item : sysDataChanges) {
-            this.repository.save(item);
+            try {
+                this.repository.save(item);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

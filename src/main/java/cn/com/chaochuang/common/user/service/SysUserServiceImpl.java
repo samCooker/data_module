@@ -1,35 +1,40 @@
 package cn.com.chaochuang.common.user.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.security.util.UserTool;
+import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysDepartmentRepository;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.OperationType;
+import cn.com.chaochuang.webservice.server.ITransferOAService;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
 public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> implements SysUserService {
+    /** webservice 函数库 */
+    @Autowired
+    private ITransferOAService      transferOAService;
 
     @Autowired
-    private SysUserRepository repository;
+    private SysUserRepository       repository;
+
+    @Autowired
+    private SysDepartmentRepository departmentRepository;
 
     @Override
     public SimpleDomainRepository<SysUser, Long> getRepository() {
         return repository;
-    }
-
-    @Override
-    public List<SysUser> findByDepartmentId(Long depid) {
-        return repository.findByDepartmentIdAndValidOrderByUserNameAsc(depid, SysUser.VALID);
     }
 
     @Override
@@ -42,44 +47,48 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
         return u;
     }
 
+    /**
+     * @see cn.com.chaochuang.common.user.service.SysUserService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
     @Override
-    public List<SysUser> findByAccount(String account) {
-        return repository.findByAccount(account);
-    }
+    public void analysisDataChange(SysDataChange dataChange) {
+        try {
+            // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
+            if (OperationType.修改.getKey().equals(dataChange.getOperationType())
+                            || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                // 从webservice获取json字符串
+                String json = this.transferOAService.getChangeUser(dataChange.getChangeScript());
 
-    @Override
-    public SysUser convert(SysUser info) {
-        SysUser u = null;
-        if (info.getId() != null) {
-            u = repository.findOne(info.getId());
-        } else {
-            u = new SysUser();
+                // 将json转成department对象
+                ObjectMapper mapper = new ObjectMapper();
+                SysUser newUser = mapper.readValue(json, SysUser.class);
+                // 根据原系统部门编号查询变更数据是否存在
+                SysUser curUser = this.repository.findByRmUserId(newUser.getRmUserId());
+                if (curUser == null) {
+                    curUser = new SysUser();
+                    // 新增人员要设置人员的本地部门编号（depId）
+                    SysDepartment dept = this.departmentRepository.findByRmDepId(newUser.getRmDepId());
+                    newUser.setDepId(dept.getId());
+                } else {
+                    // 保证编号在BeanUtils.copyProperties后不被刷掉
+                    newUser.setId(curUser.getId());
+                }
+                // 变更数据存在则获取对象后覆盖再保存
+                BeanUtils.copyProperties(curUser, newUser);
+                this.repository.save(curUser);
+            } else if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+                String[] items = dataChange.getChangeScript().split("=");
+                if (items != null && items.length == 2) {
+                    // 根据原系统编号找出要删除的对象进行删除
+                    SysUser curUser = this.repository.findByRmUserId(Long.valueOf(items[1]));
+                    if (curUser != null) {
+                        this.repository.delete(curUser);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
-        u.setAccount(info.getAccount());
-        u.setDepartment(info.getDepartment());
-        u.setSex(info.getSex());
-        u.setUserName(info.getUserName());
-        return u;
-    }
-
-    /**
-     * (non-Javadoc)
-     *
-     * @see cn.com.chaochuang.common.user.service.SysUserService#findUsers(java.lang.Long[])
-     */
-    @Override
-    public Collection<SysUser> findUsers(Long[] ids) {
-        return repository.findAll(Arrays.asList(ids));
-    }
-
-    /**
-     * (non-Javadoc)
-     *
-     * @see cn.com.chaochuang.common.user.service.SysUserService#loadAllActiveUsers()
-     */
-    @Override
-    public List<SysUser> loadAllActiveUsers() {
-        return repository.findByValid(SysUser.VALID);
     }
 
 }

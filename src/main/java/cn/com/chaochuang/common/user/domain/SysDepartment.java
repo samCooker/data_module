@@ -23,23 +23,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class SysDepartment extends PersistEntity {
     private static final long  serialVersionUID = -8098711992771334960L;
 
+    /** 原系统部门编号 */
+    private Long               rmDepId;
     /** 部门名称 */
     private String             depName;
-
     /** 父部门编号 */
     private Long               parentDep;
-
     /** 祖先部门编号 */
     private Long               ancestorDep;
-
     /** 排序号 */
     private Long               orderNum;
-
     /** 部门别名 */
     private String             depAlias;
+    /** 部门领导 */
     private String             depLead;
+    /** 县局标识 */
     private String             depRank;
+    /** 原系统的有效性标志 */
     private String             delFlag;
+    /** MD5校验码 */
+    private String             mdfCode;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -58,6 +61,21 @@ public class SysDepartment extends PersistEntity {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @return the rmDepId
+     */
+    public Long getRmDepId() {
+        return rmDepId;
+    }
+
+    /**
+     * @param rmDepId
+     *            the rmDepId to set
+     */
+    public void setRmDepId(Long rmDepId) {
+        this.rmDepId = rmDepId;
     }
 
     /**
@@ -178,6 +196,21 @@ public class SysDepartment extends PersistEntity {
      */
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    /**
+     * @return the mdfCode
+     */
+    public String getMdfCode() {
+        return mdfCode;
+    }
+
+    /**
+     * @param mdfCode
+     *            the mdfCode to set
+     */
+    public void setMdfCode(String mdfCode) {
+        this.mdfCode = mdfCode;
     }
 
     /**

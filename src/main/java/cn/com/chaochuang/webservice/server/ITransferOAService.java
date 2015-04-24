@@ -109,4 +109,24 @@ public interface ITransferOAService {
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
     String getDataChange();
+
+    /**
+     * 获取OA用户表变更的数据
+     *
+     * @param changeScript
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getChangeUser(String changeScript);
+
+    /**
+     * 获取OA组织机构表变更的数据
+     *
+     * @param changeScript
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getChangeDepartment(String changeScript);
 }

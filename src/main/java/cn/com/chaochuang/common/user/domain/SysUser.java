@@ -3,15 +3,10 @@ package cn.com.chaochuang.common.user.domain;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
-import cn.com.chaochuang.common.user.reference.Sex;
-import cn.com.chaochuang.common.user.reference.SexConverter;
 
 @Entity
 @LookUp
@@ -21,15 +16,16 @@ public class SysUser extends PersistEntity {
 
     private static final long serialVersionUID = -4615274498193533591L;
 
-    /** 所属部门 */
-    @ManyToOne
-    @JoinColumn(name = "dep_id")
-    private SysDepartment     department;
+    /** 原系统用户编号 */
+    private Long              rmUserId;
+    /** 原系统部门编号 */
+    private Long              rmDepId;
+    /** 部门编号 */
+    private Long              depId;
     /** 姓名 */
     private String            userName;
     /** 性别 */
-    @Convert(converter = SexConverter.class)
-    private Sex               sex;
+    private String            sex;
     /** 登录账号 */
     private String            account;
     /** 登录密码 */
@@ -38,24 +34,73 @@ public class SysUser extends PersistEntity {
     private String            dutyName;
     /** 移动电话 */
     private String            mobile;
+    /** 工作电话 */
+    private String            workPhone;
     /** 消息推送注册号 */
     private String            registrationId;
     /** 原系统状态标识 */
     private String            delFlag;
+    /** MD5校验码 */
+    private String            mdfCode;
 
     /**
-     * @return the department
+     * @return the workPhone
      */
-    public SysDepartment getDepartment() {
-        return department;
+    public String getWorkPhone() {
+        return workPhone;
     }
 
     /**
-     * @param department
-     *            the department to set
+     * @param workPhone
+     *            the workPhone to set
      */
-    public void setDepartment(SysDepartment department) {
-        this.department = department;
+    public void setWorkPhone(String workPhone) {
+        this.workPhone = workPhone;
+    }
+
+    /**
+     * @return the depId
+     */
+    public Long getDepId() {
+        return depId;
+    }
+
+    /**
+     * @param depId
+     *            the depId to set
+     */
+    public void setDepId(Long depId) {
+        this.depId = depId;
+    }
+
+    /**
+     * @return the rmUserId
+     */
+    public Long getRmUserId() {
+        return rmUserId;
+    }
+
+    /**
+     * @param rmUserId
+     *            the rmUserId to set
+     */
+    public void setRmUserId(Long rmUserId) {
+        this.rmUserId = rmUserId;
+    }
+
+    /**
+     * @return the rmDepId
+     */
+    public Long getRmDepId() {
+        return rmDepId;
+    }
+
+    /**
+     * @param rmDepId
+     *            the rmDepId to set
+     */
+    public void setRmDepId(Long rmDepId) {
+        this.rmDepId = rmDepId;
     }
 
     /**
@@ -76,7 +121,7 @@ public class SysUser extends PersistEntity {
     /**
      * @return the sex
      */
-    public Sex getSex() {
+    public String getSex() {
         return sex;
     }
 
@@ -84,7 +129,7 @@ public class SysUser extends PersistEntity {
      * @param sex
      *            the sex to set
      */
-    public void setSex(Sex sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
@@ -178,4 +223,18 @@ public class SysUser extends PersistEntity {
         this.delFlag = delFlag;
     }
 
+    /**
+     * @return the mdfCode
+     */
+    public String getMdfCode() {
+        return mdfCode;
+    }
+
+    /**
+     * @param mdfCode
+     *            the mdfCode to set
+     */
+    public void setMdfCode(String mdfCode) {
+        this.mdfCode = mdfCode;
+    }
 }

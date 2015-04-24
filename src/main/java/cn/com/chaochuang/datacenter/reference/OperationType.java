@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum OperationType implements IDictionary {
-    新增("add"), 修改("update"), 删除("delete");
+    新增("insert"), 修改("update"), 删除("delete");
 
     private String key;
     private String value;
