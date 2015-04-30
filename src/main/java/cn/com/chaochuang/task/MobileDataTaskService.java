@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -205,11 +206,10 @@ public class MobileDataTaskService {
             String updateInfoJson = mapper.writeValueAsString(docFileUpdate);
             String backData = transferOAService.setDocTransactInfo(updateInfoJson);
 
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, BackData.class);
-            List<BackData> backDataList = (List<BackData>) mapper.readValue(backData, javaType);
-            if (backDataList != null && backDataList.size() > 0) {
+            if (StringUtils.isNotEmpty(backData)) {
+                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, BackData.class);
+                List<BackData> backDataList = (List<BackData>) mapper.readValue(backData, javaType);
                 flowNodeInfoService.findAndUpdateFlowNodeInfo(backDataList);
-
             }
             // 删除DataUpdate对象
             this.dataUpdateService.delete(dataUpdate);
@@ -223,7 +223,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "50/50 1/1 * * * ?")
+    @Scheduled(cron = "50/50 1/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

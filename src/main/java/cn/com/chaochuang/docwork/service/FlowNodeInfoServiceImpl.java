@@ -67,8 +67,10 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
             for (BackData backData : backDataList) {
                 FlowNodeInfo nodeInfo = repository.findByRmInstanceIdAndNodeIdAndTransactId(backData.getInstanceId(),
                                 backData.getNodeId(), backData.getTransactId());
-                nodeInfo.setRmInstnoId(backData.getInstnoId());
-                repository.save(nodeInfo);
+                if (nodeInfo != null) {
+                    nodeInfo.setRmInstnoId(backData.getInstnoId());
+                    repository.save(nodeInfo);
+                }
             }
         }
     }
