@@ -33,26 +33,28 @@ public class AipCaseNodeInfo extends LongIdEntity {
     private Long              caseApplyId;
     /** 原系统流程环节实例编号 */
     private Long              rmCaseApplyId;
-    /** 原系统前驱流程环节实例编号 */
-    private Long              rmPreInstnoId;
-    /** 前驱环节编号 */
-    private String            preNodeId;
-    /** 环节编号 node_id */
-    private String            nodeId;
+    /** 原系统环节编号 */
+    private Long              rmNodeId;
+    /** 原系统前驱环节编号 */
+    private Long              rmPreNodeId;
     /** 环节名称 node_name */
     private String            nodeName;
+    /** 审批意见 */
+    private String            transactOpinion;
     /** 当前办理人姓名 */
     private String            transactName;
     /** 当前办理人id */
     private Long              transactId;
+    /** 办理部门id */
+    private Long              transactDeptId;
+    /** 办理部门名称 */
+    private String            transactDeptName;
     /** 到达时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              arriveTime;
     /** 完成时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              finishTime;
-    /** 办理部门id */
-    private Long              transactDeptId;
 
     /**
      * @return the caseApplyId
@@ -85,48 +87,33 @@ public class AipCaseNodeInfo extends LongIdEntity {
     }
 
     /**
-     * @return the rmPreInstnoId
+     * @return the rmNodeId
      */
-    public Long getRmPreInstnoId() {
-        return rmPreInstnoId;
+    public Long getRmNodeId() {
+        return rmNodeId;
     }
 
     /**
-     * @param rmPreInstnoId
-     *            the rmPreInstnoId to set
+     * @param rmNodeId
+     *            the rmNodeId to set
      */
-    public void setRmPreInstnoId(Long rmPreInstnoId) {
-        this.rmPreInstnoId = rmPreInstnoId;
+    public void setRmNodeId(Long rmNodeId) {
+        this.rmNodeId = rmNodeId;
     }
 
     /**
-     * @return the preNodeId
+     * @return the rmPreNodeId
      */
-    public String getPreNodeId() {
-        return preNodeId;
+    public Long getRmPreNodeId() {
+        return rmPreNodeId;
     }
 
     /**
-     * @param preNodeId
-     *            the preNodeId to set
+     * @param rmPreNodeId
+     *            the rmPreNodeId to set
      */
-    public void setPreNodeId(String preNodeId) {
-        this.preNodeId = preNodeId;
-    }
-
-    /**
-     * @return the nodeId
-     */
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    /**
-     * @param nodeId
-     *            the nodeId to set
-     */
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setRmPreNodeId(Long rmPreNodeId) {
+        this.rmPreNodeId = rmPreNodeId;
     }
 
     /**
@@ -142,6 +129,21 @@ public class AipCaseNodeInfo extends LongIdEntity {
      */
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
+    }
+
+    /**
+     * @return the transactOpinion
+     */
+    public String getTransactOpinion() {
+        return transactOpinion;
+    }
+
+    /**
+     * @param transactOpinion
+     *            the transactOpinion to set
+     */
+    public void setTransactOpinion(String transactOpinion) {
+        this.transactOpinion = transactOpinion;
     }
 
     /**
@@ -175,6 +177,36 @@ public class AipCaseNodeInfo extends LongIdEntity {
     }
 
     /**
+     * @return the transactDeptId
+     */
+    public Long getTransactDeptId() {
+        return transactDeptId;
+    }
+
+    /**
+     * @param transactDeptId
+     *            the transactDeptId to set
+     */
+    public void setTransactDeptId(Long transactDeptId) {
+        this.transactDeptId = transactDeptId;
+    }
+
+    /**
+     * @return the transactDeptName
+     */
+    public String getTransactDeptName() {
+        return transactDeptName;
+    }
+
+    /**
+     * @param transactDeptName
+     *            the transactDeptName to set
+     */
+    public void setTransactDeptName(String transactDeptName) {
+        this.transactDeptName = transactDeptName;
+    }
+
+    /**
      * @return the arriveTime
      */
     public Date getArriveTime() {
@@ -202,21 +234,6 @@ public class AipCaseNodeInfo extends LongIdEntity {
      */
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
-    }
-
-    /**
-     * @return the transactDeptId
-     */
-    public Long getTransactDeptId() {
-        return transactDeptId;
-    }
-
-    /**
-     * @param transactDeptId
-     *            the transactDeptId to set
-     */
-    public void setTransactDeptId(Long transactDeptId) {
-        this.transactDeptId = transactDeptId;
     }
 
 }

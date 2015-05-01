@@ -47,6 +47,8 @@ public class AipCaseAttach extends LongIdEntity {
     private LocalData         localData;
     /** 所属案件状态 */
     private String            caseStatus;
+    /** 原系统案件基础编号 */
+    private Long              rmCaseApplyId;
 
     /**
      * @return the saveName
@@ -181,6 +183,21 @@ public class AipCaseAttach extends LongIdEntity {
      */
     public void setCaseStatus(String caseStatus) {
         this.caseStatus = caseStatus;
+    }
+
+    /**
+     * @return the rmCaseApplyId
+     */
+    public Long getRmCaseApplyId() {
+        return rmCaseApplyId;
+    }
+
+    /**
+     * @param rmCaseApplyId
+     *            the rmCaseApplyId to set
+     */
+    public void setRmCaseApplyId(Long rmCaseApplyId) {
+        this.rmCaseApplyId = rmCaseApplyId;
     }
 
 }
