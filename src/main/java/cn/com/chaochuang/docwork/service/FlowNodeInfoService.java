@@ -20,7 +20,7 @@ import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
  */
 public interface FlowNodeInfoService extends CrudRestService<FlowNodeInfo, Long> {
 
-    /** 保存从远程取出的附件信息 */
+    /** 保存从远程取出的节点信息 */
     void saveRemoteFlowNodeInfo(List<FlowNodeBeanInfo> datas, Long fileId) throws Exception;
 
     /**

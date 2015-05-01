@@ -124,21 +124,26 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             return;
         }
         ObjectMapper mapper = new ObjectMapper();
-        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, FlowNodeBeanInfo.class);
-        List<FlowNodeBeanInfo> hisFlowNodesList = (List<FlowNodeBeanInfo>) mapper.readValue(hisNoJsonStr, javaType);
-        if (hisFlowNodesList != null && hisFlowNodesList.size() > 0) {
-            String rmInstanceId = hisFlowNodesList.get(0).getRmInstanceId();
+        DocFileInfo fileInfo = (DocFileInfo) mapper.readValue(hisNoJsonStr, DocFileInfo.class);
+
+        if (fileInfo != null) {
+            String rmInstanceId = fileInfo.getRmInstanceId();
             List<FlowNodeInfo> preFlowNodesList = flowNodeInfoService.findByRmInstanceId(rmInstanceId);
             // 将公文状态修改为已办
             DocFile file = repository.findByRmInstanceId(rmInstanceId);
-            file.setDocStatus(DocStatus.办结);
-            repository.save(file);
-            // 删除原节点信息
-            flowNodeInfoService.getRepository().delete(preFlowNodesList);
-            // 将oa的历史节点信息保存
-            flowNodeInfoService.saveRemoteFlowNodeInfo(hisFlowNodesList, file.getId());
-            // 保存公文个人办理记录
-            flowTransactPersonalService.saveFlowTransactPersonalInfo(hisFlowNodesList, file);
+            // 若file为空，说明数据还没导入到mobile数据库
+            if (file != null) {
+                file.setDocStatus(DocStatus.办结);
+                repository.save(file);
+                // 删除原节点信息
+                flowNodeInfoService.getRepository().delete(preFlowNodesList);
+                // 将oa的历史节点信息保存
+                flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
+                // 跟新公文意见记录
+                flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
+                // 保存公文个人办理记录
+                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file);
+            }
         }
 
     }

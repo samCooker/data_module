@@ -43,6 +43,10 @@ public class DocFileInfo {
     private Long                       creatorId;
     /** 创建人姓名 */
     private String                     creatorName;
+    /** 创建人部门id */
+    private Long                       creatorDeptId;
+    /** 创建人部门名称 */
+    private String                     creatorDeptName;
     /** 公文附件集合 */
     private List<DocFileAttachInfo>    remoteDocfileAttach;
     /** 流程集合 */
@@ -295,6 +299,36 @@ public class DocFileInfo {
      */
     public void setCreatorName(String creatorName) {
         this.creatorName = creatorName;
+    }
+
+    /**
+     * @return the creatorDeptId
+     */
+    public Long getCreatorDeptId() {
+        return creatorDeptId;
+    }
+
+    /**
+     * @param creatorDeptId
+     *            the creatorDeptId to set
+     */
+    public void setCreatorDeptId(Long creatorDeptId) {
+        this.creatorDeptId = creatorDeptId;
+    }
+
+    /**
+     * @return the creatorDeptName
+     */
+    public String getCreatorDeptName() {
+        return creatorDeptName;
+    }
+
+    /**
+     * @param creatorDeptName
+     *            the creatorDeptName to set
+     */
+    public void setCreatorDeptName(String creatorDeptName) {
+        this.creatorDeptName = creatorDeptName;
     }
 
 }
