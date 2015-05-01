@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
-import cn.com.chaochuang.datacenter.bean.BackData;
 import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.repository.FlowNodeInfoRepository;
 import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
@@ -61,17 +60,14 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
 
     }
 
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.docwork.service.FlowNodeInfoService#findByRmInstanceId(java.lang.String)
+     */
     @Override
-    public void findAndUpdateFlowNodeInfo(List<BackData> backDataList) {
-        if (backDataList != null) {
-            for (BackData backData : backDataList) {
-                FlowNodeInfo nodeInfo = repository.findByRmInstanceIdAndNodeIdAndTransactId(backData.getInstanceId(),
-                                backData.getNodeId(), backData.getTransactId());
-                if (nodeInfo != null) {
-                    nodeInfo.setRmInstnoId(backData.getInstnoId());
-                    repository.save(nodeInfo);
-                }
-            }
-        }
+    public List<FlowNodeInfo> findByRmInstanceId(String rmInstanceId) {
+        return repository.findByRmInstanceId(rmInstanceId);
     }
+
 }

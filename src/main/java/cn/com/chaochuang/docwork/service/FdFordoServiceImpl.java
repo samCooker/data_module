@@ -19,6 +19,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -55,6 +56,9 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
         return repository;
     }
 
+    @Value("${getdata.timeinterval}")
+    private String timeInterval;
+
     /**
      * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate()
      */
@@ -74,7 +78,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             }
         }
         if (result.getRmPendingItemId() == null) {
-            Date sendTime = Tools.diffDate(new Date(), -2);
+            Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
             result.setLastSendTime(Tools.DATE_TIME_FORMAT.format(sendTime));
             result.setRmPendingItemId("");
         }

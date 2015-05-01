@@ -18,18 +18,22 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.DocFile;
+import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
+import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Shicx
@@ -40,19 +44,25 @@ import cn.com.chaochuang.task.bean.DocFileInfo;
 public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> implements DocFileService {
 
     @Autowired
-    private DocFileRepository       repository;
+    private DocFileRepository           repository;
 
     @Autowired
-    private DocFileAttachService    attachmentsService;
+    private DocFileAttachService        attachmentsService;
 
     @Autowired
-    private FlowNodeInfoService     flowNodeInfoService;
+    private FlowNodeInfoService         flowNodeInfoService;
 
     @Autowired
-    private FlowNodeOpinionsService flowNodeOpinionsService;
+    private FlowNodeOpinionsService     flowNodeOpinionsService;
+
+    @Autowired
+    private FlowTransactPersonalService flowTransactPersonalService;
 
     @PersistenceContext
-    private EntityManager           entityManager;
+    private EntityManager               entityManager;
+
+    @Value("${getdata.timeinterval}")
+    private String                      timeInterval;
 
     @Override
     public SimpleDomainRepository<DocFile, Long> getRepository() {
@@ -83,13 +93,15 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
             // 保存意见信息
             flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
-
+            // 保存公文个人办理记录
+            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file);
         }
 
     }
 
     @Override
     public String getDocFileMaxInputDate() {
+
         StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(DocFile.class.getName());
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
@@ -98,7 +110,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 if (o != null) {
                     return o.toString();
                 } else {
-                    Date sendTime = Tools.diffDate(new Date(), -30);
+                    Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
                     return Tools.DATE_TIME_FORMAT.format(sendTime);
                 }
             }
@@ -107,17 +119,28 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     }
 
     @Override
-    public void finishDocFile(SysDataChange item) {
-        if (item != null && StringUtils.isNotEmpty(item.getChangeScript())) {
-            String[] items = item.getChangeScript().split("=");
-            if (items != null && items.length > 1) {
-                DocFile docFile = repository.findByRmInstanceId(items[1]);
-                if (docFile != null) {
-                    docFile.setDocStatus(DocStatus.办结);
-                    repository.save(docFile);
-                }
-            }
+    public void finishDocFile(String hisNoJsonStr) throws Exception {
+        if (Tools.isEmptyString(hisNoJsonStr)) {
+            return;
         }
+        ObjectMapper mapper = new ObjectMapper();
+        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, FlowNodeBeanInfo.class);
+        List<FlowNodeBeanInfo> hisFlowNodesList = (List<FlowNodeBeanInfo>) mapper.readValue(hisNoJsonStr, javaType);
+        if (hisFlowNodesList != null && hisFlowNodesList.size() > 0) {
+            String rmInstanceId = hisFlowNodesList.get(0).getRmInstanceId();
+            List<FlowNodeInfo> preFlowNodesList = flowNodeInfoService.findByRmInstanceId(rmInstanceId);
+            // 将公文状态修改为已办
+            DocFile file = repository.findByRmInstanceId(rmInstanceId);
+            file.setDocStatus(DocStatus.办结);
+            repository.save(file);
+            // 删除原节点信息
+            flowNodeInfoService.getRepository().delete(preFlowNodesList);
+            // 将oa的历史节点信息保存
+            flowNodeInfoService.saveRemoteFlowNodeInfo(hisFlowNodesList, file.getId());
+            // 保存公文个人办理记录
+            flowTransactPersonalService.saveFlowTransactPersonalInfo(hisFlowNodesList, file);
+        }
+
     }
 
 }

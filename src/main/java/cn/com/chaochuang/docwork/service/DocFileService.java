@@ -11,7 +11,6 @@ package cn.com.chaochuang.docwork.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 
@@ -27,7 +26,7 @@ public interface DocFileService extends CrudRestService<DocFile, Long> {
     /** 获取公文数据最大的导入时间 */
     String getDocFileMaxInputDate();
 
-    /** 将公文状态改为办结 */
-    void finishDocFile(SysDataChange item);
+    /** 1获取oa的历史节点信息，将mobile端的节点信息删除，添加获取的历史节点信息，2将公文状态改为办结 */
+    void finishDocFile(String hisNoJsonStr) throws Exception;
 
 }

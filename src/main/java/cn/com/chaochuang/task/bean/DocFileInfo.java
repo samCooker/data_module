@@ -39,6 +39,10 @@ public class DocFileInfo {
     private Date                       createDate;
     /** 数据导入时间 */
     private Date                       inputDate;
+    /** 创建人id */
+    private Long                       creatorId;
+    /** 创建人姓名 */
+    private String                     creatorName;
     /** 公文附件集合 */
     private List<DocFileAttachInfo>    remoteDocfileAttach;
     /** 流程集合 */
@@ -261,6 +265,36 @@ public class DocFileInfo {
      */
     public void setRmInstanceId(String rmInstanceId) {
         this.rmInstanceId = rmInstanceId;
+    }
+
+    /**
+     * @return the creatorId
+     */
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    /**
+     * @param creatorId
+     *            the creatorId to set
+     */
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the creatorName
+     */
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    /**
+     * @param creatorName
+     *            the creatorName to set
+     */
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 
 }

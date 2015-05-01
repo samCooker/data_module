@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,6 @@ import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserServiceImpl;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
-import cn.com.chaochuang.datacenter.bean.BackData;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
@@ -113,7 +111,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -156,7 +154,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    // @Scheduled(cron = "30/30 1/1 * * * ?")
+    @Scheduled(cron = "30/30 1/1 * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -185,7 +183,7 @@ public class MobileDataTaskService {
     /**
      * 提交公文修改数据
      */
-    // @Scheduled(cron = "0 2/1 * * * ?")
+    @Scheduled(cron = "0 2/1 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -204,13 +202,7 @@ public class MobileDataTaskService {
             DocFileUpdate docFileUpdate = mapper.readValue(dataUpdate.getContent(), DocFileUpdate.class);
             // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
             String updateInfoJson = mapper.writeValueAsString(docFileUpdate);
-            String backData = transferOAService.setDocTransactInfo(updateInfoJson);
-
-            if (StringUtils.isNotEmpty(backData)) {
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, BackData.class);
-                List<BackData> backDataList = (List<BackData>) mapper.readValue(backData, javaType);
-                flowNodeInfoService.findAndUpdateFlowNodeInfo(backDataList);
-            }
+            transferOAService.setDocTransactInfo(updateInfoJson);
             // 删除DataUpdate对象
             this.dataUpdateService.delete(dataUpdate);
         } catch (Exception ex) {
@@ -356,7 +348,9 @@ public class MobileDataTaskService {
                     this.fdFordoService.analysisDataChange(item);
                 } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
                     // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结
-                    this.fileService.finishDocFile(item);
+                    String[] items = item.getChangeScript().split("=");
+                    String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
+                    this.fileService.finishDocFile(json);
                 } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
                     // 组织机构发生变更
                     this.departmentService.analysisDataChange(item);

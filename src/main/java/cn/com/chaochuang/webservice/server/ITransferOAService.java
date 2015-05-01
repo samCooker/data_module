@@ -129,4 +129,11 @@ public interface ITransferOAService {
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
     String getChangeDepartment(String changeScript);
+
+    /**
+     * 获取OA的已办节点信息
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getOAHistoryNodes(Long instId);
 }

@@ -59,6 +59,14 @@ public class DocFile extends LongIdEntity {
     private String                 rmInstanceId;
     /** 流程编号 */
     private String                 flowId;
+    /** 创建人id */
+    private Long                   creatorId;
+    /** 创建人姓名 */
+    private String                 creatorName;
+    /** 创建人部门id */
+    private Long                   creatorDeptId;
+    /** 创建人部门名称 */
+    private String                 creatorDeptName;
     /** 创建时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date                   createDate;
@@ -307,6 +315,66 @@ public class DocFile extends LongIdEntity {
      */
     public void setFlowNodeInfos(List<FlowNodeInfo> flowNodeInfos) {
         this.flowNodeInfos = flowNodeInfos;
+    }
+
+    /**
+     * @return the creatorId
+     */
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    /**
+     * @param creatorId
+     *            the creatorId to set
+     */
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    /**
+     * @return the creatorName
+     */
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    /**
+     * @param creatorName
+     *            the creatorName to set
+     */
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    /**
+     * @return the creatorDeptId
+     */
+    public Long getCreatorDeptId() {
+        return creatorDeptId;
+    }
+
+    /**
+     * @param creatorDeptId
+     *            the creatorDeptId to set
+     */
+    public void setCreatorDeptId(Long creatorDeptId) {
+        this.creatorDeptId = creatorDeptId;
+    }
+
+    /**
+     * @return the creatorDeptName
+     */
+    public String getCreatorDeptName() {
+        return creatorDeptName;
+    }
+
+    /**
+     * @param creatorDeptName
+     *            the creatorDeptName to set
+     */
+    public void setCreatorDeptName(String creatorDeptName) {
+        this.creatorDeptName = creatorDeptName;
     }
 
 }

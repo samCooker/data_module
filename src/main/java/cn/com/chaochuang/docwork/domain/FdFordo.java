@@ -31,44 +31,49 @@ import cn.com.chaochuang.docwork.reference.FordoStatusConverter;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "fordo_id")) })
 public class FdFordo extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     /** 标题 */
-    private String      title;
+    private String            title;
     /** URL */
-    private String      url;
+    private String            url;
     /** 发送人编号 */
-    private Long        senderId;
+    private Long              senderId;
     /** 发送时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date        sendTime;
+    private Date              sendTime;
     /** 发送人姓名 */
-    private String      senderName;
+    private String            senderName;
     /** 待办状态 */
     @Convert(converter = FordoStatusConverter.class)
-    private FordoStatus status;
+    private FordoStatus       status;
     /** 待办来源类型 */
     @Convert(converter = FordoSourceConverter.class)
-    private FordoSource fordoSource;
+    private FordoSource       fordoSource;
     /** 限办日期 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date        limitTime;
+    private Date              limitTime;
     /** 待办数据读取时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date        readTime;
+    private Date              readTime;
     /** 待办明细接收人编号 */
-    private Long        recipientId;
+    private Long              recipientId;
     /** 紧急程度 */
-    private String      emergencyLevel;
+    private String            emergencyLevel;
     /** 发送人所在部门 */
-    private String      senderDeptName;
+    private String            senderDeptName;
     /** 密级 */
-    private String      secretLevel;
+    private String            secretLevel;
     /** 远程系统待办编号 */
-    private String      rmPendingId;
+    private String            rmPendingId;
     /** 远程系统待办明细编号 */
-    private String      rmPendingItemId;
+    private String            rmPendingItemId;
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date        inputDate;
+    private Date              inputDate;
 
     /**
      * @return the title
