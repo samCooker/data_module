@@ -25,4 +25,10 @@ public interface FlowNodeOpinionsRepository extends SimpleDomainRepository<FlowN
      * */
     List<FlowNodeOpinions> findByRmInstnoId(Long rmInstnoId);
 
+    /**
+     * 通过远程实例id(rmInstId)和环节标识(nodeFlag，对应oa的item_id)查找意见信息,同一个环节无重复的环节标识
+     *
+     * */
+    FlowNodeOpinions findByRmInstanceIdAndNodeFlagAndTransactId(String rmInstanceId, String nodeFlag, Long transactId);
+
 }

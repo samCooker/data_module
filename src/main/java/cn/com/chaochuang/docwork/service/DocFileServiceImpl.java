@@ -26,13 +26,10 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.domain.DocFile;
-import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
-import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -128,7 +125,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
 
         if (fileInfo != null) {
             String rmInstanceId = fileInfo.getRmInstanceId();
-            List<FlowNodeInfo> preFlowNodesList = flowNodeInfoService.findByRmInstanceId(rmInstanceId);
+            // List<FlowNodeInfo> preFlowNodesList = flowNodeInfoService.findByRmInstanceId(rmInstanceId);
             // 将公文状态修改为已办
             DocFile file = repository.findByRmInstanceId(rmInstanceId);
             // 若file为空，说明数据还没导入到mobile数据库
@@ -136,7 +133,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 file.setDocStatus(DocStatus.办结);
                 repository.save(file);
                 // 删除原节点信息
-                flowNodeInfoService.getRepository().delete(preFlowNodesList);
+                // flowNodeInfoService.getRepository().delete(preFlowNodesList);
                 // 将oa的历史节点信息保存
                 flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
                 // 跟新公文意见记录

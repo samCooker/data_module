@@ -109,9 +109,9 @@ public class MobileDataTaskService {
     private static boolean       isDealSysDataChangeRunning = false;
 
     /**
-     * 向OA获取待办事宜数据 每5分钟进行一次数据获取
+     * 向OA获取待办事宜数据 每20s进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "20/20 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -154,7 +154,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "30/30 1/1 * * * ?")
+    @Scheduled(cron = "30/30 * * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -183,7 +183,7 @@ public class MobileDataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "0 2/1 * * * ?")
+    @Scheduled(cron = "10/10 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -215,7 +215,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "50/50 1/1 * * * ?")
+    @Scheduled(cron = "30/30 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -269,7 +269,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "10/10 1/1 * * * ?")
+    @Scheduled(cron = "40/40 * * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -308,7 +308,7 @@ public class MobileDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "1/5 1/1 * * * ?")
+    @Scheduled(cron = "50/50 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -333,7 +333,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "2/10 1/1 * * * ?")
+    @Scheduled(cron = "50/50 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -347,7 +347,7 @@ public class MobileDataTaskService {
                     // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
                     this.fdFordoService.analysisDataChange(item);
                 } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
-                    // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结
+                    // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
                     String[] items = item.getChangeScript().split("=");
                     String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
                     this.fileService.finishDocFile(json);

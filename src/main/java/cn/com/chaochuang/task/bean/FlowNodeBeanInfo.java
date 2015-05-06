@@ -24,7 +24,7 @@ public class FlowNodeBeanInfo {
     /** 原系统流程环节实例编号 */
     private Long         rmInstnoId;
     /** 原系统前驱流程环节实例编号 */
-    private Long         rmPreInstnoId;
+    private Long         rmLastInstnoId;
     /** 前驱环节编号 */
     private String       preNodeId;
     /** 环节编号 node_id */
@@ -94,21 +94,6 @@ public class FlowNodeBeanInfo {
      */
     public void setRmInstnoId(Long rmInstnoId) {
         this.rmInstnoId = rmInstnoId;
-    }
-
-    /**
-     * @return the rmPreInstnoId
-     */
-    public Long getRmPreInstnoId() {
-        return rmPreInstnoId;
-    }
-
-    /**
-     * @param rmPreInstnoId
-     *            the rmPreInstnoId to set
-     */
-    public void setRmPreInstnoId(Long rmPreInstnoId) {
-        this.rmPreInstnoId = rmPreInstnoId;
     }
 
     /**
@@ -244,6 +229,21 @@ public class FlowNodeBeanInfo {
      */
     public void setTransactDeptId(Long transactDeptId) {
         this.transactDeptId = transactDeptId;
+    }
+
+    /**
+     * @return the rmLastInstnoId
+     */
+    public Long getRmLastInstnoId() {
+        return rmLastInstnoId;
+    }
+
+    /**
+     * @param rmLastInstnoId
+     *            the rmLastInstnoId to set
+     */
+    public void setRmLastInstnoId(Long rmLastInstnoId) {
+        this.rmLastInstnoId = rmLastInstnoId;
     }
 
 }
