@@ -69,7 +69,7 @@ public class FdFordo extends LongIdEntity {
     private String            secretLevel;
     /** 远程系统待办编号 */
     private String            rmPendingId;
-    /** 远程系统待办明细编号 */
+    /** 远程系统待办明细编号(若远程系统只有一个待办编号就写入rmPendingItemId) */
     private String            rmPendingItemId;
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)

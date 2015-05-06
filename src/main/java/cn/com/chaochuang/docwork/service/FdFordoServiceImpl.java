@@ -60,12 +60,13 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
     private String timeInterval;
 
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate()
+     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate(FordoSource)
      */
     @Override
-    public PendingCommandInfo selectMaxInputDate() {
+    public PendingCommandInfo selectMaxInputDate(FordoSource source) {
         PendingCommandInfo result = new PendingCommandInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmPendingItemId) from ").append(FdFordo.class.getName());
+        StringBuffer sql = new StringBuffer(" select Max(rmPendingItemId) from ").append(FdFordo.class.getName())
+                        .append(" where fordoSource=").append(source);
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {

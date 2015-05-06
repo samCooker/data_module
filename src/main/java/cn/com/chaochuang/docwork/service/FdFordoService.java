@@ -24,10 +24,13 @@ public interface FdFordoService extends CrudRestService<FdFordo, Long> {
 
     /**
      * 获取最大的数据导入时间
+     * 
+     * @param source
+     *            待办来源
      *
      * @return
      */
-    PendingCommandInfo selectMaxInputDate();
+    PendingCommandInfo selectMaxInputDate(FordoSource source);
 
     /**
      * 批量插入待办事宜数据

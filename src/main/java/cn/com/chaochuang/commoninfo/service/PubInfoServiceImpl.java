@@ -25,6 +25,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.domain.PubInfo;
 import cn.com.chaochuang.commoninfo.repository.PubInfoRepository;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 
 /**
@@ -45,7 +46,7 @@ public class PubInfoServiceImpl extends SimpleLongIdCrudRestService<PubInfo> imp
     }
 
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate()
+     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate(FordoSource)
      */
     @Override
     public String selectMaxInputDate() {

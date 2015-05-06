@@ -14,4 +14,10 @@
     >
     </jaxws:client>
 
+    <jaxws:client
+        id="ITransferAipCaseServiceClientFactory"
+        serviceClass="cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService"
+        address="${nncccase.webservice.url}"
+    >
+    </jaxws:client>
 </beans>

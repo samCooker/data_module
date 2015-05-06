@@ -43,6 +43,7 @@ import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
+import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +58,10 @@ public class MobileDataTaskService {
     /** webservice 函数库 */
     @Autowired
     private ITransferOAService   transferOAService;
+
+    @Autowired
+    private AipCaseWebService    transferAipCaseService;
+
     /** fdFordoService */
     @Autowired
     private FdFordoService       fdFordoService;
@@ -107,19 +112,21 @@ public class MobileDataTaskService {
     private static boolean       isGetSysDataChangeRunning  = false;
     /** 获取处理系统数据更改阻塞标识 */
     private static boolean       isDealSysDataChangeRunning = false;
+    /** 获取办案系统待办阻塞标识 */
+    private static boolean       isAipCaseFordoRunning      = false;
 
     /**
-     * 向OA获取待办事宜数据 每20s进行一次数据获取
+     * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "20/20 * * * * ?")
+    // @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
         }
         isFordoRunning = true;
         try {
-            // 获取当前待办表中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
-            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate();
+            // 获取当前待办表中公文待办中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
+            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.公文);
             // 若lastOutputTime无效则不做下一步
             if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
                 return;
@@ -127,20 +134,58 @@ public class MobileDataTaskService {
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
             String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(),
                             info.getRmPendingItemId());
-            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                PendingCommandInfo.class);
-                List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(json, javaType);
-                this.fdFordoService.insertFdFordos(datas, FordoSource.公文);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            // 将OA的待办记录写入待办事宜表
+            this.saveFdFordo(json, FordoSource.公文);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             isFordoRunning = false;
         }
+    }
 
+    /**
+     * 获取案件办理系统的待办记录
+     */
+    @Scheduled(cron = "2/10 1/1 * * * ?")
+    public void getAipCaseFordo() {
+        if (isAipCaseFordoRunning) {
+            return;
+        }
+        isAipCaseFordoRunning = true;
+        try {
+            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.行政办案);
+            // 若lastOutputTime无效则不做下一步
+            if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
+                return;
+            }
+            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(),
+                            info.getRmPendingItemId());
+            // 将案件办理的待办记录写入待办事宜表
+            this.saveFdFordo(json, FordoSource.行政办案);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isAipCaseFordoRunning = false;
+        }
+    }
+
+    /**
+     * 保存待办记录
+     *
+     * @param jsonData
+     * @param fdSource
+     */
+    private void saveFdFordo(String jsonData, FordoSource fdSource) {
+        try {
+            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+            ObjectMapper mapper = new ObjectMapper();
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                            PendingCommandInfo.class);
+            List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(jsonData, javaType);
+            this.fdFordoService.insertFdFordos(datas, fdSource);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
