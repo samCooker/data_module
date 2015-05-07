@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.aipcase.service;
 
+import java.util.List;
+
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -17,4 +19,17 @@ import cn.com.chaochuang.common.data.service.CrudRestService;
  */
 public interface AipCaseApplyService extends CrudRestService<AipCaseApply, Long> {
 
+    /**
+     * 获取案件办理表中最新记录导入时间
+     *
+     * @return
+     */
+    String selectAipCaseMaxInputDate();
+
+    /**
+     * 保存案件办理记录
+     *
+     * @param datas
+     */
+    void saveAipCaseApply(List<AipCaseApply> datas);
 }

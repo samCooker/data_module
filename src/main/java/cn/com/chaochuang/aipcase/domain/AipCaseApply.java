@@ -8,10 +8,14 @@
 
 package cn.com.chaochuang.aipcase.domain;
 
+import java.util.Date;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 
@@ -33,6 +37,8 @@ public class AipCaseApply extends LongIdEntity {
     private String            caseName;
     /** 案由 */
     private String            caseBrief;
+    /** 当事人/企业编号 */
+    private Long              fillEntpId;
     /** 当事人 */
     private String            fillEntpContacter;
     /** 当事企业法人代表 */
@@ -53,6 +59,24 @@ public class AipCaseApply extends LongIdEntity {
     private String            longitude;
     /** 当事人地址纬度 */
     private String            latitude;
+    /** 数据导入时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date              inputDate;
+
+    /**
+     * @return the fillEntpId
+     */
+    public Long getFillEntpId() {
+        return fillEntpId;
+    }
+
+    /**
+     * @param fillEntpId
+     *            the fillEntpId to set
+     */
+    public void setFillEntpId(Long fillEntpId) {
+        this.fillEntpId = fillEntpId;
+    }
 
     /**
      * @return the rmCaseApplyId
@@ -262,6 +286,21 @@ public class AipCaseApply extends LongIdEntity {
      */
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    /**
+     * @return the inputDate
+     */
+    public Date getInputDate() {
+        return inputDate;
+    }
+
+    /**
+     * @param inputDate
+     *            the inputDate to set
+     */
+    public void setInputDate(Date inputDate) {
+        this.inputDate = inputDate;
     }
 
 }

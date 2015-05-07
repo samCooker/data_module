@@ -23,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import cn.com.chaochuang.aipcase.domain.AipCaseApply;
+import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserServiceImpl;
 import cn.com.chaochuang.common.util.Tools;
@@ -90,6 +92,9 @@ public class MobileDataTaskService {
     @Autowired
     private SysUserServiceImpl   userService;
 
+    @Autowired
+    private AipCaseApplyService  aipCaseApplyService;
+
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
     private String               rootPath;
@@ -102,6 +107,8 @@ public class MobileDataTaskService {
     private static boolean       isFordoRunning             = false;
     /** 获取公文阻塞标识 */
     private static boolean       isGetDocFileRunning        = false;
+    /** 获取案件办理阻塞标识 */
+    private static boolean       isGetAipCaseRunning        = false;
     /** 提交公文阻塞标识 */
     private static boolean       isCommitDocFileRunning     = false;
     /** 下载公文附件阻塞标识 */
@@ -183,6 +190,36 @@ public class MobileDataTaskService {
                             PendingCommandInfo.class);
             List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取案件办理数据写入本地表
+     */
+    @Scheduled(cron = "10/0 1/1 * * * ?")
+    public void getAipCaseDataTask() {
+        if (isGetAipCaseRunning) {
+            return;
+        }
+        isGetAipCaseRunning = true;
+        try {
+            // 获取指定案件登记时间的记录
+            String lastInputTime = this.aipCaseApplyService.selectAipCaseMaxInputDate();
+            if (!Tools.isEmptyString(lastInputTime)) {
+                // 调用远程方法获取案件登记时间大于lastInputTime的案件数据
+                String json = transferAipCaseService.getAipCaseApply(lastInputTime);
+                // 将json数据转成AipCaseApply列表保存至AipCaseApply表
+                if (!Tools.isEmptyString(json)) {
+                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+                    ObjectMapper mapper = new ObjectMapper();
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                    AipCaseApply.class);
+                    List<AipCaseApply> datas = (List<AipCaseApply>) mapper.readValue(json, javaType);
+                    this.aipCaseApplyService.saveAipCaseApply(datas);
+                }
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
