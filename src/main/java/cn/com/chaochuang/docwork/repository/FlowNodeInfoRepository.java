@@ -8,6 +8,7 @@
 
 package cn.com.chaochuang.docwork.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -35,9 +36,10 @@ public interface FlowNodeInfoRepository extends SimpleDomainRepository<FlowNodeI
     FlowNodeInfo findByRmPreInstnoIdAndTransactId(Long rmPreInstnoId, Long transactId);
 
     /**
-     * 通过远程节点实例id，环节号，接收人id
+     * 通过远程节点实例id，环节号，接收人id,到达时间arriveTime查找节点信息
      * */
-    FlowNodeInfo findByRmInstanceIdAndNodeIdAndTransactId(String rmInstanceId, String nodeId, Long transactId);
+    FlowNodeInfo findByRmInstanceIdAndNodeIdAndTransactIdAndArriveTime(String rmInstanceId, String nodeId,
+                    Long transactId, Date arriveTime);
 
     /**
      * 通过远程节点实例id查找相关流程节点

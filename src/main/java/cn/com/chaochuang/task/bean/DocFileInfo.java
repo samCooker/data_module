@@ -35,6 +35,14 @@ public class DocFileInfo {
     private String                     rmInstanceId;
     /** 流程编号 */
     private String                     flowId;
+    /** 文电摘要 */
+    private String                     digest;
+    /** 来文日期 */
+    private Date                       sourceDate;
+    /** 拟搞人 */
+    private String                     redactor;
+    /** 公开方式 */
+    private String                     publish;
     /** 创建时间 */
     private Date                       createDate;
     /** 数据导入时间 */
@@ -59,6 +67,51 @@ public class DocFileInfo {
      */
     public DocFileInfo() {
         super();
+    }
+
+    /**
+     * @return the digest
+     */
+    public String getDigest() {
+        return digest;
+    }
+
+    /**
+     * @param digest
+     *            the digest to set
+     */
+    public void setDigest(String digest) {
+        this.digest = digest;
+    }
+
+    /**
+     * @return the redactor
+     */
+    public String getRedactor() {
+        return redactor;
+    }
+
+    /**
+     * @param redactor
+     *            the redactor to set
+     */
+    public void setRedactor(String redactor) {
+        this.redactor = redactor;
+    }
+
+    /**
+     * @return the publish
+     */
+    public String getPublish() {
+        return publish;
+    }
+
+    /**
+     * @param publish
+     *            the publish to set
+     */
+    public void setPublish(String publish) {
+        this.publish = publish;
     }
 
     /**
@@ -329,6 +382,21 @@ public class DocFileInfo {
      */
     public void setCreatorDeptName(String creatorDeptName) {
         this.creatorDeptName = creatorDeptName;
+    }
+
+    /**
+     * @return the sourceDate
+     */
+    public Date getSourceDate() {
+        return sourceDate;
+    }
+
+    /**
+     * @param sourceDate
+     *            the sourceDate to set
+     */
+    public void setSourceDate(Date sourceDate) {
+        this.sourceDate = sourceDate;
     }
 
 }

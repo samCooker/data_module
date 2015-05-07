@@ -67,6 +67,15 @@ public class DocFile extends LongIdEntity {
     private Long                   creatorDeptId;
     /** 创建人部门名称 */
     private String                 creatorDeptName;
+    /** 文电摘要 */
+    private String                 digest;
+    /** 来文日期 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date                   sourceDate;
+    /** 拟搞人 */
+    private String                 redactor;
+    /** 公开方式 */
+    private String                 publish;
     /** 创建时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date                   createDate;
@@ -91,6 +100,66 @@ public class DocFile extends LongIdEntity {
     @JoinColumn(name = "docId")
     /** 流程意见集合 */
     private List<FlowNodeOpinions> flowNodeOpinions;
+
+    /**
+     * @return the digest
+     */
+    public String getDigest() {
+        return digest;
+    }
+
+    /**
+     * @param digest
+     *            the digest to set
+     */
+    public void setDigest(String digest) {
+        this.digest = digest;
+    }
+
+    /**
+     * @return the sourceDate
+     */
+    public Date getSourceDate() {
+        return sourceDate;
+    }
+
+    /**
+     * @param sourceDate
+     *            the sourceDate to set
+     */
+    public void setSourceDate(Date sourceDate) {
+        this.sourceDate = sourceDate;
+    }
+
+    /**
+     * @return the redactor
+     */
+    public String getRedactor() {
+        return redactor;
+    }
+
+    /**
+     * @param redactor
+     *            the redactor to set
+     */
+    public void setRedactor(String redactor) {
+        this.redactor = redactor;
+    }
+
+    /**
+     * @return the publish
+     */
+    public String getPublish() {
+        return publish;
+    }
+
+    /**
+     * @param publish
+     *            the publish to set
+     */
+    public void setPublish(String publish) {
+        this.publish = publish;
+    }
 
     /**
      * @return the docStatus

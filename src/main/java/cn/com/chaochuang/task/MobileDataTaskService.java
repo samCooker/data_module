@@ -118,7 +118,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "0 1/1 * * * ?")
+    @Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
