@@ -26,7 +26,6 @@ import cn.com.chaochuang.aipcase.repository.AipCaseApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.docwork.domain.DocFile;
 
 /**
  * @author LJX
@@ -54,7 +53,7 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
      */
     @Override
     public String selectAipCaseMaxInputDate() {
-        StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(DocFile.class.getName());
+        StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(AipCaseApply.class.getName());
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {

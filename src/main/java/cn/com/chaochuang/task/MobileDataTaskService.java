@@ -125,7 +125,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "0 1/1 * * * ?")
+    // //@Scheduled(cron = "0 1/1 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -153,7 +153,7 @@ public class MobileDataTaskService {
     /**
      * 获取案件办理系统的待办记录
      */
-    @Scheduled(cron = "2/10 1/1 * * * ?")
+    // @Scheduled(cron = "2/10 1/1 * * * ?")
     public void getAipCaseFordo() {
         if (isAipCaseFordoRunning) {
             return;
@@ -183,6 +183,9 @@ public class MobileDataTaskService {
      * @param fdSource
      */
     private void saveFdFordo(String jsonData, FordoSource fdSource) {
+        if (Tools.isEmptyString(jsonData)) {
+            return;
+        }
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
@@ -198,7 +201,7 @@ public class MobileDataTaskService {
     /**
      * 获取案件办理数据写入本地表
      */
-    @Scheduled(cron = "10/0 1/1 * * * ?")
+    @Scheduled(cron = "20/10 1/1 * * * ?")
     public void getAipCaseDataTask() {
         if (isGetAipCaseRunning) {
             return;
@@ -222,6 +225,8 @@ public class MobileDataTaskService {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            isGetAipCaseRunning = false;
         }
     }
 
@@ -236,7 +241,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "30/30 * * * * ?")
+    // @Scheduled(cron = "30/30 * * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -265,7 +270,7 @@ public class MobileDataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/10 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -297,7 +302,7 @@ public class MobileDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "30/30 * * * * ?")
+    // @Scheduled(cron = "30/30 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -351,7 +356,7 @@ public class MobileDataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "40/40 * * * * ?")
+    // @Scheduled(cron = "40/40 * * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -390,7 +395,7 @@ public class MobileDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "50/50 * * * * ?")
+    // @Scheduled(cron = "50/50 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -415,7 +420,7 @@ public class MobileDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "50/50 * * * * ?")
+    // @Scheduled(cron = "50/50 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;

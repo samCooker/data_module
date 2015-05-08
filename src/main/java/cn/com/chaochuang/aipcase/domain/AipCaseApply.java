@@ -62,6 +62,17 @@ public class AipCaseApply extends LongIdEntity {
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              inputDate;
+    /** 创建人 */
+    private Long              createrId;
+    /** 创建人姓名 */
+    private String            createrName;
+    /** 创建人部门 */
+    private Long              createrDeptId;
+    /** 创建人部门名称 */
+    private String            createrDeptName;
+    /** 创建时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date              createDate;
 
     /**
      * @return the fillEntpId
@@ -301,6 +312,81 @@ public class AipCaseApply extends LongIdEntity {
      */
     public void setInputDate(Date inputDate) {
         this.inputDate = inputDate;
+    }
+
+    /**
+     * @return the createrId
+     */
+    public Long getCreaterId() {
+        return createrId;
+    }
+
+    /**
+     * @param createrId
+     *            the createrId to set
+     */
+    public void setCreaterId(Long createrId) {
+        this.createrId = createrId;
+    }
+
+    /**
+     * @return the createrName
+     */
+    public String getCreaterName() {
+        return createrName;
+    }
+
+    /**
+     * @param createrName
+     *            the createrName to set
+     */
+    public void setCreaterName(String createrName) {
+        this.createrName = createrName;
+    }
+
+    /**
+     * @return the createrDeptId
+     */
+    public Long getCreaterDeptId() {
+        return createrDeptId;
+    }
+
+    /**
+     * @param createrDeptId
+     *            the createrDeptId to set
+     */
+    public void setCreaterDeptId(Long createrDeptId) {
+        this.createrDeptId = createrDeptId;
+    }
+
+    /**
+     * @return the createrDeptName
+     */
+    public String getCreaterDeptName() {
+        return createrDeptName;
+    }
+
+    /**
+     * @param createrDeptName
+     *            the createrDeptName to set
+     */
+    public void setCreaterDeptName(String createrDeptName) {
+        this.createrDeptName = createrDeptName;
+    }
+
+    /**
+     * @return the createDate
+     */
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    /**
+     * @param createDate
+     *            the createDate to set
+     */
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
 }
