@@ -18,6 +18,8 @@ public class SysUser extends PersistEntity {
 
     /** 原系统用户编号 */
     private Long              rmUserId;
+    /** 原系统用户信息编号 */
+    private Long              rmUserInfoId;
     /** 原系统部门编号 */
     private Long              rmDepId;
     /** 部门编号 */
@@ -237,4 +239,20 @@ public class SysUser extends PersistEntity {
     public void setMdfCode(String mdfCode) {
         this.mdfCode = mdfCode;
     }
+
+    /**
+     * @return the rmUserInfoId
+     */
+    public Long getRmUserInfoId() {
+        return rmUserInfoId;
+    }
+
+    /**
+     * @param rmUserInfoId
+     *            the rmUserInfoId to set
+     */
+    public void setRmUserInfoId(Long rmUserInfoId) {
+        this.rmUserInfoId = rmUserInfoId;
+    }
+
 }

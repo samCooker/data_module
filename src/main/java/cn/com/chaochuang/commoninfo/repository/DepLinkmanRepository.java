@@ -17,4 +17,12 @@ import cn.com.chaochuang.commoninfo.domain.DepLinkman;
  */
 public interface DepLinkmanRepository extends SimpleDomainRepository<DepLinkman, Long> {
 
+    /**
+     * 根据原系统的通讯录编号查询通讯录记录
+     * 
+     * @param rmLinkmanId
+     *            原系统通讯录编号
+     * @return
+     */
+    DepLinkman findByRmLinkmanId(Long rmLinkmanId);
 }

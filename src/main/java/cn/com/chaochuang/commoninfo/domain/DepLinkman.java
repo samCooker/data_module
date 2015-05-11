@@ -35,6 +35,8 @@ public class DepLinkman extends LongIdEntity {
     private String duty;
     /** 固定电话 */
     private String phone;
+    /** 家庭电话 */
+    private String homePhone;
     /** 移动电话 */
     private String mobile;
     /** 电子邮件 */
@@ -229,6 +231,21 @@ public class DepLinkman extends LongIdEntity {
      */
     public void setRmLinkmanId(Long rmLinkmanId) {
         this.rmLinkmanId = rmLinkmanId;
+    }
+
+    /**
+     * @return the homePhone
+     */
+    public String getHomePhone() {
+        return homePhone;
+    }
+
+    /**
+     * @param homePhone
+     *            the homePhone to set
+     */
+    public void setHomePhone(String homePhone) {
+        this.homePhone = homePhone;
     }
 
 }

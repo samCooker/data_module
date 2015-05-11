@@ -10,11 +10,17 @@ package cn.com.chaochuang.commoninfo.service;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.commoninfo.domain.DepLinkman;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 
 /**
  * @author LLM
  *
  */
 public interface DepLinkmanService extends CrudRestService<DepLinkman, Long> {
-
+    /**
+     * 分析系统数据的处理
+     *
+     * @param dataChange
+     */
+    void analysisDataChange(SysDataChange dataChange);
 }

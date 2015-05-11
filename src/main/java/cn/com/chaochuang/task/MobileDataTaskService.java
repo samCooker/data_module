@@ -26,8 +26,9 @@ import org.springframework.stereotype.Component;
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
 import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
-import cn.com.chaochuang.common.user.service.SysUserServiceImpl;
+import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
@@ -90,10 +91,13 @@ public class MobileDataTaskService {
     private SysDepartmentService departmentService;
 
     @Autowired
-    private SysUserServiceImpl   userService;
+    private SysUserService       userService;
 
     @Autowired
     private AipCaseApplyService  aipCaseApplyService;
+
+    @Autowired
+    private DepLinkmanService    depLinkmanService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
@@ -228,14 +232,6 @@ public class MobileDataTaskService {
         } finally {
             isGetAipCaseRunning = false;
         }
-    }
-
-    /**
-     * 向OA获取通讯录数据
-     */
-    // @Scheduled(cron = "10/0 2/2 * * * ?")
-    public void getDeplinkmanDataTask() {
-
     }
 
     /**
@@ -444,6 +440,10 @@ public class MobileDataTaskService {
                 } else if (DataChangeTable.人员.getKey().equals(item.getChangeTableName())) {
                     // 人员数据发生变更
                     this.userService.analysisDataChange(item);
+                } else if (DataChangeTable.通讯录.getKey().equals(item.getChangeTableName())) {
+                    // 通讯录数据发生变更
+                } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
+                    // 新闻公告数据发生变更
                 }
                 // 删除变更数据
                 this.dataChangeService.delete(item.getId());
