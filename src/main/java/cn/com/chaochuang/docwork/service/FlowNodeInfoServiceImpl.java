@@ -46,19 +46,12 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
             return;
         }
         List<FlowNodeInfo> nodesList = new ArrayList<FlowNodeInfo>();
+        List<FlowNodeInfo> preNodesList = repository.findByDocId(fileId);
+        // 删除原节点信息，因为如果OA端进行公文退回操作后，流程节点改动较大
+        repository.deleteInBatch(preNodesList);
         for (FlowNodeBeanInfo nodeInfo : datas) {
-            // mobile端办理时，rmInstnoId为空，从远程获取对应的节点信息后再将rmInstnoId添加上
-            FlowNodeInfo node = repository.findByRmInstanceIdAndNodeIdAndTransactIdAndArriveTime(
-                            nodeInfo.getRmInstanceId(), nodeInfo.getNodeId(), nodeInfo.getTransactId(),
-                            nodeInfo.getArriveTime());
-            if (node == null) {
-                // 为空说明本地数据库无此信息，应添加
-                node = new FlowNodeInfo();
-            }
-            if (nodeInfo.getRmLastInstnoId() != null && nodeInfo.getRmLastInstnoId() != 0) {
-                // oa历史节点无此字段信息，为防止覆盖原信息修改了字段名称
-                node.setRmPreInstnoId(nodeInfo.getRmLastInstnoId());
-            }
+            FlowNodeInfo node = new FlowNodeInfo();
+            node.setRmPreInstnoId(nodeInfo.getRmLastInstnoId());
             BeanUtils.copyProperties(node, nodeInfo);
             node.setDocId(fileId);
             nodesList.add(node);

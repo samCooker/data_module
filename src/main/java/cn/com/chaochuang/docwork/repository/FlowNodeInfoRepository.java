@@ -45,4 +45,10 @@ public interface FlowNodeInfoRepository extends SimpleDomainRepository<FlowNodeI
      * 通过远程节点实例id查找相关流程节点
      * */
     List<FlowNodeInfo> findByRmInstanceId(String rmInstanceId);
+
+    /**
+     * 通过公文id查找相关流程节点
+     * */
+    List<FlowNodeInfo> findByDocId(Long docId);
+
 }

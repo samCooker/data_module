@@ -31,4 +31,9 @@ public interface FlowNodeOpinionsRepository extends SimpleDomainRepository<FlowN
      * */
     FlowNodeOpinions findByRmInstanceIdAndNodeFlagAndTransactId(String rmInstanceId, String nodeFlag, Long transactId);
 
+    /**
+     * 通过公文id查找相关意见
+     * */
+    List<FlowNodeOpinions> findByDocId(Long docId);
+
 }
