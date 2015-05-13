@@ -51,8 +51,7 @@ public class DocFile extends LongIdEntity {
     /** 来文单位 */
     private String                 sourceDept;
     /** 办理期限 */
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date                   limitDate;
+    private String                 limitDate;
     /** 公文类别 */
     private String                 docType;
     /** 原系统公文编号 */
@@ -74,6 +73,18 @@ public class DocFile extends LongIdEntity {
     private Date                   sourceDate;
     /** 拟搞人 */
     private String                 redactor;
+    /** 拟稿时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date                   redactDate;
+    /** 拟搞人部门名称 */
+    private String                 redactorDeptName;
+    /** 拟办意见 */
+    private String                 redactOpinion;
+    /** 签发人 */
+    private String                 signMan;
+    /** 签发时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date                   signDate;
     /** 公开方式 */
     private String                 publish;
     /** 创建时间 */
@@ -132,18 +143,33 @@ public class DocFile extends LongIdEntity {
     }
 
     /**
-     * @return the redactor
+     * @return the redactorDeptName
      */
-    public String getRedactor() {
-        return redactor;
+    public String getRedactorDeptName() {
+        return redactorDeptName;
     }
 
     /**
-     * @param redactor
-     *            the redactor to set
+     * @param redactorDeptName
+     *            the redactorDeptName to set
      */
-    public void setRedactor(String redactor) {
-        this.redactor = redactor;
+    public void setRedactorDeptName(String redactorDeptName) {
+        this.redactorDeptName = redactorDeptName;
+    }
+
+    /**
+     * @return the signMan
+     */
+    public String getSignMan() {
+        return signMan;
+    }
+
+    /**
+     * @param signMan
+     *            the signMan to set
+     */
+    public void setSignMan(String signMan) {
+        this.signMan = signMan;
     }
 
     /**
@@ -269,7 +295,7 @@ public class DocFile extends LongIdEntity {
     /**
      * @return the limitDate
      */
-    public Date getLimitDate() {
+    public String getLimitDate() {
         return limitDate;
     }
 
@@ -277,7 +303,7 @@ public class DocFile extends LongIdEntity {
      * @param limitDate
      *            the limitDate to set
      */
-    public void setLimitDate(Date limitDate) {
+    public void setLimitDate(String limitDate) {
         this.limitDate = limitDate;
     }
 
@@ -444,6 +470,66 @@ public class DocFile extends LongIdEntity {
      */
     public void setCreatorDeptName(String creatorDeptName) {
         this.creatorDeptName = creatorDeptName;
+    }
+
+    /**
+     * @return the redactor
+     */
+    public String getRedactor() {
+        return redactor;
+    }
+
+    /**
+     * @param redactor
+     *            the redactor to set
+     */
+    public void setRedactor(String redactor) {
+        this.redactor = redactor;
+    }
+
+    /**
+     * @return the signDate
+     */
+    public Date getSignDate() {
+        return signDate;
+    }
+
+    /**
+     * @param signDate
+     *            the signDate to set
+     */
+    public void setSignDate(Date signDate) {
+        this.signDate = signDate;
+    }
+
+    /**
+     * @return the redactDate
+     */
+    public Date getRedactDate() {
+        return redactDate;
+    }
+
+    /**
+     * @param redactDate
+     *            the redactDate to set
+     */
+    public void setRedactDate(Date redactDate) {
+        this.redactDate = redactDate;
+    }
+
+    /**
+     * @return the redactOpinion
+     */
+    public String getRedactOpinion() {
+        return redactOpinion;
+    }
+
+    /**
+     * @param redactOpinion
+     *            the redactOpinion to set
+     */
+    public void setRedactOpinion(String redactOpinion) {
+        this.redactOpinion = redactOpinion;
     }
 
 }

@@ -28,7 +28,7 @@ public class DocFileInfo {
     /** 来文单位 */
     private String                     sourceDept;
     /** 办理期限 */
-    private Date                       limitDate;
+    private String                     limitDate;
     /** 公文类别 */
     private String                     docType;
     /** 原系统公文编号 */
@@ -41,6 +41,16 @@ public class DocFileInfo {
     private Date                       sourceDate;
     /** 拟搞人 */
     private String                     redactor;
+    /** 拟稿时间 */
+    private Date                       redactDate;
+    /** 拟搞人部门名称 */
+    private String                     redactorDeptName;
+    /** 拟办意见 */
+    private String                     redactOpinion;
+    /** 签发人 */
+    private String                     signMan;
+    /** 签发时间 */
+    private Date                       signDate;
     /** 公开方式 */
     private String                     publish;
     /** 创建时间 */
@@ -63,10 +73,33 @@ public class DocFileInfo {
     private List<FlowNodeOpinionsInfo> remoteFlowOpinions;
 
     /**
-     *
+     * @return the redactorDeptName
      */
-    public DocFileInfo() {
-        super();
+    public String getRedactorDeptName() {
+        return redactorDeptName;
+    }
+
+    /**
+     * @param redactorDeptName
+     *            the redactorDeptName to set
+     */
+    public void setRedactorDeptName(String redactorDeptName) {
+        this.redactorDeptName = redactorDeptName;
+    }
+
+    /**
+     * @return the signMan
+     */
+    public String getSignMan() {
+        return signMan;
+    }
+
+    /**
+     * @param signMan
+     *            the signMan to set
+     */
+    public void setSignMan(String signMan) {
+        this.signMan = signMan;
     }
 
     /**
@@ -177,7 +210,7 @@ public class DocFileInfo {
     /**
      * @return the limitDate
      */
-    public Date getLimitDate() {
+    public String getLimitDate() {
         return limitDate;
     }
 
@@ -185,7 +218,7 @@ public class DocFileInfo {
      * @param limitDate
      *            the limitDate to set
      */
-    public void setLimitDate(Date limitDate) {
+    public void setLimitDate(String limitDate) {
         this.limitDate = limitDate;
     }
 
@@ -397,6 +430,51 @@ public class DocFileInfo {
      */
     public void setSourceDate(Date sourceDate) {
         this.sourceDate = sourceDate;
+    }
+
+    /**
+     * @return the signDate
+     */
+    public Date getSignDate() {
+        return signDate;
+    }
+
+    /**
+     * @param signDate
+     *            the signDate to set
+     */
+    public void setSignDate(Date signDate) {
+        this.signDate = signDate;
+    }
+
+    /**
+     * @return the redactDate
+     */
+    public Date getRedactDate() {
+        return redactDate;
+    }
+
+    /**
+     * @param redactDate
+     *            the redactDate to set
+     */
+    public void setRedactDate(Date redactDate) {
+        this.redactDate = redactDate;
+    }
+
+    /**
+     * @return the redactOpinion
+     */
+    public String getRedactOpinion() {
+        return redactOpinion;
+    }
+
+    /**
+     * @param redactOpinion
+     *            the redactOpinion to set
+     */
+    public void setRedactOpinion(String redactOpinion) {
+        this.redactOpinion = redactOpinion;
     }
 
 }
