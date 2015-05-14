@@ -36,9 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "doc_id")) })
 public class DocFile extends LongIdEntity {
 
-    /**
-     *
-     */
+    /** */
     private static final long      serialVersionUID = 1L;
     /** 公文标题 */
     private String                 title;
@@ -111,6 +109,10 @@ public class DocFile extends LongIdEntity {
     @JoinColumn(name = "docId")
     /** 流程意见集合 */
     private List<FlowNodeOpinions> flowNodeOpinions;
+    /** 主送单位 */
+    private String                 mainSend;
+    /** 抄送单位 */
+    private String                 copySend;
 
     /**
      * @return the digest
@@ -530,6 +532,36 @@ public class DocFile extends LongIdEntity {
      */
     public void setRedactOpinion(String redactOpinion) {
         this.redactOpinion = redactOpinion;
+    }
+
+    /**
+     * @return the mainSend
+     */
+    public String getMainSend() {
+        return mainSend;
+    }
+
+    /**
+     * @param mainSend
+     *            the mainSend to set
+     */
+    public void setMainSend(String mainSend) {
+        this.mainSend = mainSend;
+    }
+
+    /**
+     * @return the copySend
+     */
+    public String getCopySend() {
+        return copySend;
+    }
+
+    /**
+     * @param copySend
+     *            the copySend to set
+     */
+    public void setCopySend(String copySend) {
+        this.copySend = copySend;
     }
 
 }

@@ -65,6 +65,10 @@ public class DocFileInfo {
     private Long                       creatorDeptId;
     /** 创建人部门名称 */
     private String                     creatorDeptName;
+    /** 主送单位 */
+    private String                     mainSend;
+    /** 抄送单位 */
+    private String                     copySend;
     /** 公文附件集合 */
     private List<DocFileAttachInfo>    remoteDocfileAttach;
     /** 流程集合 */
@@ -475,6 +479,36 @@ public class DocFileInfo {
      */
     public void setRedactOpinion(String redactOpinion) {
         this.redactOpinion = redactOpinion;
+    }
+
+    /**
+     * @return the mainSend
+     */
+    public String getMainSend() {
+        return mainSend;
+    }
+
+    /**
+     * @param mainSend
+     *            the mainSend to set
+     */
+    public void setMainSend(String mainSend) {
+        this.mainSend = mainSend;
+    }
+
+    /**
+     * @return the copySend
+     */
+    public String getCopySend() {
+        return copySend;
+    }
+
+    /**
+     * @param copySend
+     *            the copySend to set
+     */
+    public void setCopySend(String copySend) {
+        this.copySend = copySend;
     }
 
 }

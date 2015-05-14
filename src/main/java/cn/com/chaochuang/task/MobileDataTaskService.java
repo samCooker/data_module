@@ -247,6 +247,10 @@ public class MobileDataTaskService {
             String lastInputTime = this.fileService.getDocFileMaxInputDate();
             if (!Tools.isEmptyString(lastInputTime)) {
                 String json = this.transferOAService.getDocTransactInfo(lastInputTime);
+                if (Tools.isEmptyString(json)) {
+                    isGetDocFileRunning = false;
+                    return;
+                }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
                     JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
@@ -442,6 +446,7 @@ public class MobileDataTaskService {
                     this.userService.analysisDataChange(item);
                 } else if (DataChangeTable.通讯录.getKey().equals(item.getChangeTableName())) {
                     // 通讯录数据发生变更
+                    this.depLinkmanService.analysisDataChange(item);
                 } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
                     // 新闻公告数据发生变更
                 }
