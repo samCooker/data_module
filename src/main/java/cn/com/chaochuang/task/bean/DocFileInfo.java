@@ -69,6 +69,8 @@ public class DocFileInfo {
     private String                     mainSend;
     /** 抄送单位 */
     private String                     copySend;
+    /** 自然编号（自编号） */
+    private String                     processNumber;
     /** 公文附件集合 */
     private List<DocFileAttachInfo>    remoteDocfileAttach;
     /** 流程集合 */
@@ -509,6 +511,21 @@ public class DocFileInfo {
      */
     public void setCopySend(String copySend) {
         this.copySend = copySend;
+    }
+
+    /**
+     * @return the processNumber
+     */
+    public String getProcessNumber() {
+        return processNumber;
+    }
+
+    /**
+     * @param processNumber
+     *            the processNumber to set
+     */
+    public void setProcessNumber(String processNumber) {
+        this.processNumber = processNumber;
     }
 
 }

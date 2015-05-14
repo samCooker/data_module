@@ -113,6 +113,8 @@ public class DocFile extends LongIdEntity {
     private String                 mainSend;
     /** 抄送单位 */
     private String                 copySend;
+    /** 自然编号（自编号） */
+    private String                 processNumber;
 
     /**
      * @return the digest
@@ -562,6 +564,21 @@ public class DocFile extends LongIdEntity {
      */
     public void setCopySend(String copySend) {
         this.copySend = copySend;
+    }
+
+    /**
+     * @return the processNumber
+     */
+    public String getProcessNumber() {
+        return processNumber;
+    }
+
+    /**
+     * @param processNumber
+     *            the processNumber to set
+     */
+    public void setProcessNumber(String processNumber) {
+        this.processNumber = processNumber;
     }
 
 }
