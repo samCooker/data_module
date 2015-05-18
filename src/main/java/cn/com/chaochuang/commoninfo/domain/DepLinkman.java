@@ -52,6 +52,8 @@ public class DepLinkman extends LongIdEntity {
     private Date   inputDate;
     /** 原系统通讯录编号 */
     private Long   rmLinkmanId;
+    /** 地址 */
+    private String address;
 
     /**
      * @return the staffName
@@ -246,6 +248,21 @@ public class DepLinkman extends LongIdEntity {
      */
     public void setHomePhone(String homePhone) {
         this.homePhone = homePhone;
+    }
+
+    /**
+     * @return the address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address
+     *            the address to set
+     */
+    public void setAddress(String address) {
+        this.address = address;
     }
 
 }
