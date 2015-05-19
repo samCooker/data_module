@@ -31,7 +31,7 @@ public class PolicyAttach extends LongIdEntity {
     /** 保存路径 */
     private String savePath;
     /** 法规编号 */
-    private Long   policyId;
+    private Long   rmPolicyId;
 
     /**
      * @return the saveName
@@ -94,18 +94,18 @@ public class PolicyAttach extends LongIdEntity {
     }
 
     /**
-     * @return the policyId
+     * @return the rmPolicyId
      */
-    public Long getPolicyId() {
-        return policyId;
+    public Long getRmPolicyId() {
+        return rmPolicyId;
     }
 
     /**
-     * @param policyId
-     *            the policyId to set
+     * @param rmPolicyId
+     *            the rmPolicyId to set
      */
-    public void setPolicyId(Long policyId) {
-        this.policyId = policyId;
+    public void setRmPolicyId(Long rmPolicyId) {
+        this.rmPolicyId = rmPolicyId;
     }
 
 }

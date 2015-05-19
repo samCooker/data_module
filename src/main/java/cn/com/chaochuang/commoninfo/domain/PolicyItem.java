@@ -24,6 +24,8 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "item_id")) })
 public class PolicyItem extends LongIdEntity {
+    /** 法规编号 */
+    private Long   rmPolicyId;
     /** 法规条文名称 */
     private String title;
     /** 关键字 */
@@ -34,8 +36,6 @@ public class PolicyItem extends LongIdEntity {
     private Long   parentItemId;
     /** 数据导入日期 */
     private Date   inputDate;
-    /** 法规编号 */
-    private Long   policyId;
     /** 原系统法规条文编号 */
     private Long   rmPolicyItemId;
 
@@ -115,18 +115,18 @@ public class PolicyItem extends LongIdEntity {
     }
 
     /**
-     * @return the policyId
+     * @return the rmPolicyId
      */
-    public Long getPolicyId() {
-        return policyId;
+    public Long getRmPolicyId() {
+        return rmPolicyId;
     }
 
     /**
-     * @param policyId
-     *            the policyId to set
+     * @param rmPolicyId
+     *            the rmPolicyId to set
      */
-    public void setPolicyId(Long policyId) {
-        this.policyId = policyId;
+    public void setRmPolicyId(Long rmPolicyId) {
+        this.rmPolicyId = rmPolicyId;
     }
 
     /**

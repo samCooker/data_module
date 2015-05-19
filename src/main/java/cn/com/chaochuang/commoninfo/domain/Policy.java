@@ -24,18 +24,22 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "policy_id")) })
 public class Policy extends LongIdEntity {
+    /** 原系统的法规编号 */
+    private Long   rmPolicyId;
     /** 法规名称 */
     private String policyName;
     /** 法规类型 */
     private String policyType;
     /** 颁发单位 */
     private String releaseUnit;
+    /** 颁发日期 */
+    private Date   releaseDate;
+    /** 实施日期 */
+    private Date   effectDate;
     /** 关键字 */
     private String keyword;
     /** 数据导入日期 */
     private Date   inputDate;
-    /** 原系统的法规编号 */
-    private Long   rmPolicyId;
 
     /**
      * @return the policyName
@@ -125,6 +129,36 @@ public class Policy extends LongIdEntity {
      */
     public void setRmPolicyId(Long rmPolicyId) {
         this.rmPolicyId = rmPolicyId;
+    }
+
+    /**
+     * @return the releaseDate
+     */
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    /**
+     * @param releaseDate
+     *            the releaseDate to set
+     */
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    /**
+     * @return the effectDate
+     */
+    public Date getEffectDate() {
+        return effectDate;
+    }
+
+    /**
+     * @param effectDate
+     *            the effectDate to set
+     */
+    public void setEffectDate(Date effectDate) {
+        this.effectDate = effectDate;
     }
 
 }
