@@ -31,6 +31,10 @@ public class DocFileUpdate {
     private String receiveMans;
     /** 审批意见 */
     private String opinions;
+    /** oa意见id */
+    private Long   rmNodeOpinionsId;
+    /** 发送人id */
+    private Long   senderId;
     /** 环节标识（就是itemId） */
     private String nodeFlag;
     /** 操纵标识：0：呈送；1：办结；2：退回 */
@@ -218,5 +222,35 @@ public class DocFileUpdate {
      */
     public void setReceiveMans(String receiveMans) {
         this.receiveMans = receiveMans;
+    }
+
+    /**
+     * @return the rmNodeOpinionsId
+     */
+    public Long getRmNodeOpinionsId() {
+        return rmNodeOpinionsId;
+    }
+
+    /**
+     * @param rmNodeOpinionsId
+     *            the rmNodeOpinionsId to set
+     */
+    public void setRmNodeOpinionsId(Long rmNodeOpinionsId) {
+        this.rmNodeOpinionsId = rmNodeOpinionsId;
+    }
+
+    /**
+     * @return the senderId
+     */
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    /**
+     * @param senderId
+     *            the senderId to set
+     */
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 }

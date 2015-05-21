@@ -12,6 +12,7 @@ import java.util.List;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 
@@ -28,4 +29,14 @@ public interface DataUpdateRepository extends SimpleDomainRepository<DataUpdate,
      * @return
      */
     List<DataUpdate> findByWorkTypeAndOperationType(WorkType workType, OperationType operationType);
+
+    /**
+     * 通过提交类型、操作类型和执行标识查询DataUpdate记录
+     *
+     * @param workType
+     * @param operationType
+     * @return
+     */
+    List<DataUpdate> findByWorkTypeAndOperationTypeAndExecuteFlag(WorkType workType, OperationType operationType,
+                    ExecuteFlag executeFlag);
 }

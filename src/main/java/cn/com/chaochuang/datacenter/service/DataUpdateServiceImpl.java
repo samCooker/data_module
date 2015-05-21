@@ -19,6 +19,7 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.repository.DataUpdateRepository;
@@ -47,7 +48,8 @@ public class DataUpdateServiceImpl extends SimpleLongIdCrudRestService<DataUpdat
      */
     @Override
     public List<DataUpdate> selectDocFileDataUpdate() {
-        return this.repository.findByWorkTypeAndOperationType(WorkType.公文办理提交, OperationType.修改);
+        return this.repository.findByWorkTypeAndOperationTypeAndExecuteFlag(WorkType.公文办理提交, OperationType.修改,
+                        ExecuteFlag.未执行);
     }
 
     /**

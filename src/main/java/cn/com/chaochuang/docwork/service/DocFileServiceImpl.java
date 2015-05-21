@@ -29,6 +29,7 @@ import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
+import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -97,22 +98,27 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     }
 
     @Override
-    public String getDocFileMaxInputDate() {
-
-        StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(DocFile.class.getName());
-        Query query = this.entityManager.createQuery(sql.toString());
+    public FlowNodeOpinionsInfo getDocFileMaxInputDate() {
+        FlowNodeOpinionsInfo result = new FlowNodeOpinionsInfo();
+        // 查询没有办结的公文的最大流程节点号
+        String sql = "SELECT max(RM_INSTNO_ID) FROM FLOW_NODE_INFO left join DOC_FILE using(doc_id)  where DOC_STATUS=0";
+        Query query = this.entityManager.createNativeQuery(sql);
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {
             for (Object o : datas) {
                 if (o != null) {
-                    return o.toString();
-                } else {
-                    Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
-                    return Tools.DATE_TIME_FORMAT.format(sendTime);
+                    result.setGetDataNoId(o.toString());
+                    result.setGetDataTime("");
+                    break;
                 }
             }
         }
-        return null;
+        if (result.getRmInstnoId() == null) {
+            Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
+            result.setGetDataTime(Tools.DATE_TIME_FORMAT.format(sendTime));
+            result.setGetDataNoId("");
+        }
+        return result;
     }
 
     @Override

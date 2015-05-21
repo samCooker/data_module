@@ -43,6 +43,8 @@ public class FlowNodeOpinions extends LongIdEntity {
     private String            transactDeptName;
     /** 办理部门id */
     private Long              transactDeptId;
+    /** 远程意见id */
+    private Long              rmNodeOpinionsId;
     /** 办理意见 */
     private String            opinions;
     /** 办理时间 */
@@ -52,6 +54,8 @@ public class FlowNodeOpinions extends LongIdEntity {
     private String            rmInstanceId;
     /** 原系统流程环节实例编号 */
     private Long              rmInstnoId;
+    /** 原系统数据类型表编号 */
+    private Long              rmDataitemId;
 
     /**
      * @return the nodeFlag
@@ -201,6 +205,36 @@ public class FlowNodeOpinions extends LongIdEntity {
      */
     public void setDocId(Long docId) {
         this.docId = docId;
+    }
+
+    /**
+     * @return the rmNodeOpinionsId
+     */
+    public Long getRmNodeOpinionsId() {
+        return rmNodeOpinionsId;
+    }
+
+    /**
+     * @param rmNodeOpinionsId
+     *            the rmNodeOpinionsId to set
+     */
+    public void setRmNodeOpinionsId(Long rmNodeOpinionsId) {
+        this.rmNodeOpinionsId = rmNodeOpinionsId;
+    }
+
+    /**
+     * @return the rmDataitemId
+     */
+    public Long getRmDataitemId() {
+        return rmDataitemId;
+    }
+
+    /**
+     * @param rmDataitemId
+     *            the rmDataitemId to set
+     */
+    public void setRmDataitemId(Long rmDataitemId) {
+        this.rmDataitemId = rmDataitemId;
     }
 
 }

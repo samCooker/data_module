@@ -32,10 +32,18 @@ public class FlowNodeOpinionsInfo {
     private String opinions;
     /** 办理时间 */
     private Date   transactTime;
+    /** 向OA获取数据时传递的时间 */
+    private String getDataTime;
+    /** 向OA获取数据时传递的时间 */
+    private String getDataNoId;
     /** 原实例编号 */
     private String rmInstanceId;
     /** 原系统流程环节实例编号 */
     private Long   rmInstnoId;
+    /** 远程意见id */
+    private Long   rmNodeOpinionsId;
+    /** 原系统数据类型表编号 */
+    private Long   rmDataitemId;
 
     /**
      * @return the nodeFlag
@@ -185,6 +193,66 @@ public class FlowNodeOpinionsInfo {
      */
     public void setDocId(Long docId) {
         this.docId = docId;
+    }
+
+    /**
+     * @return the rmNodeOpinionsId
+     */
+    public Long getRmNodeOpinionsId() {
+        return rmNodeOpinionsId;
+    }
+
+    /**
+     * @param rmNodeOpinionsId
+     *            the rmNodeOpinionsId to set
+     */
+    public void setRmNodeOpinionsId(Long rmNodeOpinionsId) {
+        this.rmNodeOpinionsId = rmNodeOpinionsId;
+    }
+
+    /**
+     * @return the getDataTime
+     */
+    public String getGetDataTime() {
+        return getDataTime;
+    }
+
+    /**
+     * @param getDataTime
+     *            the getDataTime to set
+     */
+    public void setGetDataTime(String getDataTime) {
+        this.getDataTime = getDataTime;
+    }
+
+    /**
+     * @return the rmDataitemId
+     */
+    public Long getRmDataitemId() {
+        return rmDataitemId;
+    }
+
+    /**
+     * @param rmDataitemId
+     *            the rmDataitemId to set
+     */
+    public void setRmDataitemId(Long rmDataitemId) {
+        this.rmDataitemId = rmDataitemId;
+    }
+
+    /**
+     * @return the getDataNoId
+     */
+    public String getGetDataNoId() {
+        return getDataNoId;
+    }
+
+    /**
+     * @param getDataNoId
+     *            the getDataNoId to set
+     */
+    public void setGetDataNoId(String getDataNoId) {
+        this.getDataNoId = getDataNoId;
     }
 
 }

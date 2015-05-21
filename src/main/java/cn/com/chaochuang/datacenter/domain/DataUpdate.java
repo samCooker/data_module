@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.datacenter.reference.OperationTypeConverter;
 import cn.com.chaochuang.datacenter.reference.WorkType;
@@ -31,17 +32,25 @@ import cn.com.chaochuang.datacenter.reference.WorkTypeConverter;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "data_update_id")) })
 public class DataUpdate extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     /** 业务类型 */
     @Convert(converter = WorkTypeConverter.class)
-    private WorkType      workType;
+    private WorkType          workType;
     /** 操作类型 */
     @Convert(converter = OperationTypeConverter.class)
-    private OperationType operationType;
+    private OperationType     operationType;
     /** 更新内容 */
-    private String        content;
+    private String            content;
     /** 数据输入时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date          inputDate;
+    private Date              inputDate;
+    /** 0:未执行;1:执行错误 */
+    private ExecuteFlag       executeFlag;
+    /** 错误内容 */
+    private String            errorInfo;
 
     /**
      * @return the workType
@@ -101,6 +110,36 @@ public class DataUpdate extends LongIdEntity {
      */
     public void setInputDate(Date inputDate) {
         this.inputDate = inputDate;
+    }
+
+    /**
+     * @return the executeFlag
+     */
+    public ExecuteFlag getExecuteFlag() {
+        return executeFlag;
+    }
+
+    /**
+     * @param executeFlag
+     *            the executeFlag to set
+     */
+    public void setExecuteFlag(ExecuteFlag executeFlag) {
+        this.executeFlag = executeFlag;
+    }
+
+    /**
+     * @return the errorInfo
+     */
+    public String getErrorInfo() {
+        return errorInfo;
+    }
+
+    /**
+     * @param errorInfo
+     *            the errorInfo to set
+     */
+    public void setErrorInfo(String errorInfo) {
+        this.errorInfo = errorInfo;
     }
 
 }

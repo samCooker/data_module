@@ -30,10 +30,10 @@ import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
-import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
@@ -43,6 +43,7 @@ import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
+import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.PendingCommandInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
@@ -143,8 +144,7 @@ public class MobileDataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(),
-                            info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -169,8 +169,7 @@ public class MobileDataTaskService {
             if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
                 return;
             }
-            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(),
-                            info.getRmPendingItemId());
+            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingItemId());
             // 将案件办理的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.行政办案);
         } catch (Exception ex) {
@@ -193,8 +192,7 @@ public class MobileDataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            PendingCommandInfo.class);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PendingCommandInfo.class);
             List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
@@ -221,8 +219,7 @@ public class MobileDataTaskService {
                 if (!Tools.isEmptyString(json)) {
                     // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    AipCaseApply.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AipCaseApply.class);
                     List<AipCaseApply> datas = (List<AipCaseApply>) mapper.readValue(json, javaType);
                     this.aipCaseApplyService.saveAipCaseApply(datas);
                 }
@@ -244,17 +241,16 @@ public class MobileDataTaskService {
         }
         isGetDocFileRunning = true;
         try {
-            String lastInputTime = this.fileService.getDocFileMaxInputDate();
-            if (!Tools.isEmptyString(lastInputTime)) {
-                String json = this.transferOAService.getDocTransactInfo(lastInputTime);
+            FlowNodeOpinionsInfo info = this.fileService.getDocFileMaxInputDate();
+            if (info.getRmInstnoId() != null || !Tools.isEmptyString(info.getGetDataTime())) {
+                String json = this.transferOAService.getDocTransactInfo(info.getGetDataNoId(), info.getGetDataTime());
                 if (Tools.isEmptyString(json)) {
                     isGetDocFileRunning = false;
                     return;
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    DocFileInfo.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
                     List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
                     fileService.saveDocFilesDatas(datas);
                 } catch (Exception ex) {
@@ -276,6 +272,7 @@ public class MobileDataTaskService {
             return;
         }
         isCommitDocFileRunning = true;
+        DataUpdate dataUpdate = null;
         try {
             // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
             List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate();
@@ -283,16 +280,24 @@ public class MobileDataTaskService {
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }
-            DataUpdate dataUpdate = (DataUpdate) datas.get(0);
-            // 将DataUpdate的centent字符串转成DocFileUpdate对象，补全webservice所需的条件字段
-            ObjectMapper mapper = new ObjectMapper();
-            DocFileUpdate docFileUpdate = mapper.readValue(dataUpdate.getContent(), DocFileUpdate.class);
-            // 将DocFileUpdate再转成json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
-            String updateInfoJson = mapper.writeValueAsString(docFileUpdate);
-            transferOAService.setDocTransactInfo(updateInfoJson);
-            // 删除DataUpdate对象
-            this.dataUpdateService.delete(dataUpdate);
+            dataUpdate = (DataUpdate) datas.get(0);
+            if (dataUpdate == null) {
+                return;
+            }
+            // 获取要提交的json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
+            String backInfo = transferOAService.setDocTransactInfo(dataUpdate.getContent());
+            if ("true".equals(backInfo)) {
+                // 删除DataUpdate对象
+                this.dataUpdateService.delete(dataUpdate);
+            } else {
+                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+                dataUpdate.setErrorInfo(backInfo);
+                this.dataUpdateService.getRepository().save(dataUpdate);
+            }
         } catch (Exception ex) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(ex.getClass().getName());
+            this.dataUpdateService.getRepository().save(dataUpdate);
             throw new RuntimeException(ex);
         } finally {
             isCommitDocFileRunning = false;
@@ -379,8 +384,7 @@ public class MobileDataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    PubInfoBean.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
                     List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
                     pubInfoService.savePubInfoDatas(datas);
                 } catch (Exception ex) {

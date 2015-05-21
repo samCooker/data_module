@@ -24,14 +24,18 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "sys_data_change_id")) })
 public class SysDataChange extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
     /** 更改表名 */
-    private String changeTableName;
+    private String            changeTableName;
     /** 更改内容描述 */
-    private String changeScript;
+    private String            changeScript;
     /** 记录填写时间 */
-    private Date   changeDate;
+    private Date              changeDate;
     /** 操作类型 */
-    private String operationType;
+    private String            operationType;
 
     /**
      * @return the changeTableName

@@ -39,6 +39,8 @@ public class FlowNodeInfo extends LongIdEntity {
     private Long              rmInstnoId;
     /** 原系统前驱流程环节实例编号 */
     private Long              rmPreInstnoId;
+    /** 原系统历史流程环节实例编号 */
+    private Long              rmInstnoHisId;
     /** 前驱环节编号 */
     private String            preNodeId;
     /** 环节编号 node_id */
@@ -243,6 +245,21 @@ public class FlowNodeInfo extends LongIdEntity {
      */
     public void setTransactDeptId(Long transactDeptId) {
         this.transactDeptId = transactDeptId;
+    }
+
+    /**
+     * @return the rmInstnoHisId
+     */
+    public Long getRmInstnoHisId() {
+        return rmInstnoHisId;
+    }
+
+    /**
+     * @param rmInstnoHisId
+     *            the rmInstnoHisId to set
+     */
+    public void setRmInstnoHisId(Long rmInstnoHisId) {
+        this.rmInstnoHisId = rmInstnoHisId;
     }
 
 }

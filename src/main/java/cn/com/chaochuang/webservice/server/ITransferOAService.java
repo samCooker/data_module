@@ -42,7 +42,7 @@ public interface ITransferOAService {
      */
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
-    String getDocTransactInfo(String lastOutputTime);
+    String getDocTransactInfo(String instNoId, String lastOutputTime);
 
     /**
      * 提交公文办理数据
