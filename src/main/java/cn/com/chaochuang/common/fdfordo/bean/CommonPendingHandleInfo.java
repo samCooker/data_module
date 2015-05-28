@@ -1,12 +1,12 @@
 /*
- * FileName:    PendingCommandInfo.java
+ * FileName:    CommonPendingHandleInfo.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月29日 (LLM) 1.0 Create
+ * History:     2015年5月28日 (LLM) 1.0 Create
  */
 
-package cn.com.chaochuang.task.bean;
+package cn.com.chaochuang.common.fdfordo.bean;
 
 import java.util.Date;
 
@@ -14,11 +14,11 @@ import java.util.Date;
  * @author LLM
  *
  */
-public class PendingCommandInfo {
+public class CommonPendingHandleInfo {
     /** 远程系统待办编号 */
     private String rmPendingId;
-    /** 远程系统待办明细编号 */
-    private String rmPendingItemId;
+    /** URL */
+    private String url;
     /** 标题 */
     private String title;
     /** 发送人编号 */
@@ -33,14 +33,10 @@ public class PendingCommandInfo {
     private Long   recipientId;
     /** 紧急程度 */
     private String emergencyLevel;
-    /** 密级 */
-    private String secretLevel;
     /** 发送人所在部门 */
     private String senderDeptName;
     /** 最后的发送时间 */
-    private String lastSendTime;
-    /** URL */
-    private String url;
+    private Date   lastSendTime;
 
     /**
      * @return the rmPendingId
@@ -55,6 +51,21 @@ public class PendingCommandInfo {
      */
     public void setRmPendingId(String rmPendingId) {
         this.rmPendingId = rmPendingId;
+    }
+
+    /**
+     * @return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param url
+     *            the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     /**
@@ -178,39 +189,9 @@ public class PendingCommandInfo {
     }
 
     /**
-     * @return the secretLevel
-     */
-    public String getSecretLevel() {
-        return secretLevel;
-    }
-
-    /**
-     * @param secretLevel
-     *            the secretLevel to set
-     */
-    public void setSecretLevel(String secretLevel) {
-        this.secretLevel = secretLevel;
-    }
-
-    /**
-     * @return the rmPendingItemId
-     */
-    public String getRmPendingItemId() {
-        return rmPendingItemId;
-    }
-
-    /**
-     * @param rmPendingItemId
-     *            the rmPendingItemId to set
-     */
-    public void setRmPendingItemId(String rmPendingItemId) {
-        this.rmPendingItemId = rmPendingItemId;
-    }
-
-    /**
      * @return the lastSendTime
      */
-    public String getLastSendTime() {
+    public Date getLastSendTime() {
         return lastSendTime;
     }
 
@@ -218,23 +199,8 @@ public class PendingCommandInfo {
      * @param lastSendTime
      *            the lastSendTime to set
      */
-    public void setLastSendTime(String lastSendTime) {
+    public void setLastSendTime(Date lastSendTime) {
         this.lastSendTime = lastSendTime;
-    }
-
-    /**
-     * @return the url
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * @param url
-     *            the url to set
-     */
-    public void setUrl(String url) {
-        this.url = url;
     }
 
 }

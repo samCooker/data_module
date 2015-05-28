@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.webservice.server.aipcasetransfer;
 
+import java.util.Date;
+
 import javax.jws.WebMethod;
 import javax.jws.WebResult;
 import javax.jws.WebService;
@@ -34,7 +36,7 @@ public interface AipCaseWebService {
      */
     @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
     @WebMethod
-    String selectPendingItemInfo(String lastOutputTime, String fordoId);
+    String selectPendingItemInfo(Date lastOutputTime, String fordoId);
 
     /**
      * 获取案件基本信息

@@ -1,12 +1,12 @@
 /*
- * FileName:    FdFordoServiceImpl.java
+ * FileName:    FdFordoAppServiceImpl.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月22日 (LLM) 1.0 Create
+ * History:     2015年5月28日 (LLM) 1.0 Create
  */
 
-package cn.com.chaochuang.docwork.service;
+package cn.com.chaochuang.appflow.service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
+import cn.com.chaochuang.appflow.domain.FdFordoApp;
+import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
@@ -29,11 +32,7 @@ import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
-import cn.com.chaochuang.docwork.domain.FdFordo;
-import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
-import cn.com.chaochuang.docwork.repository.FdFordoRepository;
-import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 
 /**
  * @author LLM
@@ -41,72 +40,74 @@ import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
  */
 @Service
 @Transactional
-public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> implements FdFordoService {
+public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoApp> implements FdFordoAppService {
     @PersistenceContext
-    private EntityManager     entityManager;
+    private EntityManager        entityManager;
 
     @Autowired
-    private FdFordoRepository repository;
+    private SysUserRepository    userRepository;
+
+    @Value("${getdata.timeinterval}")
+    private String               timeInterval;
 
     @Autowired
-    private SysUserRepository userRepository;
+    private FdFordoAppRepository repository;
 
     @Override
-    public SimpleDomainRepository<FdFordo, Long> getRepository() {
+    public SimpleDomainRepository<FdFordoApp, Long> getRepository() {
         return repository;
     }
 
-    @Value("${getdata.timeinterval}")
-    private String timeInterval;
-
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectMaxInputDate(FordoSource)
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#selectMaxInputDate()
      */
     @Override
-    public OAPendingHandleInfo selectMaxInputDate(FordoSource source) {
-        OAPendingHandleInfo result = new OAPendingHandleInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmPendingItemId) from ").append(FdFordo.class.getName())
-                        .append(" where fordoSource=").append(source);
+    public AppFlowPendingHandleInfo selectMaxInputDate() {
+        AppFlowPendingHandleInfo result = new AppFlowPendingHandleInfo();
+        StringBuffer sql = new StringBuffer(" select Max(rmPendingId) from ").append(FdFordoApp.class.getName());
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {
             for (Object o : datas) {
                 if (o != null) {
-                    result.setRmPendingItemId(o.toString());
+                    result.setRmPendingId(o.toString());
                     result.setLastSendTime(null);
                     break;
                 }
             }
         }
-        if (result.getRmPendingItemId() == null) {
+        if (result.getRmPendingId() == null) {
             Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
             result.setLastSendTime(sendTime);
-            result.setRmPendingItemId("");
+            result.setRmPendingId("");
         }
         return result;
     }
 
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#insertFdFordos(java.util.List, FordoSource)
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#insertFdFordos(java.util.List)
      */
     @Override
-    public void insertFdFordos(List<OAPendingHandleInfo> pendingItems, FordoSource fordoSource) {
-        List datas = new ArrayList();
-        FdFordo fdFordo;
+    public void insertFdFordos(List<AppFlowPendingHandleInfo> pendingItems) {
+        FdFordoApp fdFordo;
         Date currentDate = new Date();
-        for (OAPendingHandleInfo item : pendingItems) {
+        for (AppFlowPendingHandleInfo item : pendingItems) {
             // 判断当前记录是否已经存在,不存在的情况下才写入fdfordo表
-            datas = this.repository.findByRmPendingIdAndRecipientId(item.getRmPendingId(), item.getRecipientId());
-            if (Tools.isNotEmptyList(datas)) {
+            if (this.repository.findByRmPendingId(item.getRmPendingId()) != null) {
                 continue;
             }
-            fdFordo = new FdFordo();
+            // 没有待办类别或待办类别长度小于3的记录不写入数据库
+            if (Tools.isEmptyString(item.getFordoType()) || item.getFordoType().length() < 3) {
+                continue;
+            }
+            fdFordo = new FdFordoApp();
+            SysUser user = userRepository.findByrmUserInfoId(item.getRecipientId());
+            item.setRecipientId(user.getRmUserId());
+            item.setFordoType(item.getFordoType().substring(0, 3));
             BeanUtils.copyProperties(item, fdFordo);
-            fdFordo.setFordoSource(fordoSource);
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
                 // 未读数据添加消息推送
-                SysUser user = userRepository.findOne(fdFordo.getRecipientId());
                 // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
                 if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
                     JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
@@ -121,21 +122,12 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
     }
 
     /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
      */
     @Override
     public void analysisDataChange(SysDataChange dataChange) {
-        if (Tools.isEmptyString(dataChange.getChangeScript())) {
-            return;
-        }
-        String[] items = dataChange.getChangeScript().split("=");
-        if (items == null || items.length != 2) {
-            return;
-        }
-        FdFordo fordo = this.repository.findByRmPendingItemId(items[1]);
-        if (fordo != null) {
-            this.repository.delete(fordo);
-        }
+        // TODO Auto-generated method stub
+
     }
 
 }

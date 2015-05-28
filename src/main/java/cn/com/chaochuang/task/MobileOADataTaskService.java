@@ -1,9 +1,9 @@
 /*
- * FileName:    MobileDataTaskService.java
+ * FileName:    MobileOADataTaskService.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月21日 (LLM) 1.0 Create
+ * History:     2015年5月28日 (LLM) 1.0 Create
  */
 
 package cn.com.chaochuang.task;
@@ -19,20 +19,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import cn.com.chaochuang.aipcase.domain.AipCaseApply;
-import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
-import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
@@ -44,10 +39,9 @@ import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
-import cn.com.chaochuang.task.bean.PendingCommandInfo;
+import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
-import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,14 +51,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-public class MobileDataTaskService {
-
+public class MobileOADataTaskService {
     /** webservice 函数库 */
     @Autowired
     private ITransferOAService   transferOAService;
-
-    @Autowired
-    private AipCaseWebService    transferAipCaseService;
 
     /** fdFordoService */
     @Autowired
@@ -95,9 +85,6 @@ public class MobileDataTaskService {
     private SysUserService       userService;
 
     @Autowired
-    private AipCaseApplyService  aipCaseApplyService;
-
-    @Autowired
     private DepLinkmanService    depLinkmanService;
 
     /** 附件存放根路径 */
@@ -108,24 +95,16 @@ public class MobileDataTaskService {
     @Value("${docfile.attach.path}")
     private String               docFileAttachPath;
 
-    /** 获取待办阻塞标识 */
-    private static boolean       isFordoRunning             = false;
     /** 获取公文阻塞标识 */
-    private static boolean       isGetDocFileRunning        = false;
-    /** 获取案件办理阻塞标识 */
-    private static boolean       isGetAipCaseRunning        = false;
+    private static boolean       isGetDocFileRunning     = false;
     /** 提交公文阻塞标识 */
-    private static boolean       isCommitDocFileRunning     = false;
+    private static boolean       isCommitDocFileRunning  = false;
     /** 下载公文附件阻塞标识 */
-    private static boolean       isDownLoadAttachRunning    = false;
+    private static boolean       isDownLoadAttachRunning = false;
     /** 获取公告阻塞标识 */
-    private static boolean       isGetPubInfoDataRunning    = false;
-    /** 获取公告阻塞标识 */
-    private static boolean       isGetSysDataChangeRunning  = false;
-    /** 获取处理系统数据更改阻塞标识 */
-    private static boolean       isDealSysDataChangeRunning = false;
-    /** 获取办案系统待办阻塞标识 */
-    private static boolean       isAipCaseFordoRunning      = false;
+    private static boolean       isGetPubInfoDataRunning = false;
+    /** 获取待办阻塞标识 */
+    private static boolean       isFordoRunning          = false;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
@@ -138,44 +117,21 @@ public class MobileDataTaskService {
         isFordoRunning = true;
         try {
             // 获取当前待办表中公文待办中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
-            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.公文);
+            OAPendingHandleInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.公文);
             // 若lastOutputTime无效则不做下一步
-            if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
+            if (info.getLastSendTime() == null && info.getRmPendingItemId() == null) {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo(
+                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
+                                            : null, info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             isFordoRunning = false;
-        }
-    }
-
-    /**
-     * 获取案件办理系统的待办记录
-     */
-    // @Scheduled(cron = "2/10 1/1 * * * ?")
-    public void getAipCaseFordo() {
-        if (isAipCaseFordoRunning) {
-            return;
-        }
-        isAipCaseFordoRunning = true;
-        try {
-            PendingCommandInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.行政办案);
-            // 若lastOutputTime无效则不做下一步
-            if (Tools.isEmptyString(info.getLastSendTime()) && info.getRmPendingItemId() == null) {
-                return;
-            }
-            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingItemId());
-            // 将案件办理的待办记录写入待办事宜表
-            this.saveFdFordo(json, FordoSource.行政办案);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isAipCaseFordoRunning = false;
         }
     }
 
@@ -192,42 +148,12 @@ public class MobileDataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PendingCommandInfo.class);
-            List<PendingCommandInfo> datas = (List<PendingCommandInfo>) mapper.readValue(jsonData, javaType);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                            OAPendingHandleInfo.class);
+            List<OAPendingHandleInfo> datas = (List<OAPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    /**
-     * 获取案件办理数据写入本地表
-     */
-    // @Scheduled(cron = "20/10 1/1 * * * ?")
-    public void getAipCaseDataTask() {
-        if (isGetAipCaseRunning) {
-            return;
-        }
-        isGetAipCaseRunning = true;
-        try {
-            // 获取指定案件登记时间的记录
-            String lastInputTime = this.aipCaseApplyService.selectAipCaseMaxInputDate();
-            if (!Tools.isEmptyString(lastInputTime)) {
-                // 调用远程方法获取案件登记时间大于lastInputTime的案件数据
-                String json = transferAipCaseService.getAipCaseApply(lastInputTime);
-                // 将json数据转成AipCaseApply列表保存至AipCaseApply表
-                if (!Tools.isEmptyString(json)) {
-                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-                    ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AipCaseApply.class);
-                    List<AipCaseApply> datas = (List<AipCaseApply>) mapper.readValue(json, javaType);
-                    this.aipCaseApplyService.saveAipCaseApply(datas);
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isGetAipCaseRunning = false;
         }
     }
 
@@ -250,7 +176,8 @@ public class MobileDataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                    DocFileInfo.class);
                     List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
                     fileService.saveDocFilesDatas(datas);
                 } catch (Exception ex) {
@@ -384,7 +311,8 @@ public class MobileDataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                    PubInfoBean.class);
                     List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
                     pubInfoService.savePubInfoDatas(datas);
                 } catch (Exception ex) {
@@ -393,74 +321,6 @@ public class MobileDataTaskService {
             }
         } finally {
             isGetPubInfoDataRunning = false;
-        }
-    }
-
-    /**
-     * 获取远程系统修改记录数据
-     */
-    @Scheduled(cron = "10/10 * * * * ?")
-    public void getOADataChange() {
-        if (isGetSysDataChangeRunning) {
-            return;
-        }
-        isGetSysDataChangeRunning = true;
-        try {
-            String json = this.transferOAService.getDataChange();
-            if (Tools.isEmptyString(json)) {
-                return;
-            }
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, SysDataChange.class);
-            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
-            this.dataChangeService.saveSysDataChange(datas);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            isGetSysDataChangeRunning = false;
-        }
-    }
-
-    /**
-     * 处理远程系统更改数据
-     */
-    @Scheduled(cron = "5/5 * * * * ?")
-    public void dealDataChange() {
-        if (isDealSysDataChangeRunning) {
-            return;
-        }
-        isDealSysDataChangeRunning = true;
-        try {
-            Page page = this.dataChangeService.findAllByPage(1, 10);
-            List<SysDataChange> datas = page.getContent();
-            for (SysDataChange item : datas) {
-                if (DataChangeTable.公文待办事宜.getKey().equals(item.getChangeTableName())) {
-                    // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
-                    this.fdFordoService.analysisDataChange(item);
-                } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
-                    // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
-                    String[] items = item.getChangeScript().split("=");
-                    String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
-                    this.fileService.finishDocFile(json);
-                } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
-                    // 组织机构发生变更
-                    this.departmentService.analysisDataChange(item);
-                } else if (DataChangeTable.人员.getKey().equals(item.getChangeTableName())) {
-                    // 人员数据发生变更
-                    this.userService.analysisDataChange(item);
-                } else if (DataChangeTable.通讯录.getKey().equals(item.getChangeTableName())) {
-                    // 通讯录数据发生变更
-                    this.depLinkmanService.analysisDataChange(item);
-                } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
-                    // 新闻公告数据发生变更
-                }
-                // 删除变更数据
-                this.dataChangeService.delete(item.getId());
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isDealSysDataChangeRunning = false;
         }
     }
 }

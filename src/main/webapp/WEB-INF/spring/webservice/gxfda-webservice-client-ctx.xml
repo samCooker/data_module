@@ -20,4 +20,11 @@
         address="${nncccase.webservice.url}"
     >
     </jaxws:client>
+
+    <jaxws:client
+        id="ITransferSuperviseServiceClientFactory"
+        serviceClass="cn.com.chaochuang.webservice.server.SuperviseWebService"
+        address="${nnccapp.webservice.url}"
+    >
+    </jaxws:client>
 </beans>
