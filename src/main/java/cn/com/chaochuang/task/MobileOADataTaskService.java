@@ -123,9 +123,7 @@ public class MobileOADataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(
-                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
-                                            : null, info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -148,8 +146,7 @@ public class MobileOADataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            OAPendingHandleInfo.class);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
             List<OAPendingHandleInfo> datas = (List<OAPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
@@ -176,8 +173,7 @@ public class MobileOADataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    DocFileInfo.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
                     List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
                     fileService.saveDocFilesDatas(datas);
                 } catch (Exception ex) {
@@ -311,8 +307,7 @@ public class MobileOADataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    PubInfoBean.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
                     List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
                     pubInfoService.savePubInfoDatas(datas);
                 } catch (Exception ex) {

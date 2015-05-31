@@ -92,7 +92,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             // 保存意见信息
             flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
             // 保存公文个人办理记录
-            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file);
+            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
         }
 
     }
@@ -134,7 +134,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             // List<FlowNodeInfo> preFlowNodesList = flowNodeInfoService.findByRmInstanceId(rmInstanceId);
             // 将公文状态修改为已办
             DocFile file = repository.findByRmInstanceId(rmInstanceId);
-            // 若file为空，说明数据还没导入到mobile数据库
+            // 若file为空，说明数据还没导入到mobile数据库,不进行处理
             if (file != null) {
                 file.setDocStatus(DocStatus.办结);
                 repository.save(file);
@@ -145,7 +145,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 // 跟新公文意见记录
                 flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
                 // 保存公文个人办理记录
-                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file);
+                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
             }
         }
 

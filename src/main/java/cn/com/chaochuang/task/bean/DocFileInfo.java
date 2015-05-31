@@ -77,6 +77,12 @@ public class DocFileInfo {
     private List<FlowNodeBeanInfo>     remoteFlowNodes;
     /** 流程意见集合 */
     private List<FlowNodeOpinionsInfo> remoteFlowOpinions;
+    /** 公文主办处室 (保存到经办列表) */
+    private Long                       redactDeptId;
+    /** 共享标志 */
+    private String                     shareFlag;
+    /** 公文所属单位 */
+    private Long                       unitOrgId;
 
     /**
      * @return the redactorDeptName
@@ -526,6 +532,50 @@ public class DocFileInfo {
      */
     public void setProcessNumber(String processNumber) {
         this.processNumber = processNumber;
+    }
+
+    /**
+     * @return the shareFlag
+     */
+    public String getShareFlag() {
+        return shareFlag;
+    }
+
+    /**
+     * @param shareFlag
+     *            the shareFlag to set
+     */
+    public void setShareFlag(String shareFlag) {
+        this.shareFlag = shareFlag;
+    }
+
+    /**
+     * @return the unitOrgId
+     */
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    /**
+     * @param unitOrgId
+     *            the unitOrgId to set
+     */
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
+    }
+
+    /**
+     * @return the redactDeptId
+     */
+    public Long getRedactDeptId() {
+        return redactDeptId;
+    }
+
+    /**
+     * @param redactDeptId the redactDeptId to set
+     */
+    public void setRedactDeptId(Long redactDeptId) {
+        this.redactDeptId = redactDeptId;
     }
 
 }

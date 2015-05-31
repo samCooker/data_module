@@ -36,4 +36,10 @@ public interface FlowNodeOpinionsRepository extends SimpleDomainRepository<FlowN
      * */
     List<FlowNodeOpinions> findByDocId(Long docId);
 
+    /**
+     * 根据远程OA的意见id查找意见记录
+     *
+     * */
+    FlowNodeOpinions findByRmNodeOpinionsId(Long rmNodeOpinionsId);
+
 }

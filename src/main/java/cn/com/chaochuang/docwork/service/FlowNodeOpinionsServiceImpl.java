@@ -29,8 +29,7 @@ import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
  */
 @Service
 @Transactional
-public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<FlowNodeOpinions> implements
-                FlowNodeOpinionsService {
+public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<FlowNodeOpinions> implements FlowNodeOpinionsService {
 
     @Autowired
     private FlowNodeOpinionsRepository repository;
@@ -47,15 +46,20 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
             return;
         }
         List<FlowNodeOpinions> opinionsList = new ArrayList<FlowNodeOpinions>();
-        // 删除意见信息，因为如果OA端进行公文退回操作后，改动较大
-        List<FlowNodeOpinions> preOpinionsList = repository.findByDocId(fileId);
-        repository.delete(preOpinionsList);
+        // // 删除意见信息，因为如果OA端进行公文退回操作后，改动较大
+        // List<FlowNodeOpinions> preOpinionsList = repository.findByDocId(fileId);
+        // repository.delete(preOpinionsList);
+
+        FlowNodeOpinions opinion = null;
         for (FlowNodeOpinionsInfo nodeOp : datas) {
             // 先查看mobile端数据库是否有该意见记录
-            FlowNodeOpinions opinion = new FlowNodeOpinions();
-            BeanUtils.copyProperties(opinion, nodeOp);
-            opinion.setDocId(fileId);
-            opinionsList.add(opinion);
+            opinion = repository.findByRmNodeOpinionsId(nodeOp.getRmNodeOpinionsId());
+            if (opinion == null) {
+                opinion = new FlowNodeOpinions();
+                BeanUtils.copyProperties(opinion, nodeOp);
+                opinion.setDocId(fileId);
+                opinionsList.add(opinion);
+            }
         }
         repository.save(opinionsList);
     }

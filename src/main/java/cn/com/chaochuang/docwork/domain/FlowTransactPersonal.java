@@ -43,6 +43,13 @@ public class FlowTransactPersonal extends LongIdEntity {
     private Date              transactTime;
     /** 原系统公文编号 */
     private String            rmInstanceId;
+    /** 公文主办处室 */
+    private Long              redactDeptId;
+    /** 共享标志 */
+    // @Convert(converter = ShareFlagConverter.class)
+    private String            shareFlag;
+    /** 公文所属单位 */
+    private Long              unitOrgId;
 
     /**
      * @return the docFile
@@ -102,6 +109,51 @@ public class FlowTransactPersonal extends LongIdEntity {
      */
     public void setRmInstanceId(String rmInstanceId) {
         this.rmInstanceId = rmInstanceId;
+    }
+
+    /**
+     * @return the shareFlag
+     */
+    public String getShareFlag() {
+        return shareFlag;
+    }
+
+    /**
+     * @param shareFlag
+     *            the shareFlag to set
+     */
+    public void setShareFlag(String shareFlag) {
+        this.shareFlag = shareFlag;
+    }
+
+    /**
+     * @return the unitOrgId
+     */
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    /**
+     * @param unitOrgId
+     *            the unitOrgId to set
+     */
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
+    }
+
+    /**
+     * @return the redactDeptId
+     */
+    public Long getRedactDeptId() {
+        return redactDeptId;
+    }
+
+    /**
+     * @param redactDeptId
+     *            the redactDeptId to set
+     */
+    public void setRedactDeptId(Long redactDeptId) {
+        this.redactDeptId = redactDeptId;
     }
 
 }

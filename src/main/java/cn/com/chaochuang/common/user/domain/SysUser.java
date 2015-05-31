@@ -4,14 +4,15 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
 
 @Entity
 @LookUp
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")),
-                @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")), @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
 public class SysUser extends PersistEntity {
 
     private static final long serialVersionUID = -4615274498193533591L;
@@ -22,8 +23,10 @@ public class SysUser extends PersistEntity {
     private Long              rmUserInfoId;
     /** 原系统部门编号 */
     private Long              rmDepId;
-    /** 部门编号 */
-    private Long              depId;
+    /** 所属部门 */
+    @ManyToOne
+    @JoinColumn(name = "dep_id")
+    private SysDepartment     department;
     /** 姓名 */
     private String            userName;
     /** 性别 */
@@ -44,6 +47,8 @@ public class SysUser extends PersistEntity {
     private String            delFlag;
     /** MD5校验码 */
     private String            mdfCode;
+    /** 排序号 */
+    private Long              orderNum;
 
     /**
      * @return the workPhone
@@ -61,18 +66,18 @@ public class SysUser extends PersistEntity {
     }
 
     /**
-     * @return the depId
+     * @return the department
      */
-    public Long getDepId() {
-        return depId;
+    public SysDepartment getDepartment() {
+        return department;
     }
 
     /**
-     * @param depId
-     *            the depId to set
+     * @param department
+     *            the department to set
      */
-    public void setDepId(Long depId) {
-        this.depId = depId;
+    public void setDepartment(SysDepartment department) {
+        this.department = department;
     }
 
     /**
@@ -253,6 +258,21 @@ public class SysUser extends PersistEntity {
      */
     public void setRmUserInfoId(Long rmUserInfoId) {
         this.rmUserInfoId = rmUserInfoId;
+    }
+
+    /**
+     * @return the orderNum
+     */
+    public Long getOrderNum() {
+        return orderNum;
+    }
+
+    /**
+     * @param orderNum
+     *            the orderNum to set
+     */
+    public void setOrderNum(Long orderNum) {
+        this.orderNum = orderNum;
     }
 
 }

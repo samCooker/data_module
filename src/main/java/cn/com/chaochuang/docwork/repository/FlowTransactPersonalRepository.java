@@ -19,8 +19,18 @@ import cn.com.chaochuang.docwork.domain.FlowTransactPersonal;
 public interface FlowTransactPersonalRepository extends SimpleDomainRepository<FlowTransactPersonal, Long> {
 
     /**
-     * 根据办理人id和公文id查找公文个人办理记录，查找结果返回唯一
+     * 根据办理人id和公文id和共享标识shareFlag查找公文个人办理记录，查找结果返回唯一
      * */
-    FlowTransactPersonal findByDocFileAndTransactId(DocFile file, Long transactId);
+    FlowTransactPersonal findByDocFileAndTransactIdAndShareFlag(DocFile file, Long transactId, String shareFlag);
+
+    /**
+     * 根据公文id和公文主办处室id和共享标识shareFlag查找公文个人办理记录，查找结果返回唯一
+     * */
+    FlowTransactPersonal findByDocFileAndRedactDeptIdAndShareFlag(DocFile file, Long redactDeptId, String shareFlag);
+
+    /**
+     * 根据公文id和公文所属单位id和共享标识shareFlag查找公文个人办理记录，查找结果返回唯一
+     * */
+    FlowTransactPersonal findByDocFileAndUnitOrgIdAndShareFlag(DocFile file, Long unitOrgId, String shareFlag);
 
 }

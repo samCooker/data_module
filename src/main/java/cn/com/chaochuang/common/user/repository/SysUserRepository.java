@@ -22,4 +22,5 @@ public interface SysUserRepository extends SimpleDomainRepository<SysUser, Long>
      * @return
      */
     public SysUser findByrmUserInfoId(Long rmUserInfoId);
+
 }

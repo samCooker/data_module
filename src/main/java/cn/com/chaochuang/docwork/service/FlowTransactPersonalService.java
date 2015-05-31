@@ -22,7 +22,7 @@ import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
 public interface FlowTransactPersonalService extends CrudRestService<FlowTransactPersonal, Long> {
 
     /**
-     * 保存人员经办过的公文记录，公文id（原系统公文编号）和办理人id联合唯一
+     * 根据公文的不同共享标识保存公文的经办列表
      * */
-    void saveFlowTransactPersonalInfo(List<FlowNodeBeanInfo> flowNodeInfoList, DocFile file) throws Exception;
+    void saveFlowTransactPersonalInfo(List<FlowNodeBeanInfo> flowNodeInfoList, DocFile file, Long redactDeptId) throws Exception;
 }

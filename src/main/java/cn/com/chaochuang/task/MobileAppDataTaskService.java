@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
@@ -41,7 +40,7 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
      */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -56,8 +55,7 @@ public class MobileAppDataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(),
-                            Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
+            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(), Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
             // 将行政审批的待办记录写入待办事宜表
             this.saveFdFordo(json);
         } catch (Exception ex) {
@@ -79,10 +77,8 @@ public class MobileAppDataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            AppFlowPendingHandleInfo.class);
-            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper
-                            .readValue(jsonData, javaType);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoAppService.insertFdFordos(datas);
         } catch (Exception ex) {
             ex.printStackTrace();

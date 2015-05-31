@@ -8,7 +8,7 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
 
     /**
      * 保存用户信息
-     * 
+     *
      * @param user
      * @return
      */
@@ -20,4 +20,13 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
      * @param dataChange
      */
     void analysisDataChange(SysDataChange dataChange);
+
+    /**
+     * 根据远程OA的用户id查找用户
+     * 
+     * @param 远程OA的用户id
+     *
+     * @return SysUser,若rmUserId为空返回null
+     * */
+    public SysUser findByRmUserId(Long rmUserId);
 }

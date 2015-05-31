@@ -54,8 +54,7 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
     public void analysisDataChange(SysDataChange dataChange) {
         try {
             // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
-            if (OperationType.修改.getKey().equals(dataChange.getOperationType())
-                            || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+            if (OperationType.修改.getKey().equals(dataChange.getOperationType()) || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
                 // 从webservice获取json字符串
                 String json = this.transferOAService.getChangeUser(dataChange.getChangeScript());
 
@@ -68,7 +67,7 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
                     curUser = new SysUser();
                     // 新增人员要设置人员的本地部门编号（depId）
                     SysDepartment dept = this.departmentRepository.findByRmDepId(newUser.getRmDepId());
-                    newUser.setDepId(dept.getId());
+                    newUser.setDepartment(dept);
                 } else {
                     // 保证编号在BeanUtils.copyProperties后不被刷掉
                     newUser.setId(curUser.getId());
@@ -89,6 +88,19 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.common.user.service.SysUserService#findByRmUserId(java.lang.Long)
+     */
+    @Override
+    public SysUser findByRmUserId(Long rmUserId) {
+        if (rmUserId == null) {
+            return null;
+        }
+        return repository.findByRmUserId(rmUserId);
     }
 
 }

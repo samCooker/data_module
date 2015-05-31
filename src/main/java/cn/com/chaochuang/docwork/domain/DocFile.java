@@ -115,6 +115,11 @@ public class DocFile extends LongIdEntity {
     private String                 copySend;
     /** 自然编号（自编号） */
     private String                 processNumber;
+    /** 共享标志 */
+    // @Convert(converter = ShareFlagConverter.class)
+    private String                 shareFlag;
+    /** 公文所属单位 */
+    private Long                   unitOrgId;
 
     /**
      * @return the digest
@@ -579,6 +584,36 @@ public class DocFile extends LongIdEntity {
      */
     public void setProcessNumber(String processNumber) {
         this.processNumber = processNumber;
+    }
+
+    /**
+     * @return the shareFlag
+     */
+    public String getShareFlag() {
+        return shareFlag;
+    }
+
+    /**
+     * @param shareFlag
+     *            the shareFlag to set
+     */
+    public void setShareFlag(String shareFlag) {
+        this.shareFlag = shareFlag;
+    }
+
+    /**
+     * @return the unitOrgId
+     */
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    /**
+     * @param unitOrgId
+     *            the unitOrgId to set
+     */
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
     }
 
 }
