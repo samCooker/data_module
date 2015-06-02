@@ -54,7 +54,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
      */
     @Override
     public void saveAppItemApplyDatas(List<AppFlowShowData> appDatas) {
-        if (Tools.isNotEmptyList(appDatas)) {
+        if (!Tools.isNotEmptyList(appDatas)) {
             return;
         }
         AppItemApply apply;
