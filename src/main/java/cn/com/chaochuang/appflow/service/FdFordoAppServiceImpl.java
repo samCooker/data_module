@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
@@ -102,7 +103,6 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
             }
             fdFordo = new FdFordoApp();
             SysUser user = userRepository.findByrmUserInfoId(item.getRecipientId());
-            item.setRecipientId(user.getRmUserId());
             item.setFordoType(item.getFordoType().substring(0, 3));
             BeanUtils.copyProperties(item, fdFordo);
             if (item.getReadTime() == null) {
@@ -117,6 +117,8 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
             }
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
+            fdFordo.setLocalData(LocalData.非本地数据);
+
             this.repository.save(fdFordo);
         }
     }
@@ -128,6 +130,38 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
     public void analysisDataChange(SysDataChange dataChange) {
         // TODO Auto-generated method stub
 
+    }
+
+    /**
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#selectUnLocalData()
+     */
+    @Override
+    public List<FdFordoApp> selectUnLocalData() {
+        // 获取未到本地数据
+        return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据);
+    }
+
+    /**
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#updateLocalData(java.lang.String)
+     */
+    @Override
+    public void updateLocalData(String rmPendingId) {
+        FdFordoApp pending = this.repository.findByRmPendingId(rmPendingId);
+        if (pending != null) {
+            pending.setLocalData(LocalData.有本地数据);
+            this.repository.save(pending);
+        }
+    }
+
+    /**
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#deleteExpirePending(java.lang.String)
+     */
+    @Override
+    public void deleteExpirePending(String rmPendingId) {
+        FdFordoApp fordo = this.repository.findByRmPendingId(rmPendingId);
+        if (fordo != null) {
+            this.repository.delete(fordo);
+        }
     }
 
 }

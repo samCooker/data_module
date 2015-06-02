@@ -41,4 +41,25 @@ public interface FdFordoAppService extends CrudRestService<FdFordoApp, Long> {
      * @param dataChange
      */
     void analysisDataChange(SysDataChange dataChange);
+
+    /**
+     * 获取所有未下载到本地数据的待办事宜
+     *
+     * @return
+     */
+    List<FdFordoApp> selectUnLocalData();
+
+    /**
+     * 更新待办事宜的本地状态为“在本地”
+     *
+     * @param rmPendingId
+     */
+    void updateLocalData(String rmPendingId);
+
+    /**
+     * 删除过期的待办
+     * 
+     * @param rmPendingId
+     */
+    void deleteExpirePending(String rmPendingId);
 }

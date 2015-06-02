@@ -30,4 +30,15 @@ public interface SuperviseWebService {
     @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
     @WebMethod
     String selectPendingHandleList(Date lastOutputTime, Long pendingHandleId);
+
+    /**
+     * 根据待办事宜编号获取对应的审批数据
+     *
+     * @param pendingHandleIds
+     *            待办事宜编号字符串集合按"，"分隔
+     * @return AppFlowShowData列表的json字符串
+     */
+    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebMethod
+    String selectAppItemApplyDates(String pendingHandleIds);
 }
