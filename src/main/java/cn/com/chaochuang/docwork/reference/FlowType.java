@@ -17,7 +17,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  */
 public enum FlowType implements IDictionary {
 
-    发文("f"), 收文("s"), 内部文("n"), 内部请示汇报("0"), 公文发送("c"), 通报("t"), 便函("b"), 收文处理_其他("q"), 收文处理_食安办("a");
+    发文("f"), 收文("s"), 内部文("n"), 内部请示汇报("0"), 会办发文("c"), 通报("t"), 便函("b"), 收文处理_其他("q"), 收文处理_食安办("a");
 
     private String key;
     private String value;
