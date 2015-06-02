@@ -32,11 +32,11 @@ public class AppItemApply extends LongIdEntity {
     private Long              rmItemApplyId;
     /** 受理编号 */
     private String            itemNum;
-    /**  */
+    /** 审批事项流水号 */
     private Long              prjId;
-    /**  */
+    /** 审批事项逻辑号 */
     private String            prjSortId;
-    /**  */
+    /** 审批事项名称 */
     private String            prjName;
     /** 审批流程分类 */
     private String            prjApproveFlag;

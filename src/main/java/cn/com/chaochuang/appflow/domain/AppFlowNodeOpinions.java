@@ -28,6 +28,8 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 public class AppFlowNodeOpinions extends LongIdEntity {
     /** 原系统审批意见流水号 */
     private Long   rmNodeOpinionsId;
+    /** 审批事项编号 */
+    private Long   itemApplyId;
     /** 流程实例编号 */
     private Long   flowInstId;
     /** 意见所属环节编号 */
@@ -51,6 +53,21 @@ public class AppFlowNodeOpinions extends LongIdEntity {
     private String opinions;
     /** 阅示标识 */
     private String readSign;
+
+    /**
+     * @return the itemApplyId
+     */
+    public Long getItemApplyId() {
+        return itemApplyId;
+    }
+
+    /**
+     * @param itemApplyId
+     *            the itemApplyId to set
+     */
+    public void setItemApplyId(Long itemApplyId) {
+        this.itemApplyId = itemApplyId;
+    }
 
     /**
      * @return the rmNodeOpinionsId

@@ -28,6 +28,8 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 public class AppFlowNodeInfo extends LongIdEntity {
     /** 原系统实例环节流水号 */
     private Long   rmNodeInfoId;
+    /** 审批事项编号 */
+    private Long   itemApplyId;
     /** 流程实例编号 */
     private Long   flowInstId;
     /** 前继环节流水号 */
@@ -66,6 +68,21 @@ public class AppFlowNodeInfo extends LongIdEntity {
     private String transactDeptName;
     /** 环节所属单位 */
     private Long   handleUnitId;
+
+    /**
+     * @return the itemApplyId
+     */
+    public Long getItemApplyId() {
+        return itemApplyId;
+    }
+
+    /**
+     * @param itemApplyId
+     *            the itemApplyId to set
+     */
+    public void setItemApplyId(Long itemApplyId) {
+        this.itemApplyId = itemApplyId;
+    }
 
     /**
      * @return the rmNodeInfoId
