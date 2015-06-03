@@ -35,8 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Service
 @Transactional
-public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDepartment> implements
-                SysDepartmentService {
+public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDepartment> implements SysDepartmentService {
 
     @Autowired
     private SysDepartmentRepository repository;
@@ -96,8 +95,7 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     public void analysisDataChange(SysDataChange dataChange) {
         try {
             // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
-            if (OperationType.修改.getKey().equals(dataChange.getOperationType())
-                            || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+            if (OperationType.修改.getKey().equals(dataChange.getOperationType()) || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
                 // 从webservice获取json字符串
                 String json = this.transferOAService.getChangeDepartment(dataChange.getChangeScript());
 
@@ -133,6 +131,19 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     @Override
     public SimpleDomainRepository<SysDepartment, Long> getRepository() {
         return repository;
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.common.user.service.SysDepartmentService#findByRmDepId(java.lang.Long)
+     */
+    @Override
+    public SysDepartment findByRmDepId(Long rmDepId) {
+        if (rmDepId == null) {
+            return null;
+        }
+        return repository.findByRmDepId(rmDepId);
     }
 
 }

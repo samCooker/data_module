@@ -32,4 +32,13 @@ public interface SysDepartmentService extends CrudRestService<SysDepartment, Lon
      * @param dataChange
      */
     void analysisDataChange(SysDataChange dataChange);
+
+    /**
+     * 根据原系统部门编号查找部门对象
+     *
+     * @param rmDepId
+     *            原系统部门编号
+     * @return
+     */
+    public SysDepartment findByRmDepId(Long rmDepId);
 }

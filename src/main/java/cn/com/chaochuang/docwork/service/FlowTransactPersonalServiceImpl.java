@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FlowTransactPersonal;
@@ -36,6 +38,9 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
 
     @Autowired
     private SysUserService                 userService;
+
+    @Autowired
+    private SysDepartmentService           departmentService;
 
     @Autowired
     private FlowTransactPersonalRepository repository;
@@ -64,9 +69,10 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
                 // 循环办理节点，添加经办人的办理记录，经办人可以查询到已经办理的公文，但不与单位共享和部门共享重复
                 SysUser user = userService.findByRmUserId(nodeInfo.getTransactId());
                 if (user != null) {
-                    FlowTransactPersonal personalRecord = repository.findByDocFileAndUnitOrgIdAndShareFlag(file, user.getDepartment().getAncestorDep(), ShareFlag.本单位共享.getKey());
+                    SysDepartment department = departmentService.findByRmDepId(user.getRmDepId());
+                    FlowTransactPersonal personalRecord = repository.findByDocFileAndUnitOrgIdAndShareFlag(file, department.getAncestorDep(), ShareFlag.本单位共享.getKey());
                     if (personalRecord == null) {
-                        personalRecord = repository.findByDocFileAndRedactDeptIdAndShareFlag(file, user.getDepartment().getRmDepId(), ShareFlag.本部门共享.getKey());
+                        personalRecord = repository.findByDocFileAndRedactDeptIdAndShareFlag(file, department.getRmDepId(), ShareFlag.本部门共享.getKey());
                     }
                     if (personalRecord == null) {
                         personalRecord = repository.findByDocFileAndTransactIdAndShareFlag(file, user.getRmUserId(), ShareFlag.不共享.getKey());
@@ -78,8 +84,8 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
                         personalRecord.setRmInstanceId(nodeInfo.getRmInstanceId());
                         personalRecord.setTransactId(user.getRmUserId());
                         personalRecord.setShareFlag(ShareFlag.不共享.getKey());
-                        personalRecord.setUnitOrgId(user.getDepartment().getAncestorDep());
-                        personalRecord.setRedactDeptId(user.getDepartment().getId());
+                        // personalRecord.setUnitOrgId(file.getUnitOrgId());
+                        // personalRecord.setRedactDeptId(redactDeptId);
                     } else {
                         // 取最近的办理时间
                         personalRecord.setTransactTime(nodeInfo.getArriveTime());
