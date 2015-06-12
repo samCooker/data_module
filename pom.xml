@@ -94,5 +94,11 @@
             <artifactId>jpush-client</artifactId>
             <version>3.2.3</version>
         </dependency>
+        <!-- 邮件处理 -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+        </dependency>
     </dependencies>
 </project>
