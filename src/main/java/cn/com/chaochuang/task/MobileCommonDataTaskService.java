@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
@@ -67,7 +66,7 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/10 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -92,7 +91,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+    // @Scheduled(cron = "5/5 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;

@@ -66,7 +66,10 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
                     continue;
                 }
                 // 保存AppItemApply
-                apply = new AppItemApply();
+                apply = repository.findByRmItemApplyId(applyData.getRmItemApplyId());
+                if (apply == null) {
+                    apply = new AppItemApply();
+                }
                 BeanUtils.copyProperties(apply, applyData);
                 this.repository.save(apply);
                 // 保存AppFlowNodeInfo

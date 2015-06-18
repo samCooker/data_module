@@ -13,6 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.WorkType;
 
 /**
  * @author LLM
@@ -25,11 +26,11 @@ public interface DataUpdateService extends CrudRestService<DataUpdate, Long> {
      *
      * @return
      */
-    List<DataUpdate> selectDocFileDataUpdate();
+    List<DataUpdate> selectDocFileDataUpdate(WorkType workType);
 
     /**
      * 更新公文提交数据
-     * 
+     *
      * @param updateInfo
      */
     void docFileDataUpdate(DocFileUpdate updateInfo);

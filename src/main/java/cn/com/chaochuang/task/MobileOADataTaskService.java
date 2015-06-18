@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
@@ -29,6 +28,7 @@ import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
@@ -109,7 +109,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "8/15 * * * * ?")
+    // @Scheduled(cron = "8/15 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -123,9 +123,7 @@ public class MobileOADataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(
-                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
-                                            : "", info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -148,8 +146,7 @@ public class MobileOADataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            OAPendingHandleInfo.class);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
             List<OAPendingHandleInfo> datas = (List<OAPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
@@ -160,7 +157,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -176,8 +173,7 @@ public class MobileOADataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    DocFileInfo.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, DocFileInfo.class);
                     List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
                     fileService.saveDocFilesDatas(datas);
                 } catch (Exception ex) {
@@ -193,7 +189,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "3/10 * * * * ?")
+    // @Scheduled(cron = "3/10 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -202,7 +198,7 @@ public class MobileOADataTaskService {
         DataUpdate dataUpdate = null;
         try {
             // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
-            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate();
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.公文办理提交);
             // 每次仅处理列表的第一条记录
             if (!Tools.isNotEmptyList(datas)) {
                 return;
@@ -225,7 +221,7 @@ public class MobileOADataTaskService {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());
             this.dataUpdateService.getRepository().save(dataUpdate);
-            throw new RuntimeException(ex);
+            ex.printStackTrace();
         } finally {
             isCommitDocFileRunning = false;
         }
@@ -234,7 +230,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -288,7 +284,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "40/40 * * * * ?")
+    // @Scheduled(cron = "40/40 * * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -311,8 +307,7 @@ public class MobileOADataTaskService {
                 }
                 try {
                     ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    PubInfoBean.class);
+                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, PubInfoBean.class);
                     List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
                     pubInfoService.savePubInfoDatas(datas);
                 } catch (Exception ex) {

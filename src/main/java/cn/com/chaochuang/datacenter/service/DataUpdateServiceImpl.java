@@ -47,9 +47,8 @@ public class DataUpdateServiceImpl extends SimpleLongIdCrudRestService<DataUpdat
      * @see cn.com.chaochuang.datacenter.service.DataUpdateService#selectDocFileDataUpdate()
      */
     @Override
-    public List<DataUpdate> selectDocFileDataUpdate() {
-        return this.repository.findByWorkTypeAndOperationTypeAndExecuteFlag(WorkType.公文办理提交, OperationType.修改,
-                        ExecuteFlag.未执行);
+    public List<DataUpdate> selectDocFileDataUpdate(WorkType workType) {
+        return this.repository.findByWorkTypeAndOperationTypeAndExecuteFlag(workType, OperationType.修改, ExecuteFlag.未执行);
     }
 
     /**

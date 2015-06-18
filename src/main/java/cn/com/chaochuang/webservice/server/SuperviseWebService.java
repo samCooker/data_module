@@ -14,6 +14,8 @@ import javax.jws.WebMethod;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
+
 /**
  * @author LLM
  *
@@ -41,4 +43,15 @@ public interface SuperviseWebService {
     @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
     @WebMethod
     String selectAppItemApplyDates(String pendingHandleIds);
+
+    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebMethod
+    String getApplyExcuteInfo(Long pendingHandleId, Long curNodeId);
+
+    /**
+     * 提交审批项
+     * */
+    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebMethod
+    String submitAppItemInfo(WebServiceNodeInfo nodeInfo);
 }

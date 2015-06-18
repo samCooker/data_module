@@ -21,6 +21,11 @@ import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.FdFordoAppService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.reference.WorkType;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -39,16 +44,20 @@ public class MobileAppDataTaskService {
     private FdFordoAppService   fdFordoAppService;
     @Autowired
     private AppItemApplyService appItemApplyService;
+    @Autowired
+    private DataUpdateService   dataUpdateService;
 
     /** 获取公文阻塞标识 */
     private static boolean      isFordoRunning       = false;
     /** 获取行政审批数据标识 */
     private static boolean      isAppItemDataRunning = false;
+    /** 提交行政审批数据标识 */
+    private static boolean      isSubmitDataRunning  = false;
 
     /**
      * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
      */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -63,8 +72,7 @@ public class MobileAppDataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(),
-                            Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
+            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(), Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
             // 将行政审批的待办记录写入待办事宜表
             this.saveFdFordo(json);
         } catch (Exception ex) {
@@ -86,10 +94,8 @@ public class MobileAppDataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            AppFlowPendingHandleInfo.class);
-            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper
-                            .readValue(jsonData, javaType);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoAppService.insertFdFordos(datas);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -99,7 +105,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/10 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -124,6 +130,49 @@ public class MobileAppDataTaskService {
             ex.printStackTrace();
         } finally {
             isAppItemDataRunning = false;
+        }
+    }
+
+    /**
+     * 提交审批项数据
+     */
+    @Scheduled(cron = "10/15 * * * * ?")
+    public void commintSuperviseDataTask() {
+        if (isSubmitDataRunning) {
+            return;
+        }
+        isSubmitDataRunning = true;
+        DataUpdate dataUpdate = null;
+        try {
+            // 扫描DataUpdate数据列表，条件：workType=02;operationType=update
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.行政审批提交);
+            // 每次仅处理列表的第一条记录
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            dataUpdate = (DataUpdate) datas.get(0);
+            if (dataUpdate == null) {
+                return;
+            }
+            // 获取要提交的json字符串
+            ObjectMapper mapper = new ObjectMapper();
+            WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
+            String backInfo = superviseWebService.submitAppItemInfo(nodeInfo);
+            if ("true".equals(backInfo)) {
+                // 删除DataUpdate对象
+                this.dataUpdateService.delete(dataUpdate);
+            } else {
+                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+                dataUpdate.setErrorInfo(backInfo);
+                this.dataUpdateService.getRepository().save(dataUpdate);
+            }
+        } catch (Exception ex) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(ex.getClass().getName());
+            this.dataUpdateService.getRepository().save(dataUpdate);
+            ex.printStackTrace();
+        } finally {
+            isSubmitDataRunning = false;
         }
     }
 }

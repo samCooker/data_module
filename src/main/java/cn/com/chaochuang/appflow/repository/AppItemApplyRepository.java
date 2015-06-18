@@ -17,4 +17,12 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  */
 public interface AppItemApplyRepository extends SimpleDomainRepository<AppItemApply, Long> {
 
+    /**
+     * 通过原系统事项申请编号查找审批项
+     * 
+     * @param rmItemApplyId
+     * @return
+     */
+    AppItemApply findByRmItemApplyId(Long rmItemApplyId);
+
 }
