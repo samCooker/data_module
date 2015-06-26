@@ -28,7 +28,6 @@ import cn.com.chaochuang.common.jpush.util.JPushUtils;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
@@ -117,24 +116,6 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
             this.repository.save(fdFordo);
-        }
-    }
-
-    /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
-     */
-    @Override
-    public void analysisDataChange(SysDataChange dataChange) {
-        if (Tools.isEmptyString(dataChange.getChangeScript())) {
-            return;
-        }
-        String[] items = dataChange.getChangeScript().split("=");
-        if (items == null || items.length != 2) {
-            return;
-        }
-        FdFordo fordo = this.repository.findByRmPendingItemId(items[1]);
-        if (fordo != null) {
-            this.repository.delete(fordo);
         }
     }
 

@@ -13,8 +13,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
@@ -23,7 +25,6 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.service.DocFileService;
-import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -37,36 +38,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MobileCommonDataTaskService {
     /** webservice 函数库 */
     @Autowired
-    private ITransferOAService   transferOAService;
+    private ITransferOAService         transferOAService;
 
     /** fdFordoService */
     @Autowired
-    private FdFordoService       fdFordoService;
+    private CommonPendingHandleService commonFordoService;
 
     @Autowired
-    private DocFileService       fileService;
+    private DocFileService             fileService;
 
     @Autowired
-    private SysDataChangeService dataChangeService;
+    private SysDataChangeService       dataChangeService;
 
     @Autowired
-    private SysDepartmentService departmentService;
+    private SysDepartmentService       departmentService;
 
     @Autowired
-    private SysUserService       userService;
+    private SysUserService             userService;
 
     @Autowired
-    private DepLinkmanService    depLinkmanService;
+    private DepLinkmanService          depLinkmanService;
 
     /** 获取公告阻塞标识 */
-    private static boolean       isGetSysDataChangeRunning  = false;
+    private static boolean             isGetSysDataChangeRunning  = false;
     /** 获取处理系统数据更改阻塞标识 */
-    private static boolean       isDealSysDataChangeRunning = false;
+    private static boolean             isDealSysDataChangeRunning = false;
 
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
+    @Scheduled(cron = "10/10 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -91,7 +92,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    // @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "5/5 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -101,9 +102,10 @@ public class MobileCommonDataTaskService {
             Page page = this.dataChangeService.findAllByPage(1, 10);
             List<SysDataChange> datas = page.getContent();
             for (SysDataChange item : datas) {
-                if (DataChangeTable.公文待办事宜.getKey().equals(item.getChangeTableName())) {
-                    // 如果处理的表为oa_pending_handle_dts 则调用fdfordo的方法分析处理过程
-                    this.fdFordoService.analysisDataChange(item);
+                if (item.getChangeTableName() != null
+                                && item.getChangeTableName().contains(DataChangeTable.待办事宜.getKey())) {
+                    // 如果处理的表表名包含pending_handle，则调用公用的待办方法分析处理过程
+                    this.commonFordoService.analysisDataChange(item);
                 } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
                     // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
                     String[] items = item.getChangeScript().split("=");

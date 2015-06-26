@@ -25,8 +25,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
  */
 @Service
 @Transactional
-public class AppFlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeInfo> implements
-                AppFlowNodeInfoService {
+public class AppFlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeInfo> implements AppFlowNodeInfoService {
     @Autowired
     private AppFlowNodeInfoRepository repository;
 
@@ -43,6 +42,8 @@ public class AppFlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<AppF
         AppFlowNodeInfo node = this.repository.findByRmNodeInfoId(info.getRmNodeInfoId());
         if (node != null) {
             try {
+                // 避免id置空
+                info.setId(node.getId());
                 BeanUtils.copyProperties(node, info);
                 this.repository.save(node);
             } catch (Exception ex) {

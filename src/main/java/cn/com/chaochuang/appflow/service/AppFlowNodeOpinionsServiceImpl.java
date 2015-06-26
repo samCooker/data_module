@@ -25,8 +25,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
  */
 @Service
 @Transactional
-public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeOpinions> implements
-                AppFlowNodeOpinionsService {
+public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeOpinions> implements AppFlowNodeOpinionsService {
     @Autowired
     private AppFlowNodeOpinionsRepository repository;
 
@@ -43,6 +42,8 @@ public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<
         AppFlowNodeOpinions node = this.repository.findByRmNodeOpinionsId(info.getRmNodeOpinionsId());
         if (node != null) {
             try {
+                // 避免id置空
+                info.setId(node.getId());
                 BeanUtils.copyProperties(node, info);
                 this.repository.save(node);
             } catch (Exception ex) {

@@ -1,12 +1,12 @@
 /*
- * FileName:    DataChangeTable.java
+ * FileName:    LemmaType.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年4月8日 (LLM) 1.0 Create
+ * History:     2015年4月9日 (LLM) 1.0 Create
  */
 
-package cn.com.chaochuang.datacenter.reference;
+package cn.com.chaochuang.common.fdfordo.reference;
 
 import cn.com.chaochuang.common.dictionary.IDictionary;
 import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
@@ -15,17 +15,15 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  * @author LLM
  *
  */
-public enum DataChangeTable implements IDictionary {
-    待办事宜("pending_handle"), 公文办结("oa_wf_flo_hisno"), 组织结构("sys_department"), 人员("sys_user"), 通讯录("oa_address_info"), 新闻公告(
-                    "oa_pub_board");
-
+public enum SystemType implements IDictionary {
+    oa("公文系统"), supervise("审批系统"), aipcase("办案系统");
     private String key;
     private String value;
 
     /**
      * @param key
      */
-    private DataChangeTable(String key) {
+    private SystemType(String key) {
         this(key, null);
         DictionaryRefresher.getInstance().refreshIDictionary(this);
     }
@@ -34,7 +32,7 @@ public enum DataChangeTable implements IDictionary {
      * @param key
      * @param value
      */
-    private DataChangeTable(String key, String value) {
+    private SystemType(String key, String value) {
         this.key = key;
         this.value = value;
         DictionaryRefresher.getInstance().refreshIDictionary(this);

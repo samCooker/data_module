@@ -57,14 +57,14 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
      */
-    // @Scheduled(cron = "5/10 * * * * ?")
+    @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
         }
         isFordoRunning = true;
         try {
-            // 获取当前待办表中公文待办中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
+            // 获取当前待办表中公文待办中最大的id，若无法获取时间值则获取距离当前时间一个月的时间值
             AppFlowPendingHandleInfo info = this.fdFordoAppService.selectMaxInputDate();
             // 若lastOutputTime或rmPendingId无效则不做下一步
             if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
@@ -105,7 +105,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
+    @Scheduled(cron = "10/10 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
