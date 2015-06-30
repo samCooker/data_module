@@ -1,0 +1,65 @@
+#set($bodyattr="class='easyui-layout' style='border:0px'")
+<div id="tb" style="padding:2px 5px;">
+    <form id="queryForm">
+        <table class="tb2 default-table">
+
+        </table>
+    </form>
+<hr>
+    <a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+        plain="true" onClick="add()">新增</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+        iconCls="icon-edit" plain="true" onclick="edit()">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+        iconCls="icon-remove" plain="true" onClick="del()">删除</a>
+</div>
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+<table id="dg" title="申请列表" style="width:100%;" data-options="pageSize:20,pageList:[20,30,50],fit:true,rownumbers:true,singleSelect:true,pagination:true,toolbar:'#tb',url:'registerapp/list.json'">
+    <thead>
+    <tr>
+        <th data-options="field:'userName'",width="20%">姓名</th>
+        <th data-options="field:'imeiCode'",width="35%">手机IMEI码</th>
+        <th data-options="field:'status'",width"10%">状态</th>
+        <th data-options="field:'applyShowTime'",width="20%">申请时间</th>
+        <th data-options="field:'status',editor:{type:'checkbox',options:{on:'P',off:''}}",width="20%">审批列</th>
+        
+        <th data-options="field:'operate',align:'center',formatter:operaterFormatter",width="10%">操作列</th>
+    </tr>
+    </thead>
+</table>
+<div class="cc-operateColum">
+    <a href='javascript:;' onclick='editRow(getRowIdByDom(this))'>编辑</a>&emsp;&emsp;
+    <a href='javascript:;' onclick='delRow(getRowIdByDom(this))'>删除</a>
+</div>
+</div>
+
+#@script()
+<script>
+ $(function () {
+        $('#dg').datagrid({
+        });
+    });
+
+//行内操作的方法，编辑和修改
+var _datagrid = $("#dg");
+var _toolbar = $("#tb");
+var _btnEdit = $("[iconCls='icon-edit']",_toolbar);
+var _btnDelete = $("[iconCls='icon-remove']",_toolbar);
+
+function operaterFormatter(value,row,index){
+    return $(".cc-operateColum",_datagrid.parents(".cc-tableWrap")).html();
+}
+function getRowIdByDom(dom){
+    var tr =$(dom).parent().parent().parent();
+    return tr.attr("datagrid-row-index");
+}
+function delRow(index){
+    _datagrid.datagrid("selectRow",index);
+    _btnDelete.click();
+}
+function editRow(index){
+    _datagrid.datagrid("selectRow",index);
+    _btnEdit.click();
+}
+</script>
+#end

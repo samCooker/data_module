@@ -1,0 +1,28 @@
+#@script()
+<script type="text/javascript">
+    function showArtDialog(__url, __callback) {
+        var _isIE6 = !('minWidth' in $('html')[0].style);
+        var d = dialog({
+                    url:__url,
+                    quickClose: true,
+                    modal:true,
+                    padding: 0,
+                    onshow:function() {
+                        top.dialoginstance = this;
+                        if (_isIE6) $('select').hide();
+                    }
+                }).show();
+
+        d.addEventListener('close', function () {
+            var result = this.returnValue;
+            if (_isIE6) $('select').show();
+
+            this.remove();
+
+            if (__callback) {
+                __callback(result);
+            }
+        });
+    }
+</script>
+#end

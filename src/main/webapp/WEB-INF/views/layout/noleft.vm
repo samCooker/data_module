@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        #fixhtmlhead()
+        #fixhtmlcss()
+        #fixhtmlscript()
+    </head>
+    <body $!bodyattr>
+        #pageheader()
+        #pagenav()
+        <div id="main">
+            <div id="right">
+                $screen_content
+            </div>
+        </div>
+        #pagefooter()
+#localhtmlscript()
+    </body>
+</html>

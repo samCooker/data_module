@@ -1,18 +1,24 @@
 package cn.com.chaochuang.common.user.domain;
 
+import java.util.Date;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
+import cn.com.chaochuang.registerapply.reference.IsRegister;
+import cn.com.chaochuang.registerapply.reference.IsRegisterConverter;
 
 @Entity
 @LookUp
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")), @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")),
+                @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
 public class SysUser extends PersistEntity {
 
     private static final long serialVersionUID = -4615274498193533591L;
@@ -49,6 +55,58 @@ public class SysUser extends PersistEntity {
     private String            mdfCode;
     /** 排序号 */
     private Long              orderNum;
+    /** 是否注册app */
+    @Convert(converter = IsRegisterConverter.class)
+    private IsRegister        isRegister;
+    /** 注册时间 */
+    private Date              registerTime;
+    /** 手机IMEI码 */
+    private String            imeiCode;
+
+    /**
+     * @return the isRegister
+     */
+    public IsRegister getIsRegister() {
+        return isRegister;
+    }
+
+    /**
+     * @param isRegister
+     *            the isRegister to set
+     */
+    public void setIsRegister(IsRegister isRegister) {
+        this.isRegister = isRegister;
+    }
+
+    /**
+     * @return the registerTime
+     */
+    public Date getRegisterTime() {
+        return registerTime;
+    }
+
+    /**
+     * @param registerTime
+     *            the registerTime to set
+     */
+    public void setRegisterTime(Date registerTime) {
+        this.registerTime = registerTime;
+    }
+
+    /**
+     * @return the imeiCode
+     */
+    public String getImeiCode() {
+        return imeiCode;
+    }
+
+    /**
+     * @param imeiCode
+     *            the imeiCode to set
+     */
+    public void setImeiCode(String imeiCode) {
+        this.imeiCode = imeiCode;
+    }
 
     /**
      * @return the workPhone

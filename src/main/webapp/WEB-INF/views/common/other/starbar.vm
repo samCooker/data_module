@@ -1,0 +1,3 @@
+#if($__fullcount && ($__fullcount>0))#{foreach}($__c in [1..$__fullcount])<i class='png_bg fa-star'></i>#{end}#{end}
+#if($__halfcount && ($__halfcount>0))#{foreach}($__c in [1..$__halfcount])<i class='png_bg fa-star-half-o'/></i>#{end}#{end}
+#if($__emptycount && ($__emptycount>0))#{foreach}($__c in [1..$__emptycount])<i class='png_bg fa-star-o'/></i>#{end}#{end}

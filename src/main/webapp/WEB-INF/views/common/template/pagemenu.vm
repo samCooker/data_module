@@ -1,0 +1,32 @@
+<div #if($__divid)id="$__divid"#end >
+        <div #if($__divid)class="${__divid}-title"#end ><i class="png_bg fa-bank"></i>&nbsp;&nbsp;备案工作</div>
+        <ul class="$!{__divid}-menu" id="masterdiv">
+
+#menuonlyhead("待办事项", "pending/list", " fa-briefcase ")
+
+#set($__menuoptions = {"报备登记":"recordsend/bbdj/edit", "上报备案":"recordsend/sbba/list", "报备情况":"recordsend/baqk/list"})
+#menuitem("accordion", "collapse2", "报送备案", " fa-file-text-o ", $__menuoptions)
+
+#menuonlyhead("备案回复", "recordreply/list", " fa-comment ")
+
+#set($__menuoptions = {"通报列表":"recordnotify/tblb/list", "通报图表":"recordnotify/tbtb/list", "备案查询":"recordnotify/bacx/list"})
+#menuitem("accordion", "collapse4", "备案通报", " fa-bullhorn ", $__menuoptions)
+
+#menuonlyhead("备案登记", "recordreg/list", " fa-book ")
+
+#set($__menuoptions = {"实质审查":"recordexam/szsc/list", "审查情况":"recordexam/scqk/list", "历史情况":"recordexam/lsqk/list", "备案修改":"recordexam/baxg/list"})
+#menuitem("accordion", "collapse6", "备案审查", " fa-eye ", $__menuoptions)
+
+
+#menuonlyhead("法规文件查询", "laws/list", " fa-search ")
+
+#set($__menuoptions = {"写邮件":"workmail/xyj/edit", "收件箱":"workmail/sjx/list", "发件箱":"workmail/fjx/list", "草稿箱":"workmail/cgx/list", "垃圾箱":"workmail/ljx/list", "存档箱":"workmail/cdx/list"})
+#menuitem("accordion", "collapse8", "内部邮件", " fa-at ", $__menuoptions)
+
+#set($__menuoptions = {"个人设置":"user/personal/set", "查看日志":"log/list", "在线用户":"onlineuser/list", "用户管理":"sysuser/list", "工作机构管理":"sysdep/list", "权限管理":"syspower/list", "角色管理":"sysrole/list", "修改密码":"userpwd/chgpwd"})
+#menuitem("accordion", "collapse9", "后台管理", " fa-cogs ", $__menuoptions)
+
+#menuonlyhead("退出系统", "common/logout", " fa-power-off ")
+
+        </ul>
+</div>

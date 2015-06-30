@@ -1,0 +1,10 @@
+<link rel="stylesheet" type="text/css" href="css/default.css">
+<link rel="stylesheet" type="text/css" href="css/effect.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="lib/jquery/easyui/themes/icon.css">
+#if($__customcsstplist)
+#foreach($__csstpl in $__customcsstplist.keySet())
+#parse($__csstpl)
+#end
+#end
+<link rel="stylesheet" type="text/css" href="css/icons_Custom.css">

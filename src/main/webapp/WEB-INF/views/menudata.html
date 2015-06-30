@@ -1,0 +1,25 @@
+<script type="text/javascript">
+$(document).ready(function(){
+    /************************************
+     * 初始化导航菜单列表               *
+     ************************************/
+    var _menus = {
+        我的桌面: [
+            {
+                "icon": "icon icon-sys",
+                "title": "系统管理",
+                "items": [
+                    {
+                        "title": "授权管理",
+                        "url": "registerapp/list"
+                    }
+                ]
+            }
+        ]
+    };
+    var app = new CCApp();
+    app.menus = _menus;
+    app.initMenu(_menus.我的桌面);
+    app.init();
+});
+</script>

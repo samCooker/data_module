@@ -1,0 +1,3 @@
+<div class="btn-wraper $!__class" #if($__attr) $!__attr #{end}>
+    $!bodyContent
+</div>
