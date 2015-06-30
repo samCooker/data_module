@@ -23,7 +23,6 @@ import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
-import cn.com.chaochuang.common.util.UserHelper;
 import cn.com.chaochuang.registerapply.bean.SysRegisterApplyShowBean;
 import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
 import cn.com.chaochuang.registerapply.service.SysRegisterApplyService;
@@ -54,10 +53,8 @@ public class SysRegisterApplyController {
                         conversionService);
         searchBuilder.clearSearchBuilder().findSearchParam(request);
         searchBuilder.appendSort(Direction.DESC, "applyTime");
-        registerApplyService.toRegisterAppAuthority(UserHelper.getCurrentUser().getId(), "abc");
         SearchListHelper<SysRegisterApply> listhelper = new SearchListHelper<SysRegisterApply>();
         listhelper.execute(searchBuilder, registerApplyService.getRepository(), page, rows);
-
         EasyUIPage p = new EasyUIPage();
         p.setRows(BeanCopyBuilder.buildList(listhelper.getList(), SysRegisterApplyShowBean.class));
         p.setTotal(listhelper.getCount());

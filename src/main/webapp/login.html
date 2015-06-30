@@ -83,7 +83,6 @@
                 url : url,
                 data : form.serialize(),
                 success : function(data) {
-                    console.log(data);
                     if (data) {
                         if (-1 != data.indexOf("用户名或密码错误")) {
                             $("#login-error").show().html("用户名或密码错误！");
