@@ -21,8 +21,14 @@ import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
  */
 public class SysRegisterApplyShowBean {
 
+    /** 申请项id */
+    private Long          id;
+    /** 申请人姓名 */
     @Mapping("registerUser.userName")
     private String        userName;
+    /** 申请人帐号 */
+    @Mapping("registerUser.account")
+    private String        account;
     /** 申请时间 */
     private Date          applyTime;
     private String        applyShowTime;
@@ -30,6 +36,21 @@ public class SysRegisterApplyShowBean {
     private String        imeiCode;
     /** 申请状态 */
     private AppAuthStatus status;
+
+    /**
+     * @return the account
+     */
+    public String getAccount() {
+        return account;
+    }
+
+    /**
+     * @param account
+     *            the account to set
+     */
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
     /**
      * @return the userName
@@ -96,6 +117,21 @@ public class SysRegisterApplyShowBean {
      */
     public void setStatus(AppAuthStatus status) {
         this.status = status;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     *            the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }
