@@ -23,9 +23,9 @@ import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
+import cn.com.chaochuang.registerapply.bean.RegisterInfo;
 import cn.com.chaochuang.registerapply.bean.SysRegisterApplyShowBean;
 import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
 import cn.com.chaochuang.registerapply.service.SysRegisterApplyService;
 
 /**
@@ -84,9 +84,9 @@ public class SysRegisterApplyController {
      */
     @RequestMapping("changeinbatch.json")
     @ResponseBody
-    public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status) {
+    public boolean changeApplicationStatusInBatch(RegisterInfo info) {
         try {
-            return registerApplyService.changeApplicationStatusInBatch(ids, status);
+            return registerApplyService.changeApplicationStatusInBatch(info.getIds(), info.getStatus());
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -95,7 +95,7 @@ public class SysRegisterApplyController {
 
     /**
      * 删除多个申请项
-     * 
+     *
      * @param ids
      * @return
      */
