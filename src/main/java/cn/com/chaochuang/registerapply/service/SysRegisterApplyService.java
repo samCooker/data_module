@@ -10,6 +10,7 @@ package cn.com.chaochuang.registerapply.service;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
 
 /**
  * @author Shicx
@@ -27,5 +28,43 @@ public interface SysRegisterApplyService extends CrudRestService<SysRegisterAppl
      * @return
      */
     public boolean toRegisterAppAuthority(Long userId, String imeiCode);
+
+    /**
+     * 改变多个申请的状态
+     *
+     * @param ids
+     *            多个申请项id
+     * @param status
+     *            状态号
+     * @return
+     */
+    public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status);
+
+    /**
+     * 改变申请状态
+     *
+     * @param ids
+     *            申请项id
+     * @param status
+     *            状态号
+     * @return
+     */
+    public boolean changeApplicationStatus(Long id, AppAuthStatus status);
+
+    /**
+     * 删除多个申请项
+     *
+     * @param ids
+     * @return
+     */
+    public boolean deleteApplicationInBatch(Long[] ids);
+
+    /**
+     * 删除申请项
+     *
+     * @param id
+     * @return
+     */
+    public boolean deleteApplication(Long id);
 
 }

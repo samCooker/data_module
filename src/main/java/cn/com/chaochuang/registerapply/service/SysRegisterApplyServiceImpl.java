@@ -8,7 +8,9 @@
 
 package cn.com.chaochuang.registerapply.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -74,6 +76,87 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         }
         repository.save(registerApply);
         return true;
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.registerapply.service.SysRegisterApplyService#changeApplicationStatus(java.lang.Long,
+     *      cn.com.chaochuang.registerapply.reference.AppAuthStatus)
+     */
+    @Override
+    public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status) {
+        if (ids == null || ids.length == 0 || status == null) {
+            return false;
+        }
+        List<SysRegisterApply> registerApplyList = new ArrayList<SysRegisterApply>();
+        for (Long id : ids) {
+            SysRegisterApply registerApply = repository.findOne(id);
+            if (registerApply != null) {
+                registerApply.setStatus(status);
+                registerApplyList.add(registerApply);
+            }
+        }
+        repository.save(registerApplyList);
+        return true;
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.registerapply.service.SysRegisterApplyService#deleteByApplicationId(java.lang.Long)
+     */
+    @Override
+    public boolean deleteApplicationInBatch(Long[] ids) {
+        if (ids == null) {
+            return false;
+        }
+        List<SysRegisterApply> registerApplyList = new ArrayList<SysRegisterApply>();
+        for (Long id : ids) {
+            SysRegisterApply registerApply = repository.findOne(id);
+            if (registerApply != null) {
+                registerApplyList.add(registerApply);
+            }
+        }
+        repository.delete(registerApplyList);
+        return true;
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.registerapply.service.SysRegisterApplyService#changeApplicationStatus(java.lang.Long,
+     *      cn.com.chaochuang.registerapply.reference.AppAuthStatus)
+     */
+    @Override
+    public boolean changeApplicationStatus(Long id, AppAuthStatus status) {
+        if (id == null || status == null) {
+            return false;
+        }
+        SysRegisterApply registerApply = repository.findOne(id);
+        if (registerApply != null) {
+            registerApply.setStatus(status);
+            repository.save(registerApply);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.registerapply.service.SysRegisterApplyService#deleteApplication(java.lang.Long)
+     */
+    @Override
+    public boolean deleteApplication(Long id) {
+        if (id == null) {
+            return false;
+        }
+        SysRegisterApply registerApply = repository.findOne(id);
+        if (registerApply != null) {
+            repository.delete(registerApply);
+        }
+        return false;
     }
 
 }

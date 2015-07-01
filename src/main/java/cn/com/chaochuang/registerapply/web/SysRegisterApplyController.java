@@ -25,6 +25,7 @@ import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
 import cn.com.chaochuang.registerapply.bean.SysRegisterApplyShowBean;
 import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
 import cn.com.chaochuang.registerapply.service.SysRegisterApplyService;
 
 /**
@@ -40,13 +41,13 @@ public class SysRegisterApplyController {
     @Autowired
     protected ConversionService     conversionService;
 
-    @RequestMapping("/list")
+    @RequestMapping("list")
     public ModelAndView toAuthorityPage() {
         ModelAndView mav = new ModelAndView("/registerapply/list");
         return mav;
     }
 
-    @RequestMapping("/list.json")
+    @RequestMapping("list.json")
     @ResponseBody
     public EasyUIPage getAuthorityData(Integer page, Integer rows, SysUser user, HttpServletRequest request) {
         SearchBuilder<SysRegisterApply, Long> searchBuilder = new SearchBuilder<SysRegisterApply, Long>(
@@ -61,7 +62,7 @@ public class SysRegisterApplyController {
         return p;
     }
 
-    @RequestMapping("/apply")
+    @RequestMapping("apply.json")
     @ResponseBody
     public boolean toRegisterAppAuthority(Long userId, String imeiCode) {
         try {
@@ -71,4 +72,36 @@ public class SysRegisterApplyController {
             return false;
         }
     }
+
+    /**
+     * 改变申请状态
+     *
+     * @param ids
+     *            各申请项id
+     * @param status
+     *            状态号
+     * @return
+     */
+    @RequestMapping("changestatus.json")
+    @ResponseBody
+    public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status) {
+        try {
+            return registerApplyService.changeApplicationStatusInBatch(ids, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @RequestMapping("delete.json")
+    @ResponseBody
+    public boolean deleteApplication(Long[] ids) {
+        try {
+            return registerApplyService.deleteApplicationInBatch(ids);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
