@@ -74,7 +74,7 @@ public class SysRegisterApplyController {
     }
 
     /**
-     * 改变申请状态
+     * 改变各申请状态
      *
      * @param ids
      *            各申请项id
@@ -82,7 +82,7 @@ public class SysRegisterApplyController {
      *            状态号
      * @return
      */
-    @RequestMapping("changestatus.json")
+    @RequestMapping("changeinbatch.json")
     @ResponseBody
     public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status) {
         try {
@@ -93,7 +93,13 @@ public class SysRegisterApplyController {
         }
     }
 
-    @RequestMapping("delete.json")
+    /**
+     * 删除多个申请项
+     * 
+     * @param ids
+     * @return
+     */
+    @RequestMapping("deleteinbatch.json")
     @ResponseBody
     public boolean deleteApplication(Long[] ids) {
         try {
