@@ -1,5 +1,9 @@
 <script type="text/javascript">
 var baseUrl = '$link.getContextURL()/registerapp'
+    $(function () {
+        $('#dg').datagrid({
+        });
+    });
 function getConditions(){
     var f = $("#queryForm").serializeArray();
     var searchConditions = {};
@@ -32,18 +36,17 @@ function getCheckedId(){
 
 function operate(status){
     var ids = getCheckedId();
-    console.log({"ids":ids,"status":status});
     if(ids.length){
         $.messager.confirm('提示','确定通过审批?',function(r){
             if (r){
-                $.post(baseUrl + '/changeinbatch.json',{"ids":ids,status:status},function(result){
-                    if (result == "true"){
+                $.post(baseUrl + '/changeinbatch.json',{ids:ids,status:status},function(result){
+                    if (result){
                         $('#dg').datagrid('reload');
                     } else {
                         $.messager.show({
                             title: '提示',
                             msg: "操作失败"
-                        });
+                        },'json');
                     }
                 });
             }
@@ -57,7 +60,7 @@ function del(){
             if (r){
                 console.log(ids);
                 $.post(baseUrl + '/deleteinbatch.json',{ids:ids},function(result){
-                    if (result == "true"){
+                    if (result){
                         $('#dg').datagrid('reload');
                     } else {
                         $.messager.show({
