@@ -15,6 +15,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,9 +24,9 @@ import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
-import cn.com.chaochuang.registerapply.bean.RegisterInfo;
 import cn.com.chaochuang.registerapply.bean.SysRegisterApplyShowBean;
 import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
 import cn.com.chaochuang.registerapply.service.SysRegisterApplyService;
 
 /**
@@ -84,9 +85,9 @@ public class SysRegisterApplyController {
      */
     @RequestMapping("changeinbatch.json")
     @ResponseBody
-    public boolean changeApplicationStatusInBatch(RegisterInfo info) {
+    public boolean changeApplicationStatusInBatch(@RequestParam(value = "ids[]") Long[] ids, AppAuthStatus status) {
         try {
-            return registerApplyService.changeApplicationStatusInBatch(info.getIds(), info.getStatus());
+            return registerApplyService.changeApplicationStatusInBatch(ids, status);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -101,7 +102,7 @@ public class SysRegisterApplyController {
      */
     @RequestMapping("deleteinbatch.json")
     @ResponseBody
-    public boolean deleteApplication(Long[] ids) {
+    public boolean deleteApplication(@RequestParam(value = "ids[]") Long[] ids) {
         try {
             return registerApplyService.deleteApplicationInBatch(ids);
         } catch (Exception e) {
