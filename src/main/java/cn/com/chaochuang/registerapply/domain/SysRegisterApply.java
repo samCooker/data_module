@@ -13,6 +13,7 @@ import java.util.Date;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -20,6 +21,7 @@ import javax.persistence.OneToOne;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.registerapply.reference.AppAuthStatusConverter;
 
 /**
  * @author Shicx
@@ -42,6 +44,7 @@ public class SysRegisterApply extends LongIdEntity {
     /** 手机IMEI码 */
     private String            imeiCode;
     /** 申请状态 */
+    @Convert(converter = AppAuthStatusConverter.class)
     private AppAuthStatus     status;
 
     /**
