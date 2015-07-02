@@ -23,10 +23,18 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
 
     /**
      * 根据远程OA的用户id查找用户
-     * 
+     *
      * @param 远程OA的用户id
      *
      * @return SysUser,若rmUserId为空返回null
      * */
     public SysUser findByRmUserId(Long rmUserId);
+
+    /**
+     * 根据rmUserInfoId查找用户
+     *
+     * @param rmUserInfoId
+     * @return
+     */
+    public SysUser findByRmUserInfoId(Long rmUserInfoId);
 }

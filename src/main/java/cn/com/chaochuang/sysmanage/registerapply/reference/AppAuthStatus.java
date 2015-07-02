@@ -1,4 +1,4 @@
-package cn.com.chaochuang.registerapply.reference;
+package cn.com.chaochuang.sysmanage.registerapply.reference;
 
 import cn.com.chaochuang.common.dictionary.IDictionary;
 import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;

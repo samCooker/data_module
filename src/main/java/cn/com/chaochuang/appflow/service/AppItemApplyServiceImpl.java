@@ -43,6 +43,8 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
     private AppFlowNodeOpinionsService nodeOpinionsService;
     @Autowired
     private AppItemAttachService       attachService;
+    @Autowired
+    private AppTransactPersonalService appTransactPersonalService;
 
     @Override
     public SimpleDomainRepository<AppItemApply, Long> getRepository() {
@@ -77,6 +79,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
                     for (AppFlowNodeInfo nodeInfo : applyData.getFlowNodeInfos()) {
                         this.nodeInfoService.saveFlowNodeInfo(nodeInfo);
                     }
+                    appTransactPersonalService.saveAppTransactPersonalByFlowNodes(applyData.getFlowNodeInfos(), apply);
                 }
                 // 保存AppFlowNodeOpinions
                 if (Tools.isNotEmptyList(applyData.getFlowNodeOpinions())) {

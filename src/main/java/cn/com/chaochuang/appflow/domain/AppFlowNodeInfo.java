@@ -26,48 +26,52 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "node_info_id")) })
 public class AppFlowNodeInfo extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7704831045991198864L;
     /** 原系统实例环节流水号 */
-    private Long   rmNodeInfoId;
+    private Long              rmNodeInfoId;
     /** 审批事项编号 */
-    private Long   itemApplyId;
+    private Long              itemApplyId;
     /** 流程实例编号 */
-    private Long   flowInstId;
+    private Long              flowInstId;
     /** 前继环节流水号 */
-    private Long   preNodeId;
+    private Long              preNodeId;
     /** 前继环节代号 */
-    private String preNodeCode;
+    private String            preNodeCode;
     /** 前继环节名称 */
-    private String preNodeName;
+    private String            preNodeName;
     /** 当前环节代号 */
-    private String nodeCode;
+    private String            nodeCode;
     /** 当前环节名称 */
-    private String nodeName;
+    private String            nodeName;
     /** 环节发送时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date   arriveTime;
+    private Date              arriveTime;
     /** 环节处理结束 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date   finishTime;
+    private Date              finishTime;
     /** 处理时限 */
-    private Long   limitDate;
+    private Long              limitDate;
     /** 超时标志 */
-    private String timeOut;
+    private String            timeOut;
     /** 环节类型 */
-    private String nodeType;
+    private String            nodeType;
     /** 当前环节发送人编号 */
-    private Long   sendMan;
+    private Long              sendMan;
     /** 当前环节发送人名称 */
-    private String sendManName;
+    private String            sendManName;
     /** 当前环节处理人编号 */
-    private Long   transactId;
+    private Long              transactId;
     /** 当前环节处理人姓名 */
-    private String transactName;
+    private String            transactName;
     /** 当前环节处理人所属部门 */
-    private Long   transactDeptId;
+    private Long              transactDeptId;
     /** 当前环节处理人所属部门名称 */
-    private String transactDeptName;
+    private String            transactDeptName;
     /** 环节所属单位 */
-    private Long   handleUnitId;
+    private Long              handleUnitId;
 
     /**
      * @return the itemApplyId

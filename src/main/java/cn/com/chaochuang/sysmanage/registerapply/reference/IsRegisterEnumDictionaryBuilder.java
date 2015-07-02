@@ -6,7 +6,7 @@
  * History:     2014年10月27日 (guig) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.reference;
+package cn.com.chaochuang.sysmanage.registerapply.reference;
 
 import org.springframework.stereotype.Component;
 

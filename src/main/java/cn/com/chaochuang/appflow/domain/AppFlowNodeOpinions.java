@@ -26,33 +26,37 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "node_opinions_id")) })
 public class AppFlowNodeOpinions extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -338150812230785508L;
     /** 原系统审批意见流水号 */
-    private Long   rmNodeOpinionsId;
+    private Long              rmNodeOpinionsId;
     /** 审批事项编号 */
-    private Long   itemApplyId;
+    private Long              itemApplyId;
     /** 流程实例编号 */
-    private Long   flowInstId;
+    private Long              flowInstId;
     /** 意见所属环节编号 */
-    private Long   nodeId;
+    private Long              nodeId;
     /** 环节名称 */
-    private String nodeName;
+    private String            nodeName;
     /** 环节代码 */
-    private String nodeCode;
+    private String            nodeCode;
     /** 审批人编号 */
-    private Long   transactId;
+    private Long              transactId;
     /** 审批人名称 */
-    private String transactName;
+    private String            transactName;
     /** 审批人部门编号 */
-    private Long   transactDeptId;
+    private Long              transactDeptId;
     /** 审批人部门名称 */
-    private String transactDeptName;
+    private String            transactDeptName;
     /** 审批时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date   transactTime;
+    private Date              transactTime;
     /** 审批意见内容 */
-    private String opinions;
+    private String            opinions;
     /** 阅示标识 */
-    private String readSign;
+    private String            readSign;
 
     /**
      * @return the itemApplyId

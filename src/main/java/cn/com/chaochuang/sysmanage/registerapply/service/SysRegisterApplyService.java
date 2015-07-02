@@ -6,11 +6,11 @@
  * History:     2015年6月29日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.service;
+package cn.com.chaochuang.sysmanage.registerapply.service;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
 
 /**
  * @author Shicx

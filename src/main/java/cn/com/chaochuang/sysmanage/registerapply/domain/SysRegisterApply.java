@@ -6,7 +6,7 @@
  * History:     2015年6月29日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.domain;
+package cn.com.chaochuang.sysmanage.registerapply.domain;
 
 import java.util.Date;
 
@@ -20,8 +20,8 @@ import javax.persistence.OneToOne;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.common.user.domain.SysUser;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatusConverter;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatusConverter;
 
 /**
  * @author Shicx

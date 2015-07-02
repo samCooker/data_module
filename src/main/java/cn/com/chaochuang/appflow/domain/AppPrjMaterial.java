@@ -22,22 +22,26 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "material_id")) })
 public class AppPrjMaterial extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -1654984512792332607L;
     /** 原系统材料清单分类编号 */
-    private Long   rmMaterialId;
+    private Long              rmMaterialId;
     /** 材料清单分类名称 */
-    private String materialName;
+    private String            materialName;
     /** 材料清单对应审批项编号 */
-    private Long   prjId;
+    private Long              prjId;
     /** 显示标识 */
-    private String typeFlag;
+    private String            typeFlag;
     /** 排序号 */
-    private Long   showSort;
+    private Long              showSort;
     /** 是否有效 */
-    private String validFlag;
+    private String            validFlag;
     /** 必须上传 */
-    private String needUploadFlag;
+    private String            needUploadFlag;
     /** 才来大类名称 */
-    private String materialNameType;
+    private String            materialNameType;
 
     /**
      * @return the rmMaterialId

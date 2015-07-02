@@ -27,31 +27,35 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "attach_id")) })
 public class AppItemAttach extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 2453637155776496271L;
     /** 原系统附件编号 */
-    private Long      rmAttachId;
+    private Long              rmAttachId;
     /** 材料清单编号 */
-    private Long      materialId;
+    private Long              materialId;
     /** 申请项目编号 */
-    private Long      itemApplyId;
+    private Long              itemApplyId;
     /** 附件保存名 */
-    private String    saveName;
+    private String            saveName;
     /** 附件真实名 */
-    private String    trueName;
+    private String            trueName;
     /** 附件保存路径 */
-    private String    savePath;
+    private String            savePath;
     /** 附件大小 */
-    private Long      fileSize;
+    private Long              fileSize;
     /** 是否是图像 */
-    private String    isImage;
+    private String            isImage;
     /** 排序号 */
-    private Long      showSort;
+    private Long              showSort;
     /** 所属单位 */
-    private Long      handleUnitId;
+    private Long              handleUnitId;
     /** 上传时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date      applyTime;
+    private Date              applyTime;
     /** 是否是本地数据 */
-    private LocalData localData;
+    private LocalData         localData;
 
     /**
      * @return the rmAttachId

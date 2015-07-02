@@ -6,7 +6,7 @@
  * History:     2015年6月29日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.service;
+package cn.com.chaochuang.sysmanage.registerapply.service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,9 +22,10 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
-import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
-import cn.com.chaochuang.registerapply.repository.SysRegisterApplyRepository;
+import cn.com.chaochuang.sysmanage.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegister;
+import cn.com.chaochuang.sysmanage.registerapply.repository.SysRegisterApplyRepository;
 
 /**
  * @author Shicx
@@ -32,8 +33,7 @@ import cn.com.chaochuang.registerapply.repository.SysRegisterApplyRepository;
  */
 @Service
 @Transactional
-public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply> implements
-                SysRegisterApplyService {
+public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply> implements SysRegisterApplyService {
 
     @Autowired
     private SysRegisterApplyRepository repository;
@@ -89,15 +89,19 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         if (ids == null || ids.length == 0 || status == null) {
             return false;
         }
-        List<SysRegisterApply> registerApplyList = new ArrayList<SysRegisterApply>();
         for (Long id : ids) {
             SysRegisterApply registerApply = repository.findOne(id);
             if (registerApply != null) {
+                // 改变状态并保存
                 registerApply.setStatus(status);
-                registerApplyList.add(registerApply);
+                SysUser user = registerApply.getRegisterUser();
+                user.setRegisterTime(new Date());
+                user.setImeiCode(registerApply.getImeiCode());
+                user.setIsRegister(AppAuthStatus.审批通过.equals(status) ? IsRegister.已注册 : IsRegister.未注册);
+                userRepository.save(user);
+                repository.save(registerApply);
             }
         }
-        repository.save(registerApplyList);
         return true;
     }
 
@@ -118,7 +122,7 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
                 registerApplyList.add(registerApply);
             }
         }
-        repository.delete(registerApplyList);
+        repository.deleteInBatch(registerApplyList);
         return true;
     }
 

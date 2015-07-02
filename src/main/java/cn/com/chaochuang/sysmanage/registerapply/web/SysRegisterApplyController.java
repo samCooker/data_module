@@ -6,7 +6,7 @@
  * History:     2015年6月29日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.web;
+package cn.com.chaochuang.sysmanage.registerapply.web;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,10 +24,10 @@ import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.util.SearchListHelper;
-import cn.com.chaochuang.registerapply.bean.SysRegisterApplyShowBean;
-import cn.com.chaochuang.registerapply.domain.SysRegisterApply;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
-import cn.com.chaochuang.registerapply.service.SysRegisterApplyService;
+import cn.com.chaochuang.sysmanage.registerapply.bean.SysRegisterApplyShowBean;
+import cn.com.chaochuang.sysmanage.registerapply.domain.SysRegisterApply;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.service.SysRegisterApplyService;
 
 /**
  * @author Shicx
@@ -51,8 +51,7 @@ public class SysRegisterApplyController {
     @RequestMapping("list.json")
     @ResponseBody
     public EasyUIPage getAuthorityData(Integer page, Integer rows, SysUser user, HttpServletRequest request) {
-        SearchBuilder<SysRegisterApply, Long> searchBuilder = new SearchBuilder<SysRegisterApply, Long>(
-                        conversionService);
+        SearchBuilder<SysRegisterApply, Long> searchBuilder = new SearchBuilder<SysRegisterApply, Long>(conversionService);
         searchBuilder.clearSearchBuilder().findSearchParam(request);
         searchBuilder.appendSort(Direction.DESC, "applyTime");
         SearchListHelper<SysRegisterApply> listhelper = new SearchListHelper<SysRegisterApply>();

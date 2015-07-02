@@ -24,46 +24,50 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "node_info_id")) })
 public class AppEntp extends LongIdEntity {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 2200370368113192779L;
     /** 原系统企业编号 */
-    private Long   rmEntpId;
+    private Long              rmEntpId;
     /** 注册资金 */
-    private Long   registerFund;
+    private Long              registerFund;
     /** 经度 */
-    private Long   longitude;
+    private Long              longitude;
     /** 纬度 */
-    private Long   latitude;
+    private Long              latitude;
     /** 企业名称 */
-    private String entpName;
+    private String            entpName;
     /** 省份 */
-    private String entpProvince;
+    private String            entpProvince;
     /** 联系人 */
-    private String contact;
+    private String            contact;
     /** 联系人职务 */
-    private String contactDuty;
+    private String            contactDuty;
     /** 联系人手机 */
-    private String cellPhone;
+    private String            cellPhone;
     /** 联系人地址 */
-    private String contactAddress;
+    private String            contactAddress;
     /** 联系人邮编 */
-    private String contactPostalCode;
+    private String            contactPostalCode;
     /** 联系人电话 */
-    private String tel;
+    private String            tel;
     /** 注册地址 */
-    private String registerAddress;
+    private String            registerAddress;
     /** 营业执照 */
-    private String businessLicense;
+    private String            businessLicense;
     /** 城市 */
-    private String cityName;
+    private String            cityName;
     /** 管理单位 */
-    private String handleUnitName;
+    private String            handleUnitName;
     /** 传真 */
-    private String fax;
+    private String            fax;
     /** 电子邮件 */
-    private String email;
+    private String            email;
     /** 执照注册时间 */
-    private Date   businessLicenseDate;
+    private Date              businessLicenseDate;
     /** 数据导入时间 */
-    private Date   inputDate;
+    private Date              inputDate;
 
     /**
      * @return the rmEntpId

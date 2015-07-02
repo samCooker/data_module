@@ -6,14 +6,14 @@
  * History:     2015年6月29日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.bean;
+package cn.com.chaochuang.sysmanage.registerapply.bean;
 
 import java.util.Date;
 
 import org.dozer.Mapping;
 
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
 
 /**
  * @author Shicx

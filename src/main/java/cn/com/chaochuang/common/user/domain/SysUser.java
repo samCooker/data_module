@@ -12,13 +12,12 @@ import javax.persistence.ManyToOne;
 
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
-import cn.com.chaochuang.registerapply.reference.IsRegister;
-import cn.com.chaochuang.registerapply.reference.IsRegisterConverter;
+import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegister;
+import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegisterConverter;
 
 @Entity
 @LookUp
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")),
-                @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")), @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
 public class SysUser extends PersistEntity {
 
     private static final long serialVersionUID = -4615274498193533591L;

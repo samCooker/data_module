@@ -6,9 +6,9 @@
  * History:     2015年7月1日 (LJX) 1.0 Create
  */
 
-package cn.com.chaochuang.registerapply.bean;
+package cn.com.chaochuang.sysmanage.registerapply.bean;
 
-import cn.com.chaochuang.registerapply.reference.AppAuthStatus;
+import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
 
 /**
  * @author LJX

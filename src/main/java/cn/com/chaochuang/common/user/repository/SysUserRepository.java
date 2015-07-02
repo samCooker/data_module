@@ -25,4 +25,9 @@ public interface SysUserRepository extends SimpleDomainRepository<SysUser, Long>
      */
     public SysUser findByrmUserInfoId(Long rmUserInfoId);
 
+    /**
+     * 根据rmUserInfoId查找用户
+     * */
+    public SysUser findByRmUserInfoId(Long rmUserInfoId);
+
 }
