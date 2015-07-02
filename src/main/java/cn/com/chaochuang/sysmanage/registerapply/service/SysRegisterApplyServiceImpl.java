@@ -8,9 +8,7 @@
 
 package cn.com.chaochuang.sysmanage.registerapply.service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -86,21 +84,11 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
      */
     @Override
     public boolean changeApplicationStatusInBatch(Long[] ids, AppAuthStatus status) {
-        if (ids == null || ids.length == 0 || status == null) {
+        if (ids == null) {
             return false;
         }
         for (Long id : ids) {
-            SysRegisterApply registerApply = repository.findOne(id);
-            if (registerApply != null) {
-                // 改变状态并保存
-                registerApply.setStatus(status);
-                SysUser user = registerApply.getRegisterUser();
-                user.setRegisterTime(new Date());
-                user.setImeiCode(registerApply.getImeiCode());
-                user.setIsRegister(AppAuthStatus.审批通过.equals(status) ? IsRegister.已注册 : IsRegister.未注册);
-                userRepository.save(user);
-                repository.save(registerApply);
-            }
+            changeApplicationStatus(id, status);
         }
         return true;
     }
@@ -115,14 +103,9 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         if (ids == null) {
             return false;
         }
-        List<SysRegisterApply> registerApplyList = new ArrayList<SysRegisterApply>();
         for (Long id : ids) {
-            SysRegisterApply registerApply = repository.findOne(id);
-            if (registerApply != null) {
-                registerApplyList.add(registerApply);
-            }
+            deleteApplication(id);
         }
-        repository.deleteInBatch(registerApplyList);
         return true;
     }
 
@@ -139,8 +122,11 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         }
         SysRegisterApply registerApply = repository.findOne(id);
         if (registerApply != null) {
+            // 设置申请状态
             registerApply.setStatus(status);
             repository.save(registerApply);
+            // 保存申请信息到用户表
+            saveRegisterInfoInUser(registerApply, status);
             return true;
         }
         return false;
@@ -159,8 +145,24 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         SysRegisterApply registerApply = repository.findOne(id);
         if (registerApply != null) {
             repository.delete(registerApply);
+            // 将用户表的申请信息置回未注册状态
+            saveRegisterInfoInUser(registerApply, AppAuthStatus.未审批);
         }
         return false;
+    }
+
+    /**
+     * 保存申请信息到用户表
+     *
+     * @param registerApply
+     * @param status
+     */
+    private void saveRegisterInfoInUser(SysRegisterApply registerApply, AppAuthStatus status) {
+        SysUser user = registerApply.getRegisterUser();
+        user.setRegisterTime(new Date());
+        user.setImeiCode(registerApply.getImeiCode());
+        user.setIsRegister(AppAuthStatus.审批通过.equals(status) ? IsRegister.已注册 : IsRegister.未注册);
+        userRepository.save(user);
     }
 
 }

@@ -31,9 +31,6 @@ public class AppTransactPersonal extends LongIdEntity {
     private static final long serialVersionUID = -8453578016801449236L;
 
     /** 审批事项编号 */
-    // @OneToOne
-    // @JoinColumn(name = "rmItemApplyId", referencedColumnName = "rmItemApplyId")
-    // private AppItemApply itemApply;
     private Long              rmItemApplyId;
     /** 经办人 */
     private Long              transactId;
@@ -43,6 +40,8 @@ public class AppTransactPersonal extends LongIdEntity {
     private Long              unitOrgId;
     /** 经办人所属部门 */
     private Long              transactDeptId;
+    /** 标题 */
+    private String            title;
 
     /**
      * @return the transactId
@@ -124,6 +123,21 @@ public class AppTransactPersonal extends LongIdEntity {
      */
     public void setRmItemApplyId(Long rmItemApplyId) {
         this.rmItemApplyId = rmItemApplyId;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title
+     *            the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

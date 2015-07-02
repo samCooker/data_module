@@ -59,6 +59,7 @@ public class AppTransactPersonalServiceImpl extends SimpleLongIdCrudRestService<
                     if (user == null) {
                         throw new RuntimeException("找不到RmUserInfo=" + nodeInfo.getTransactId() + "的用户。");
                     }
+                    newTransaction.setTitle(apply.getPrjName() + "   " + apply.getApplyInfo());
                     newTransaction.setRmItemApplyId(nodeInfo.getItemApplyId());
                     newTransaction.setTransactTime(nodeInfo.getArriveTime());
                     newTransaction.setUnitOrgId(user.getDepartment() != null ? user.getDepartment().getAncestorDep() : null);
