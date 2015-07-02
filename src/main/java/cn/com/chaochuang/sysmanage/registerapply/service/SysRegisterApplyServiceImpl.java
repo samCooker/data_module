@@ -66,13 +66,14 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
             registerApply.setImeiCode(imeiCode);
             registerApply.setApplyTime(new Date());
             registerApply.setStatus(AppAuthStatus.未审批);
-        } else {
-            // 重新申请
-            registerApply.setImeiCode(imeiCode);
-            registerApply.setApplyTime(new Date());
-            registerApply.setStatus(AppAuthStatus.未审批);
+            // 保存申请项
+            repository.save(registerApply);
+            // 将用户注册信息置为提交状态
+            user.setIsRegister(IsRegister.已提交注册);
+            user.setImeiCode(imeiCode);
+            user.setRegisterTime(new Date());
+            userRepository.save(user);
         }
-        repository.save(registerApply);
         return true;
     }
 
@@ -159,9 +160,19 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
      */
     private void saveRegisterInfoInUser(SysRegisterApply registerApply, AppAuthStatus status) {
         SysUser user = registerApply.getRegisterUser();
-        user.setRegisterTime(new Date());
-        user.setImeiCode(registerApply.getImeiCode());
-        user.setIsRegister(AppAuthStatus.审批通过.equals(status) ? IsRegister.已注册 : IsRegister.未注册);
+        if (AppAuthStatus.审批通过.equals(status)) {
+            user.setRegisterTime(new Date());
+            user.setImeiCode(registerApply.getImeiCode());
+            user.setIsRegister(IsRegister.已注册);
+        } else if (AppAuthStatus.审批不通过.equals(status)) {
+            user.setRegisterTime(new Date());
+            user.setImeiCode(registerApply.getImeiCode());
+            user.setIsRegister(IsRegister.注册未通过);
+        } else {
+            user.setRegisterTime(null);
+            user.setImeiCode(null);
+            user.setIsRegister(IsRegister.未注册);
+        }
         userRepository.save(user);
     }
 

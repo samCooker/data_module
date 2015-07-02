@@ -5,7 +5,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
 
 public enum IsRegister implements IDictionary {
 
-    未注册("0"), 已注册("1");
+    未注册("0"), 已提交注册("1"), 注册未通过("2"), 已注册("3");
 
     private String key;
     private String value;
