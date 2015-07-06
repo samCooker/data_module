@@ -54,4 +54,16 @@ public interface SuperviseWebService {
     @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
     @WebMethod
     String submitAppItemInfo(WebServiceNodeInfo nodeInfo);
+
+    /**
+     * 获取公文的附件
+     *
+     * @param fileName
+     * @param offset
+     * @param reads
+     * @return
+     */
+    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebMethod
+    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
 }

@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.appflow.service;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
  */
 @Service
 @Transactional
-public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppItemAttach> implements
-                AppItemAttachService {
+public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppItemAttach> implements AppItemAttachService {
     @Autowired
     private AppItemAttachRepository repository;
 
@@ -45,6 +46,31 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
         if (node == null) {
             info.setLocalData(LocalData.非本地数据);
             this.repository.save(info);
+        }
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#selectUnLocalAttach()
+     */
+    @Override
+    public List<AppItemAttach> selectUnLocalAttach() {
+        return this.repository.findByLocalData(LocalData.非本地数据);
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#saveDocFileAttachForLocal(cn.com.chaochuang.appflow.domain.AppItemAttach,
+     *      java.lang.String)
+     */
+    @Override
+    public void saveDocFileAttachForLocal(AppItemAttach attach, String localFileName) {
+        if (attach != null) {
+            attach.setLocalData(LocalData.有本地数据);
+            attach.setSavePath(localFileName);
+            this.repository.save(attach);
         }
     }
 }

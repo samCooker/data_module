@@ -75,7 +75,7 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             // undone
             break;
         default:
-            return;
+            throw new RuntimeException("找不到对应的待办类型");
         }
 
     }

@@ -8,17 +8,24 @@
 
 package cn.com.chaochuang.task;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
 import cn.com.chaochuang.appflow.bean.AppFlowShowData;
+import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.service.AppItemApplyService;
+import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.FdFordoAppService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
@@ -39,25 +46,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class MobileAppDataTaskService {
 
     @Autowired
-    private SuperviseWebService superviseWebService;
+    private SuperviseWebService  superviseWebService;
     @Autowired
-    private FdFordoAppService   fdFordoAppService;
+    private FdFordoAppService    fdFordoAppService;
     @Autowired
-    private AppItemApplyService appItemApplyService;
+    private AppItemApplyService  appItemApplyService;
     @Autowired
-    private DataUpdateService   dataUpdateService;
+    private DataUpdateService    dataUpdateService;
+    @Autowired
+    private AppItemAttachService appItemAttachService;
 
+    /** 附件存放根路径 */
+    @Value("${upload.rootpath}")
+    private String               rootPath;
+
+    /** 公文附件存放相对路径 */
+    @Value("${supervisefile.attach.path}")
+    private String               docFileAttachPath;
     /** 获取公文阻塞标识 */
-    private static boolean      isFordoRunning       = false;
+    private static boolean       isFordoRunning          = false;
     /** 获取行政审批数据标识 */
-    private static boolean      isAppItemDataRunning = false;
+    private static boolean       isAppItemDataRunning    = false;
     /** 提交行政审批数据标识 */
-    private static boolean      isSubmitDataRunning  = false;
+    private static boolean       isSubmitDataRunning     = false;
+    /** 下载公文附件阻塞标识 */
+    private static boolean       isDownLoadAttachRunning = false;
 
     /**
      * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
      */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -72,7 +90,8 @@ public class MobileAppDataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(), Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
+            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(),
+                            Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
             // 将行政审批的待办记录写入待办事宜表
             this.saveFdFordo(json);
         } catch (Exception ex) {
@@ -94,8 +113,10 @@ public class MobileAppDataTaskService {
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
-            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(jsonData, javaType);
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                            AppFlowPendingHandleInfo.class);
+            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper
+                            .readValue(jsonData, javaType);
             this.fdFordoAppService.insertFdFordos(datas);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -105,7 +126,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/10 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -136,7 +157,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    @Scheduled(cron = "10/15 * * * * ?")
+    // @Scheduled(cron = "10/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -173,6 +194,60 @@ public class MobileAppDataTaskService {
             ex.printStackTrace();
         } finally {
             isSubmitDataRunning = false;
+        }
+    }
+
+    /**
+     * 获取公文的附件，拉到本地存储
+     */
+    // @Scheduled(cron = "15/20 * * * * ?")
+    public void getDocFileAttachTask() {
+        if (isDownLoadAttachRunning) {
+            return;
+        }
+        isDownLoadAttachRunning = true;
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            String localFilePath = this.rootPath + this.docFileAttachPath + Tools.DATE_FORMAT4.format(new Date());
+            // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
+            List<AppItemAttach> datas = this.appItemAttachService.selectUnLocalAttach();
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            AppItemAttach attach = (AppItemAttach) datas.get(0);
+            File file = new File(localFilePath);
+            // 目录不存在则建立新目录
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            String localFileName = localFilePath + "/" + attach.getSaveName();
+            String remoteFileName = attach.getSavePath();
+            file = new File(localFileName);
+            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+            // 调用ITransferOAService的setDocTransactInfo的uploadStreamAttachFile方法
+            Long offset = Long.valueOf(0);
+            int uploadBlockSize = 10240;
+            byte[] buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            while (buffer.length > 0) {
+                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                offset += buffer.length;
+                buffer = new byte[uploadBlockSize];
+                buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            }
+            // 将附件localData标志置为本地数据("1")
+            this.appItemAttachService.saveDocFileAttachForLocal(attach, localFileName);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (bufferedOutputStream != null) {
+                try {
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                } catch (IOException exf) {
+                    throw new RuntimeException(exf);
+                }
+            }
+            isDownLoadAttachRunning = false;
         }
     }
 }

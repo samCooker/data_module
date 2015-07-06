@@ -66,7 +66,7 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/6 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -101,26 +101,32 @@ public class MobileCommonDataTaskService {
             Page page = this.dataChangeService.findAllByPage(1, 10);
             List<SysDataChange> datas = page.getContent();
             for (SysDataChange item : datas) {
-                if (item.getChangeTableName() != null
-                                && item.getChangeTableName().contains(DataChangeTable.待办事宜.getKey())) {
-                    // 如果处理的表表名包含pending_handle，则调用公用的待办方法分析处理过程
-                    this.commonFordoService.analysisDataChange(item);
-                } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
-                    // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
-                    String[] items = item.getChangeScript().split("=");
-                    String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
-                    this.fileService.finishDocFile(json);
-                } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
-                    // 组织机构发生变更
-                    this.departmentService.analysisDataChange(item);
-                } else if (DataChangeTable.人员.getKey().equals(item.getChangeTableName())) {
-                    // 人员数据发生变更
-                    this.userService.analysisDataChange(item);
-                } else if (DataChangeTable.通讯录.getKey().equals(item.getChangeTableName())) {
-                    // 通讯录数据发生变更
-                    this.depLinkmanService.analysisDataChange(item);
-                } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
-                    // 新闻公告数据发生变更
+                try {
+                    if (item.getChangeTableName() != null
+                                    && item.getChangeTableName().contains(DataChangeTable.待办事宜.getKey())) {
+                        // 如果处理的表表名包含pending_handle，则调用公用的待办方法分析处理过程
+                        this.commonFordoService.analysisDataChange(item);
+                    } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
+                        // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
+                        String[] items = item.getChangeScript().split("=");
+                        String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
+                        this.fileService.finishDocFile(json);
+                    } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
+                        // 组织机构发生变更
+                        this.departmentService.analysisDataChange(item);
+                    } else if (DataChangeTable.人员.getKey().equals(item.getChangeTableName())) {
+                        // 人员数据发生变更
+                        this.userService.analysisDataChange(item);
+                    } else if (DataChangeTable.通讯录.getKey().equals(item.getChangeTableName())) {
+                        // 通讯录数据发生变更
+                        this.depLinkmanService.analysisDataChange(item);
+                    } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
+                        // 新闻公告数据发生变更
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
+                    continue;
                 }
                 // 删除变更数据
                 this.dataChangeService.delete(item.getId());

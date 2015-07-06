@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum SystemType implements IDictionary {
-    oa("公文系统"), supervise("审批系统"), aipcase("办案系统");
+    oa("oa", "公文系统"), supervise("supervise", "审批系统"), aipcase("aipcase", "办案系统");
     private String key;
     private String value;
 

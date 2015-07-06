@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.appflow.service;
 
+import java.util.List;
+
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -19,9 +21,24 @@ public interface AppItemAttachService extends CrudRestService<AppItemAttach, Lon
 
     /**
      * 保存审批材料数据
-     * 
+     *
      * @param info
      *            审批材料
      */
     void saveAppItemAttach(AppItemAttach info);
+
+    /**
+     * 查询localData=0的附件信息
+     *
+     * @return
+     */
+    List<AppItemAttach> selectUnLocalAttach();
+
+    /**
+     * 修改指定附件的路径和本地标识
+     * 
+     * @param id
+     * @param localFileName
+     */
+    void saveDocFileAttachForLocal(AppItemAttach attach, String localFileName);
 }
