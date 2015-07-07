@@ -51,7 +51,8 @@ public class SysRegisterApplyController {
     @RequestMapping("list.json")
     @ResponseBody
     public EasyUIPage getAuthorityData(Integer page, Integer rows, SysUser user, HttpServletRequest request) {
-        SearchBuilder<SysRegisterApply, Long> searchBuilder = new SearchBuilder<SysRegisterApply, Long>(conversionService);
+        SearchBuilder<SysRegisterApply, Long> searchBuilder = new SearchBuilder<SysRegisterApply, Long>(
+                        conversionService);
         searchBuilder.clearSearchBuilder().findSearchParam(request);
         searchBuilder.appendSort(Direction.DESC, "applyTime");
         SearchListHelper<SysRegisterApply> listhelper = new SearchListHelper<SysRegisterApply>();
@@ -87,6 +88,42 @@ public class SysRegisterApplyController {
     public boolean changeApplicationStatusInBatch(@RequestParam(value = "ids[]") Long[] ids, AppAuthStatus status) {
         try {
             return registerApplyService.changeApplicationStatusInBatch(ids, status);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 后台直接注册
+     *
+     * @param id
+     * @param imeiCode
+     * @return
+     */
+    @RequestMapping("register.json")
+    @ResponseBody
+    public boolean register(Long id, String imeiCode) {
+        try {
+            return registerApplyService.register(id, imeiCode);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 注销
+     *
+     * @param id
+     * @param imeiCode
+     * @return
+     */
+    @RequestMapping("unregister.json")
+    @ResponseBody
+    public boolean unRegister(Long id) {
+        try {
+            return registerApplyService.unRregister(id);
         } catch (Exception e) {
             e.printStackTrace();
             return false;

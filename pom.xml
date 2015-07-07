@@ -100,5 +100,11 @@
             <artifactId>mail</artifactId>
             <version>1.4.7</version>
         </dependency>
+        <!-- RSA算法处理 -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.46</version>
+        </dependency>
     </dependencies>
 </project>

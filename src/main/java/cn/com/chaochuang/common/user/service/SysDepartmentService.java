@@ -11,6 +11,7 @@ package cn.com.chaochuang.common.user.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.common.user.bean.DepTreeBean;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.tree.DepartmentTreeNode;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
@@ -41,4 +42,6 @@ public interface SysDepartmentService extends CrudRestService<SysDepartment, Lon
      * @return
      */
     public SysDepartment findByRmDepId(Long rmDepId);
+
+    public List<DepTreeBean> getDepTree(Long parentId);
 }

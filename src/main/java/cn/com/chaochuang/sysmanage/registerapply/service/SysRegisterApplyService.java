@@ -67,4 +67,21 @@ public interface SysRegisterApplyService extends CrudRestService<SysRegisterAppl
      */
     public boolean deleteApplication(Long id);
 
+    /**
+     * 直接后台注册
+     *
+     * @param userId
+     * @param imeiCode
+     * @return
+     */
+    public boolean register(Long userId, String imeiCode);
+
+    /**
+     * 注销
+     * 
+     * @param userId
+     * @return
+     */
+    public boolean unRregister(Long userId);
+
 }

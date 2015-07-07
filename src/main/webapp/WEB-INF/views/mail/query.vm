@@ -1,0 +1,22 @@
+<form id="queryForm">
+    <table class="tb2">
+        <tr>
+              <th style="text-align:right;">用户名：</th>
+              <td style="text-align:left">
+                <input name="$qc.like('mailUserName')" class="easyui-textbox" style="margin:5px;"/>
+              </td>
+              <th style="text-align:right;">帐号：</th>
+              <td style="text-align:left">
+                <input name="$qc.like('account')" class="easyui-textbox" style="margin:5px;"/>
+              </td>
+              <th style="text-align:right;">组织机构：</th>
+              <td style="text-align:left">
+                <input name="$qc.like('orgName')" class="easyui-textbox" style="margin:5px;"/>
+              </td>
+        </tr>
+        <span style="float:right;position:absolute;right:5px;">
+            <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-search" onclick="formSerach()" >查询</a>
+            <a href="javascript:;" class="easyui-linkbutton" plain="true" iconCls="icon-remove" onclick="reset()">重置</a>
+        </span>
+    </table>
+</form>

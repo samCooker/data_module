@@ -17,7 +17,8 @@ import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegisterConverter;
 
 @Entity
 @LookUp
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")), @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "user_id")),
+                @AttributeOverride(name = "valid", column = @Column(name = "valid")) })
 public class SysUser extends PersistEntity {
 
     private static final long serialVersionUID = -4615274498193533591L;
@@ -30,7 +31,7 @@ public class SysUser extends PersistEntity {
     private Long              rmDepId;
     /** 所属部门 */
     @ManyToOne
-    @JoinColumn(name = "dep_id")
+    @JoinColumn(name = "rmDepId", referencedColumnName = "rmDepId", insertable = false, updatable = false)
     private SysDepartment     department;
     /** 姓名 */
     private String            userName;

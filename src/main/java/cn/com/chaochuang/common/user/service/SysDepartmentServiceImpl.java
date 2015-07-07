@@ -18,8 +18,10 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.common.data.domain.ValidAble;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.user.bean.DepTreeBean;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.repository.SysDepartmentRepository;
 import cn.com.chaochuang.common.user.tree.DepartmentTreeNode;
@@ -35,7 +37,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Service
 @Transactional
-public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDepartment> implements SysDepartmentService {
+public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDepartment> implements
+                SysDepartmentService {
 
     @Autowired
     private SysDepartmentRepository repository;
@@ -95,7 +98,8 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
     public void analysisDataChange(SysDataChange dataChange) {
         try {
             // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
-            if (OperationType.修改.getKey().equals(dataChange.getOperationType()) || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+            if (OperationType.修改.getKey().equals(dataChange.getOperationType())
+                            || OperationType.新增.getKey().equals(dataChange.getOperationType())) {
                 // 从webservice获取json字符串
                 String json = this.transferOAService.getChangeDepartment(dataChange.getChangeScript());
 
@@ -135,7 +139,7 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see cn.com.chaochuang.common.user.service.SysDepartmentService#findByRmDepId(java.lang.Long)
      */
     @Override
@@ -144,6 +148,34 @@ public class SysDepartmentServiceImpl extends SimpleLongIdCrudRestService<SysDep
             return null;
         }
         return repository.findByRmDepId(rmDepId);
+    }
+
+    /**
+     * @see cn.com.chaochuang.common.user.service.SysDepartmentService#getDepTree(java.lang.Long)
+     */
+    @Override
+    public List<DepTreeBean> getDepTree(Long parentId) {
+        List<DepTreeBean> tree = null;
+        List<SysDepartment> depts = null;
+        if (parentId == null) {
+            depts = this.repository.findByRootDepartment(ValidAble.VALID);
+        } else {
+            depts = this.repository.findByParentDepAndValidOrderByOrderNumAsc(parentId, ValidAble.VALID);
+        }
+        if (depts != null && depts.size() > 0) {
+            tree = new ArrayList<DepTreeBean>();
+            for (SysDepartment dep : depts) {
+                // 若parentId不为空，则判断获取的组织机构数据不包含parentId
+                if (parentId != null && dep.getRmDepId().equals(parentId)) {
+                    continue;
+                }
+                List<SysDepartment> supDep = this.repository.findByParentDepAndValidOrderByOrderNumAsc(
+                                dep.getRmDepId(), ValidAble.VALID);
+                Boolean isLeaf = (supDep != null && supDep.size() > 0) ? false : true;
+                tree.add(new DepTreeBean(dep.getRmDepId(), dep.getDepName(), isLeaf));
+            }
+        }
+        return tree;
     }
 
 }

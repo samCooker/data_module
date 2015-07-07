@@ -31,7 +31,8 @@ import cn.com.chaochuang.sysmanage.registerapply.repository.SysRegisterApplyRepo
  */
 @Service
 @Transactional
-public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply> implements SysRegisterApplyService {
+public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply> implements
+                SysRegisterApplyService {
 
     @Autowired
     private SysRegisterApplyRepository repository;
@@ -174,6 +175,38 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
             user.setIsRegister(IsRegister.未注册);
         }
         userRepository.save(user);
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.sysmanage.registerapply.service.SysRegisterApplyService#register(java.lang.Long,
+     *      java.lang.String)
+     */
+    @Override
+    public boolean register(Long userId, String imeiCode) {
+        this.toRegisterAppAuthority(userId, imeiCode);
+        SysRegisterApply sra = this.repository.findByRegisterUser(this.userRepository.findOne(userId));
+        if (sra != null) {
+            this.changeApplicationStatus(sra.getId(), AppAuthStatus.审批通过);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * (non-Javadoc)
+     *
+     * @see cn.com.chaochuang.sysmanage.registerapply.service.SysRegisterApplyService#unRregister(java.lang.Long)
+     */
+    @Override
+    public boolean unRregister(Long userId) {
+        SysRegisterApply sra = this.repository.findByRegisterUser(this.userRepository.findOne(userId));
+        if (sra != null) {
+            this.deleteApplication(sra.getId());
+            return true;
+        }
+        return false;
     }
 
 }

@@ -10,6 +10,9 @@ package cn.com.chaochuang.common.user.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 
@@ -34,4 +37,7 @@ public interface SysDepartmentRepository extends SimpleDomainRepository<SysDepar
      * @return
      */
     public SysDepartment findByRmDepId(Long rmDepId);
+
+    @Query("select d from SysDepartment d where d.rmDepId=d.parentDep and d.rmDepId=d.ancestorDep and d.valid=:va order by d.orderNum")
+    public List<SysDepartment> findByRootDepartment(@Param("va") Integer valid);
 }

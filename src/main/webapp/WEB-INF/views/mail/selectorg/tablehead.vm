@@ -1,0 +1,2 @@
+<th data-options="field:'noteName',width:250">文书名称</th>
+<th data-options="field:'noteNum',width:300">文书编号</th>

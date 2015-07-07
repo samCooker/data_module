@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.common.security.UserInfo;
 import cn.com.chaochuang.common.user.bean.SimpleCurrentUserInfo;
 import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysManageUserRepository;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 
 /**
@@ -33,13 +34,15 @@ import cn.com.chaochuang.common.user.repository.SysUserRepository;
 public class SimpleUserDetailsService implements UserDetailsService {
 
     @Value("${security.default_admin_account}")
-    private String            defaultAdminUserAccount;
+    private String                  defaultAdminUserAccount;
 
     @Value("${security.default_admin_password}")
-    private String            defaultAdminUserPassword;
+    private String                  defaultAdminUserPassword;
 
     @Autowired
-    private SysUserRepository userRepository;
+    private SysUserRepository       userRepository;
+    @Autowired
+    private SysManageUserRepository manageUserRepository;
 
     private boolean doForAddFirstUser() {
         if (0 == userRepository.count()) {
@@ -75,8 +78,10 @@ public class SimpleUserDetailsService implements UserDetailsService {
             }
         }
         if (null != user && null != user.getId()) {
+            if (this.manageUserRepository.findByUserId(user.getId()) == null) {
+                throw new UsernameNotFoundException("没有权限！");
+            }
             Collection<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-
             return new UserInfo(new SimpleCurrentUserInfo(user), user.getPassword(), auths);
         } else {
             throw new UsernameNotFoundException("没有用户[" + username + "]的数据！");
