@@ -66,4 +66,15 @@ public interface SuperviseWebService {
     @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
     @WebMethod
     byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+
+    /**
+     * 获取变动的企业信息
+     * 
+     * @param entpId
+     * @return
+     */
+    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebMethod
+    String getChangeEntpInfo(Long entpId);
+
 }

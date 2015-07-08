@@ -19,6 +19,7 @@ import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.commoninfo.service.AppEntpService;
 import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
@@ -57,6 +58,9 @@ public class MobileCommonDataTaskService {
 
     @Autowired
     private DepLinkmanService          depLinkmanService;
+
+    @Autowired
+    private AppEntpService             appEntpService;
 
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning  = false;
@@ -122,6 +126,9 @@ public class MobileCommonDataTaskService {
                         this.depLinkmanService.analysisDataChange(item);
                     } else if (DataChangeTable.新闻公告.getKey().equals(item.getChangeTableName())) {
                         // 新闻公告数据发生变更
+                    } else if (DataChangeTable.企业信息.getKey().equals(item.getChangeTableName())) {
+                        // 企业信息的添加和更新
+                        this.appEntpService.insertOrUpdataEntp(item);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
