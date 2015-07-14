@@ -76,7 +76,7 @@
                     <th align="right">手机IMEI</th>
                     <td>
                     <input type="hidden" id="id" name="id"/>
-                    <input  class="easyui-textbox easyui-validatebox" name="imeiCode" data-options="width:'165px',required:true" />
+                    <input  class="easyui-textbox easyui-validatebox" id="imeiCode" name="imeiCode" data-options="width:'165px',required:true" />
                     </td>
                 </tr>
             </table>

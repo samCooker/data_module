@@ -34,6 +34,11 @@
     }
 
     function operate(index){
+        $("#id").val("");
+        $("#userName").html("");
+        $("#depName").html("");
+        $("#account").html("");
+        $("#imeiCode").textbox("setValue","");
         $('#dg').datagrid("selectRow",index);
         var row = $('#dg').datagrid('getSelected');
         if(row.isRegister != "已注册"){
@@ -82,7 +87,7 @@
         return htmlStr;
     }
 $(function(){
-    var ch= document.documentElement.clientHeight-40;
+    var ch= document.documentElement.clientHeight-50;
     if(!ch) ch = 640;
     $(".autoH").attr("height",ch+"px");
     $('#dg').datagrid();

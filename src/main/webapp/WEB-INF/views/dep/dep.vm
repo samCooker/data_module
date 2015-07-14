@@ -2,7 +2,7 @@
 <div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
     <table class="show">
         <tr>
-            <td class="autoH" width="25%"  style="">
+            <td class="autoH" width="30%"  style="">
                 <div style="padding:10px;height:99%;overflow:auto;">
                 <ul id="itemtree"></ul>
                 </div>
