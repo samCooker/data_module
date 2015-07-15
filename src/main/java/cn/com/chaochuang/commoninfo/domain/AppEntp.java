@@ -74,6 +74,8 @@ public class AppEntp extends LongIdEntity {
     private Date              inputDate;
     /** 经营范围 */
     private String            busName;
+    /** 许可证有效期描述 */
+    private String            licenceDateScript;
 
     /**
      * @return the rmEntpId
@@ -388,6 +390,21 @@ public class AppEntp extends LongIdEntity {
      */
     public void setBusName(String busName) {
         this.busName = busName;
+    }
+
+    /**
+     * @return the licenceDateScript
+     */
+    public String getLicenceDateScript() {
+        return licenceDateScript;
+    }
+
+    /**
+     * @param licenceDateScript
+     *            the licenceDateScript to set
+     */
+    public void setLicenceDateScript(String licenceDateScript) {
+        this.licenceDateScript = licenceDateScript;
     }
 
 }

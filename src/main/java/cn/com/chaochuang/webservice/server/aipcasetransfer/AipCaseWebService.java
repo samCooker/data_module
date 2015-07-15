@@ -50,6 +50,17 @@ public interface AipCaseWebService {
     String getAipCaseApply(String lastOutputTime);
 
     /**
+     * 获取案件基本信息
+     *
+     * @param pendingHandleIds
+     *            案件待办编号
+     * @return 案件基本信息
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String selectAipCaseApplyDates(String pendingHandleIds);
+
+    /**
      * 保存案件办理信息
      *
      * @param command

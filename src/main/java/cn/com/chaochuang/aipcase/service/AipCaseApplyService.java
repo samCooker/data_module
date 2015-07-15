@@ -10,6 +10,7 @@ package cn.com.chaochuang.aipcase.service;
 
 import java.util.List;
 
+import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -31,5 +32,5 @@ public interface AipCaseApplyService extends CrudRestService<AipCaseApply, Long>
      *
      * @param datas
      */
-    void saveAipCaseApply(List<AipCaseApply> datas);
+    void saveAipCaseApply(List<AipCaseShowData> datas);
 }

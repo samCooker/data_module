@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
 import cn.com.chaochuang.aipcase.repository.AipCaseApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -72,11 +73,11 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
      * @see cn.com.chaochuang.aipcase.service.AipCaseApplyService#saveAipCaseApply(java.util.List)
      */
     @Override
-    public void saveAipCaseApply(List<AipCaseApply> datas) {
+    public void saveAipCaseApply(List<AipCaseShowData> datas) {
         // 保存webservice获取的案件基本数据，先检查是否有重复数据
-        for (AipCaseApply apply : datas) {
-            if (this.repository.findByRmCaseApplyId(apply.getRmCaseApplyId()) == null) {
-                this.repository.save(apply);
+        for (AipCaseShowData data : datas) {
+            if (this.repository.findByRmCaseApplyId(data.getRmCaseApplyId()) == null) {
+                // this.repository.save(apply);
             }
         }
     }
