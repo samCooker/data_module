@@ -5,10 +5,10 @@
         <td style="text-align:left">
             <input style="width:110px" name="$qc.like('userName')" class="easyui-textbox" style="margin:5px;"/>
         </td>
-        <th style="text-align:right;">帐号：</th>
-        <td style="text-align:left">
-            <input  style="width:110px"  name="$qc.like('account')" class="easyui-textbox" style="margin:5px;"/>
-        </td>
+##        <th style="text-align:right;">帐号：</th>
+##        <td style="text-align:left">
+##            <input  style="width:110px"  name="$qc.like('account')" class="easyui-textbox" style="margin:5px;"/>
+##        </td>
         <th style="text-align:right;">部门：</th>
         <td style="text-align:left">
             <input  style="width:110px"  name="$qc.like('department.depName')" class="easyui-textbox" style="margin:5px;"/>

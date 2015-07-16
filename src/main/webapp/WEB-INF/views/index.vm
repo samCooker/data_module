@@ -64,7 +64,7 @@
 $(document).ready(function(){
     if(!window.CC){
         window.CC = new CCApp();
-        top.CC.addTab({title:"授权管理",url:"$link.getContextURL()"+"/registerapp/list"});
+        top.CC.addTab({title:"用户注册申请",url:"$link.getContextURL()"+"/registerapp/list"});
     }
 });
 </script>
