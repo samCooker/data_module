@@ -17,7 +17,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  */
 public enum DataChangeTable implements IDictionary {
     待办事宜("pending_handle"), 公文办结("oa_wf_flo_hisno"), 组织结构("sys_department"), 人员("sys_user"), 通讯录("oa_address_info"), 新闻公告(
-                    "oa_pub_board");
+                    "oa_pub_board"), 企业信息("gxfda_app_app_entp");
 
     private String key;
     private String value;

@@ -6,7 +6,7 @@
  * History:     2015年6月2日 (LLM) 1.0 Create
  */
 
-package cn.com.chaochuang.appflow.domain;
+package cn.com.chaochuang.commoninfo.domain;
 
 import java.util.Date;
 
@@ -14,6 +14,8 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 
@@ -22,7 +24,7 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
  *
  */
 @Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "node_info_id")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "entp_id")) })
 public class AppEntp extends LongIdEntity {
     /**
      *
@@ -65,9 +67,15 @@ public class AppEntp extends LongIdEntity {
     /** 电子邮件 */
     private String            email;
     /** 执照注册时间 */
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              businessLicenseDate;
     /** 数据导入时间 */
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              inputDate;
+    /** 经营范围 */
+    private String            busName;
+    /** 许可证有效期描述 */
+    private String            licenceDateScript;
 
     /**
      * @return the rmEntpId
@@ -367,6 +375,36 @@ public class AppEntp extends LongIdEntity {
      */
     public void setInputDate(Date inputDate) {
         this.inputDate = inputDate;
+    }
+
+    /**
+     * @return the busName
+     */
+    public String getBusName() {
+        return busName;
+    }
+
+    /**
+     * @param busName
+     *            the busName to set
+     */
+    public void setBusName(String busName) {
+        this.busName = busName;
+    }
+
+    /**
+     * @return the licenceDateScript
+     */
+    public String getLicenceDateScript() {
+        return licenceDateScript;
+    }
+
+    /**
+     * @param licenceDateScript
+     *            the licenceDateScript to set
+     */
+    public void setLicenceDateScript(String licenceDateScript) {
+        this.licenceDateScript = licenceDateScript;
     }
 
 }
