@@ -27,23 +27,25 @@ import org.springframework.beans.BeanWrapperImpl;
  */
 public abstract class Tools {
     /** 按 yyyy-MM-dd HH:mm:ss 格式化时间. */
-    public static final SimpleDateFormat DATE_TIME_FORMAT   = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final SimpleDateFormat DATE_TIME_FORMAT    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /** 按 yyyyMMddHHmmss 格式化时间. */
-    public static final SimpleDateFormat DATE_TIME_FORMAT2  = new SimpleDateFormat("yyyyMMddHHmmss");
+    public static final SimpleDateFormat DATE_TIME_FORMAT2   = new SimpleDateFormat("yyyyMMddHHmmss");
     /** 按 yyyy-MM-dd HH:mm 格式化时间. */
-    public static final SimpleDateFormat DATE_MINUTE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    public static final SimpleDateFormat DATE_MINUTE_FORMAT  = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     /** 按 yyyy-MM-dd 格式化日期. */
-    public static final SimpleDateFormat DATE_FORMAT        = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat DATE_FORMAT         = new SimpleDateFormat("yyyy-MM-dd");
     /** 按 yyyy/MM/dd 格式化日期. */
-    public static final SimpleDateFormat DATE_FORMAT2       = new SimpleDateFormat("yyyy/MM/dd");
+    public static final SimpleDateFormat DATE_FORMAT2        = new SimpleDateFormat("yyyy/MM/dd");
     /** 按 yyyy年MM月dd日 格式化日期. */
-    public static final SimpleDateFormat DATE_FORMAT3       = new SimpleDateFormat("yyyy年MM月dd日");
+    public static final SimpleDateFormat DATE_FORMAT3        = new SimpleDateFormat("yyyy年MM月dd日");
     /** 按 yyyyMMdd 格式化日期. */
-    public static final SimpleDateFormat DATE_FORMAT4       = new SimpleDateFormat("yyyyMMdd");
+    public static final SimpleDateFormat DATE_FORMAT4        = new SimpleDateFormat("yyyyMMdd");
     /** 按 yyyyMMdd 格式化日期. */
-    public static final SimpleDateFormat DATE_FORMAT5       = new SimpleDateFormat("HH:mm");
+    public static final SimpleDateFormat DATE_FORMAT5        = new SimpleDateFormat("HH:mm");
     /** 数值格式化 */
-    public static final DecimalFormat    DECIMAL_FORMAT     = new DecimalFormat("#0.######");
+    public static final DecimalFormat    DECIMAL_FORMAT      = new DecimalFormat("#0.######");
+    /** 两位小数标准格式化 */
+    public static final DecimalFormat    STANDARD_DEC_FORMAT = new DecimalFormat("#0.00");
 
     /**
      * 将字符串数组转换成List
@@ -549,5 +551,27 @@ public abstract class Tools {
             result = true;
         }
         return result;
+    }
+
+    /**
+     * 在指定字符串上补充num个空格
+     *
+     * @param source
+     *            原字符串
+     * @param num
+     *            需要补充的空格数
+     * @return 补充空格后的字符串
+     */
+    public static String addBlack(String source, int num) {
+        if (num <= 0) {
+            return source;
+        }
+        if (Tools.isEmptyString(source)) {
+            source = "";
+        }
+        for (int i = 0; i < num; i++) {
+            source += " ";
+        }
+        return source;
     }
 }

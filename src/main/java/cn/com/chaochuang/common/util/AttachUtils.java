@@ -199,4 +199,21 @@ public abstract class AttachUtils {
         in1.close();
         out1.close();
     }
+
+    /**
+     * 创建Path指定的文件夹
+     *
+     * @param path
+     *            路径
+     */
+    public static void createFilePath(String path) {
+        if (path != null && path.length() > 0) {
+            File file = new File(path);
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    return;
+                }
+            }
+        }
+    }
 }

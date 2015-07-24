@@ -10,6 +10,8 @@ package cn.com.chaochuang.aipcase.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -36,6 +38,15 @@ public interface FdFordoAipcaseRepository extends SimpleDomainRepository<FdFordo
      * @return
      */
     List<FdFordoAipcase> findByLocalDataOrderBySendTimeAsc(LocalData localData);
+
+    /**
+     * 根据本地数据标识获取待办数据
+     * 
+     * @param localData
+     * @param page
+     * @return
+     */
+    List<FdFordoAipcase> findByLocalDataOrderBySendTimeAsc(LocalData localData, Pageable page);
 
     /**
      * 根据原系统待办编号查找待办记录

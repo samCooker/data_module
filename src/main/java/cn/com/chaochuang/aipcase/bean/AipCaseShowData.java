@@ -11,6 +11,8 @@ package cn.com.chaochuang.aipcase.bean;
 import java.util.Date;
 import java.util.List;
 
+import cn.com.chaochuang.task.bean.AipLawContentData;
+
 /**
  * @author LLM
  *
@@ -59,9 +61,11 @@ public class AipCaseShowData {
     /** 创建时间 */
     private Date                    createDate;
     /** 案件办理环节记录 */
-    private List<AipCaseNodeInfo>   nodeInfos;
+    private List<AipCaseNodes>      nodeInfos;
     /** 案件办理附件记录 */
     private List<AipCaseAttachInfo> attachInfos;
+    /** 案件相关文书 */
+    private List<AipLawContentData> contentList;
 
     /**
      * @return the rmPendingId
@@ -381,7 +385,7 @@ public class AipCaseShowData {
     /**
      * @return the nodeInfos
      */
-    public List<AipCaseNodeInfo> getNodeInfos() {
+    public List<AipCaseNodes> getNodeInfos() {
         return nodeInfos;
     }
 
@@ -389,7 +393,7 @@ public class AipCaseShowData {
      * @param nodeInfos
      *            the nodeInfos to set
      */
-    public void setNodeInfos(List<AipCaseNodeInfo> nodeInfos) {
+    public void setNodeInfos(List<AipCaseNodes> nodeInfos) {
         this.nodeInfos = nodeInfos;
     }
 
@@ -406,6 +410,20 @@ public class AipCaseShowData {
      */
     public void setAttachInfos(List<AipCaseAttachInfo> attachInfos) {
         this.attachInfos = attachInfos;
+    }
+
+    /**
+     * @return the contentList
+     */
+    public List<AipLawContentData> getContentList() {
+        return contentList;
+    }
+
+    /**
+     * @param contentList the contentList to set
+     */
+    public void setContentList(List<AipLawContentData> contentList) {
+        this.contentList = contentList;
     }
 
 }

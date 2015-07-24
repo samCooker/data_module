@@ -14,7 +14,7 @@ import java.util.Date;
  * @author LLM
  *
  */
-public class AipCaseNodeInfo {
+public class AipCaseNodes {
     /** 原系统流程环节实例编号 */
     private Long   rmCaseApplyId;
     /** 原系统环节编号 */

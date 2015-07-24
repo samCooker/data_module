@@ -17,4 +17,11 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  */
 public interface AipCaseNodeInfoRepository extends SimpleDomainRepository<AipCaseNodeInfo, Long> {
 
+    /**
+     * 通过远程记录ID查找办理环节记录
+     * 
+     * @param rmNodeId
+     */
+    public AipCaseNodeInfo findByRmNodeId(Long rmNodeId);
+
 }

@@ -69,4 +69,27 @@ public interface AipCaseWebService {
     @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
     @WebMethod
     String saveAipCaseApprove(String command);
+
+    /**
+     * 获取文书信息
+     * 
+     * @param caseApplyId
+     * @param dataMap
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String getLawContentData(Long caseApplyId, String mdfCode);
+
+    /**
+     * 获取附件信息
+     * 
+     * @param fileName
+     * @param offset
+     * @param reads
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
 }

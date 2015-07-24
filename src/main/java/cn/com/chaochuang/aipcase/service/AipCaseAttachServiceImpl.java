@@ -8,12 +8,18 @@
 
 package cn.com.chaochuang.aipcase.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.bean.AipCaseAttachInfo;
 import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.repository.AipCaseAttachRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
@@ -33,6 +39,29 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
     @Override
     public SimpleDomainRepository<AipCaseAttach, Long> getRepository() {
         return repository;
+    }
+
+    @Override
+    public void saveAttachments(List<AipCaseAttachInfo> attachInfos) {
+        if (attachInfos == null) {
+            return;
+        }
+        for (AipCaseAttachInfo info : attachInfos) {
+            AipCaseAttach attach = repository.findByRmAttachId(info.getRmAttachId());
+            if (attach == null) {
+                attach = new AipCaseAttach();
+            }
+            try {
+                BeanUtils.copyProperties(attach, info);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            attach.setLocalData(LocalData.非本地数据);
+            repository.save(attach);
+
+        }
     }
 
 }

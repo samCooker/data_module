@@ -8,6 +8,9 @@
 
 package cn.com.chaochuang.aipcase.service;
 
+import java.util.List;
+
+import cn.com.chaochuang.aipcase.bean.AipCaseAttachInfo;
 import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -16,5 +19,12 @@ import cn.com.chaochuang.common.data.service.CrudRestService;
  *
  */
 public interface AipCaseAttachService extends CrudRestService<AipCaseAttach, Long> {
+
+    /**
+     * 保存附件信息
+     * 
+     * @param attachInfos
+     */
+    void saveAttachments(List<AipCaseAttachInfo> attachInfos);
 
 }

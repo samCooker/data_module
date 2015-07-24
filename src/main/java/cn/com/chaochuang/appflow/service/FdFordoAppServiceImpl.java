@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -141,6 +142,16 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
     public List<FdFordoApp> selectUnLocalData() {
         // 获取未到本地数据
         return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据);
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.appflow.service.FdFordoAppService#selectUnLocalData(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public List<FdFordoApp> selectUnLocalData(Pageable page) {
+        return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据, page);
     }
 
     /**

@@ -8,6 +8,9 @@
 
 package cn.com.chaochuang.aipcase.service;
 
+import java.util.List;
+
+import cn.com.chaochuang.aipcase.bean.AipCaseNodes;
 import cn.com.chaochuang.aipcase.domain.AipCaseNodeInfo;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -16,5 +19,12 @@ import cn.com.chaochuang.common.data.service.CrudRestService;
  *
  */
 public interface AipCaseNodeInfoService extends CrudRestService<AipCaseNodeInfo, Long> {
+
+    /**
+     * 保存办理环节信息
+     * 
+     * @param nodeInfos
+     */
+    void saveNodeInfos(List<AipCaseNodes> nodeInfos);
 
 }

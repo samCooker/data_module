@@ -17,4 +17,12 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  */
 public interface AipCaseAttachRepository extends SimpleDomainRepository<AipCaseAttach, Long> {
 
+    /**
+     * 根据远程ID查找附件
+     * 
+     * @param rmAttachId
+     * @return
+     */
+    AipCaseAttach findByRmAttachId(Long rmAttachId);
+
 }

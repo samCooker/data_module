@@ -10,6 +10,8 @@ package cn.com.chaochuang.appflow.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -37,4 +39,12 @@ public interface FdFordoAppRepository extends SimpleDomainRepository<FdFordoApp,
      * @return
      */
     List<FdFordoApp> findByLocalDataOrderBySendTimeAsc(LocalData localData);
+
+    /**
+     * 根据本地数据标识获取待办数据
+     * 
+     * @param localData
+     * @return
+     */
+    List<FdFordoApp> findByLocalDataOrderBySendTimeAsc(LocalData localData, Pageable page);
 }

@@ -13,8 +13,8 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author LLM
@@ -23,20 +23,24 @@ import cn.com.chaochuang.docwork.reference.IsLocalData;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "case_note_file_id")) })
 public class AipCaseNoteFile extends LongIdEntity {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8168613326874740930L;
     /** 远程系统案件基本信息编号 */
-    private Long        rmCaseApplyId;
+    private Long              rmCaseApplyId;
     /** 文书名称 */
-    private String      noteName;
+    private String            noteName;
     /** 远程系统文书文件编号 */
-    private Long        rmNoteFileId;
+    private Long              rmNoteFileId;
     /** 文件路径 */
-    private String      filePath;
+    private String            filePath;
     /** 是否本地数据 */
-    private IsLocalData localData;
+    private LocalData         localData;
     /** 案件状态 */
-    private String      caseStatus;
+    private String            caseStatus;
     /** 文件MD5码 */
-    private String      mdfCode;
+    private String            mdfCode;
 
     /**
      * @return the rmCaseApplyId
@@ -101,7 +105,7 @@ public class AipCaseNoteFile extends LongIdEntity {
     /**
      * @return the localData
      */
-    public IsLocalData getLocalData() {
+    public LocalData getLocalData() {
         return localData;
     }
 
@@ -109,7 +113,7 @@ public class AipCaseNoteFile extends LongIdEntity {
      * @param localData
      *            the localData to set
      */
-    public void setLocalData(IsLocalData localData) {
+    public void setLocalData(LocalData localData) {
         this.localData = localData;
     }
 

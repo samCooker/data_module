@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
@@ -134,7 +135,7 @@ public class MobileAppDataTaskService {
         isAppItemDataRunning = true;
         try {
             // 获取未下载审批数据的待办事宜，即localData=0的数据
-            List<FdFordoApp> datas = this.fdFordoAppService.selectUnLocalData();
+            List<FdFordoApp> datas = this.fdFordoAppService.selectUnLocalData(new PageRequest(0, 10));
             if (!Tools.isNotEmptyList(datas)) {
                 isAppItemDataRunning = false;
                 return;
@@ -146,6 +147,7 @@ public class MobileAppDataTaskService {
             ObjectMapper mapper = new ObjectMapper();
             JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AppFlowShowData.class);
             List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
+            // 保存并修改待办事宜 localData=1
             this.appItemApplyService.saveAppItemApplyDatas(appDatas);
         } catch (Exception ex) {
             ex.printStackTrace();

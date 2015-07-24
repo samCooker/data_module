@@ -10,6 +10,8 @@ package cn.com.chaochuang.appflow.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.common.data.service.CrudRestService;
@@ -48,6 +50,13 @@ public interface FdFordoAppService extends CrudRestService<FdFordoApp, Long> {
      * @return
      */
     List<FdFordoApp> selectUnLocalData();
+
+    /**
+     * 分页获取所有未下载到本地数据的待办事宜
+     *
+     * @return
+     */
+    List<FdFordoApp> selectUnLocalData(Pageable page);
 
     /**
      * 更新待办事宜的本地状态为“在本地”

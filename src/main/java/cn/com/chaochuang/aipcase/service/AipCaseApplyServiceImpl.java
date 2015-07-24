@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,15 +44,20 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
 
     @Autowired
     private AipCaseApplyRepository repository;
+    @Autowired
+    private AipCaseAttachService   aipCaseAttachService;
+    @Autowired
+    private AipCaseNodeInfoService aipCaseNodeInfoService;
+    @Autowired
+    private AipCaseNoteFileService aipCaseNoteFileService;
+    @Autowired
+    private FdFordoAipcaseService  fdFordoAipcaseService;
 
     @Override
     public SimpleDomainRepository<AipCaseApply, Long> getRepository() {
         return repository;
     }
 
-    /**
-     * @see cn.com.chaochuang.aipcase.service.AipCaseApplyService#selectAipCaseMaxInputDate()
-     */
     @Override
     public String selectAipCaseMaxInputDate() {
         StringBuffer sql = new StringBuffer(" select Max(createDate) from ").append(AipCaseApply.class.getName());
@@ -69,15 +75,32 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
         return "";
     }
 
-    /**
-     * @see cn.com.chaochuang.aipcase.service.AipCaseApplyService#saveAipCaseApply(java.util.List)
-     */
     @Override
     public void saveAipCaseApply(List<AipCaseShowData> datas) {
+        if (datas == null) {
+            return;
+        }
         // 保存webservice获取的案件基本数据，先检查是否有重复数据
         for (AipCaseShowData data : datas) {
-            if (this.repository.findByRmCaseApplyId(data.getRmCaseApplyId()) == null) {
-                // this.repository.save(apply);
+            try {
+                AipCaseApply apply = this.repository.findByRmCaseApplyId(data.getRmCaseApplyId());
+                if (apply == null) {
+                    apply = new AipCaseApply();
+                    apply.setInputDate(new Date());
+                }
+                BeanUtils.copyProperties(apply, data);
+                this.repository.save(apply);
+                // 保存办理环节记录
+                aipCaseNodeInfoService.saveNodeInfos(data.getNodeInfos());
+                // 保存附件记录
+                aipCaseAttachService.saveAttachments(data.getAttachInfos());
+                // 保存文书记录
+                aipCaseNoteFileService.saveAipCaseNoteFile(data.getContentList());
+                // 更改待办
+                fdFordoAipcaseService.updateLocalData(data.getRmPendingId());
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;// 有异常不影响其他
             }
         }
     }

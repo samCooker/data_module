@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
@@ -33,6 +34,7 @@ import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
+import cn.com.chaochuang.task.bean.AipCasePendingInfo;
 
 /**
  * @author LLM
@@ -65,8 +67,7 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
     @Override
     public AipCasePendingHandleInfo selectMaxInputDate() {
         AipCasePendingHandleInfo result = new AipCasePendingHandleInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmPendingItemId) from ")
-                        .append(FdFordoAipcase.class.getName());
+        StringBuffer sql = new StringBuffer(" select Max(rmPendingId) from ").append(FdFordoAipcase.class.getName());
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {
@@ -90,10 +91,10 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
      * @see cn.com.chaochuang.aipcase.service.FdFordoAipcaseService#insertFdFordos(java.util.List)
      */
     @Override
-    public void insertFdFordos(List<AipCasePendingHandleInfo> pendingItems) {
+    public void insertFdFordos(List<AipCasePendingInfo> pendingItems) {
         FdFordoAipcase fdFordo;
         Date currentDate = new Date();
-        for (AipCasePendingHandleInfo item : pendingItems) {
+        for (AipCasePendingInfo item : pendingItems) {
             // 判断当前记录是否已经存在,不存在的情况下才写入fdfordoAipCase表
             if (this.repository.findByRmPendingIdAndRecipientId(item.getRmPendingId(), item.getRecipientId()) != null) {
                 continue;
@@ -113,6 +114,7 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
             }
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
+            fdFordo.setLocalData(LocalData.非本地数据);
             this.repository.save(fdFordo);
         }
     }
@@ -124,6 +126,17 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
     public List<FdFordoAipcase> selectUnLocalData() {
         // 获取未到本地数据
         return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据);
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.aipcase.service.FdFordoAipcaseService#selectUnLocalData(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public List<FdFordoAipcase> selectUnLocalData(Pageable page) {
+        // 分页获取未到本地数据
+        return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据, page);
     }
 
     /**
