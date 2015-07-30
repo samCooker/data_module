@@ -14,6 +14,8 @@ import javax.jws.WebMethod;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
+import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
+
 /**
  * @author LLM
  *
@@ -92,4 +94,14 @@ public interface AipCaseWebService {
     @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
     @WebMethod
     byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+
+    /**
+     * 提交审批或退回
+     * 
+     * @param info
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String submitOrRejectAipCaseApply(AipCaseSubmitInfo info);
 }

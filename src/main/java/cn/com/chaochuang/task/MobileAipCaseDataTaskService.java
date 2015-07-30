@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
@@ -31,8 +32,13 @@ import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
 import cn.com.chaochuang.aipcase.service.AipCaseNoteFileService;
 import cn.com.chaochuang.aipcase.service.FdFordoAipcaseService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.reference.WorkType;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.task.bean.AipCasePendingInfo;
+import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 import cn.com.chaochuang.task.bean.AipLawContentData;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
@@ -59,6 +65,8 @@ public class MobileAipCaseDataTaskService {
     private FdFordoAipcaseService  fdFordoService;
     @Autowired
     private AipCaseNoteFileService aipCaseNoteFileService;
+    @Autowired
+    private DataUpdateService      dataUpdateService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
@@ -73,11 +81,13 @@ public class MobileAipCaseDataTaskService {
     private static boolean         isAipCaseFordoRunning = false;
     /** 获取文书信息并转成pdf文件 阻塞标识 */
     private static boolean         isTransferFileRunning = false;
+    /** 提交或退回数据标识 */
+    private static boolean         isSubmitDataRunning   = false;
 
     /**
      * 获取案件办理系统的待办记录
      */
-    // @Scheduled(cron = "10/30 * * * * ?")
+    @Scheduled(cron = "10/30 * * * * ?")
     public void getAipCaseFordo() {
         if (isAipCaseFordoRunning) {
             return;
@@ -125,7 +135,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取案件办理数据写入本地表
      */
-    // @Scheduled(cron = "20/40 * * * * ?")
+    @Scheduled(cron = "20/40 * * * * ?")
     public void getAipCaseDataTask() {
         if (isGetAipCaseRunning) {
             return;
@@ -159,7 +169,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 根据待办获取文书内容，将远程生成html文件的路径保存
      */
-    // @Scheduled(cron = "30/50 * * * * ?")
+    @Scheduled(cron = "30/50 * * * * ?")
     public void AipLawContentToPDF() {
         if (isTransferFileRunning) {
             return;
@@ -235,5 +245,41 @@ public class MobileAipCaseDataTaskService {
             }
         }
 
+    }
+
+    /**
+     * 提交或退回案件审批
+     */
+    @Scheduled(cron = "10/15 * * * * ?")
+    public void commintSuperviseDataTask() {
+        if (isSubmitDataRunning) {
+            return;
+        }
+        isSubmitDataRunning = true;
+        DataUpdate dataUpdate = null;
+        try {
+            // 扫描DataUpdate数据列表，条件：workType=03;operationType=update
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.案件办理提交);
+            // 每次仅处理列表的第一条记录
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            dataUpdate = (DataUpdate) datas.get(0);
+            if (dataUpdate == null) {
+                return;
+            }
+            // 获取要提交的json字符串
+            ObjectMapper mapper = new ObjectMapper();
+            AipCaseSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), AipCaseSubmitInfo.class);
+            String backInfo = transferAipCaseService.submitOrRejectAipCaseApply(nodeInfo);
+            aipCaseApplyService.deleteDataUpdateAndFordo(dataUpdate, backInfo, nodeInfo);
+        } catch (Exception ex) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(ex.getClass().getName());
+            this.dataUpdateService.getRepository().save(dataUpdate);
+            ex.printStackTrace();
+        } finally {
+            isSubmitDataRunning = false;
+        }
     }
 }

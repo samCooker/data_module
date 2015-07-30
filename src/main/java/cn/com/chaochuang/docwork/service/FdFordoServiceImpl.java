@@ -119,4 +119,14 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.docwork.service.FdFordoService#findByRmPendingId(java.lang.Long)
+     */
+    @Override
+    public FdFordo findByRmPendingItemId(String fordoId) {
+        return repository.findByRmPendingItemId(fordoId);
+    }
+
 }

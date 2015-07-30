@@ -25,11 +25,16 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.domain.DocFile;
+import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
+import cn.com.chaochuang.task.bean.OaSubmitInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,6 +63,11 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
 
     @PersistenceContext
     private EntityManager               entityManager;
+
+    @Autowired
+    private DataUpdateService           dataUpdateService;
+    @Autowired
+    private FdFordoService              fdFordoService;
 
     @Value("${getdata.timeinterval}")
     private String                      timeInterval;
@@ -92,7 +102,8 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             // 保存意见信息
             flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
             // 保存公文个人办理记录
-            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
+            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
+                            fileInfo.getRedactDeptId());
         }
 
     }
@@ -145,8 +156,33 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 // 跟新公文意见记录
                 flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
                 // 保存公文个人办理记录
-                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
+                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
+                                fileInfo.getRedactDeptId());
             }
+        }
+
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.docwork.service.DocFileService#deleteDataUpdateAndFordo(cn.com.chaochuang.datacenter.domain.DataUpdate,
+     *      cn.com.chaochuang.task.bean.OaSubmitInfo, java.lang.String)
+     */
+    @Override
+    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, OaSubmitInfo nodeInfo, String backInfo) {
+        if ("true".equals(backInfo)) {
+            // 删除DataUpdate对象
+            this.dataUpdateService.delete(dataUpdate);
+        } else {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(backInfo);
+            this.dataUpdateService.getRepository().save(dataUpdate);
+        }
+        // 删除待办
+        FdFordo fordo = fdFordoService.findByRmPendingItemId(nodeInfo.getFordoId() + "");
+        if (fordo != null) {
+            fdFordoService.delete(fordo);
         }
 
     }

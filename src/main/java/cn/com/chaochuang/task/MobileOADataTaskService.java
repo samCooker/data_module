@@ -41,6 +41,7 @@ import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
+import cn.com.chaochuang.task.bean.OaSubmitInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
@@ -214,14 +215,9 @@ public class MobileOADataTaskService {
             }
             // 获取要提交的json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
             String backInfo = transferOAService.setDocTransactInfo(dataUpdate.getContent());
-            if ("true".equals(backInfo)) {
-                // 删除DataUpdate对象
-                this.dataUpdateService.delete(dataUpdate);
-            } else {
-                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-                dataUpdate.setErrorInfo(backInfo);
-                this.dataUpdateService.getRepository().save(dataUpdate);
-            }
+            ObjectMapper mapper = new ObjectMapper();
+            OaSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), OaSubmitInfo.class);
+            fileService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, backInfo);
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());

@@ -21,10 +21,15 @@ import cn.com.chaochuang.appflow.domain.AppFlowNodeInfo;
 import cn.com.chaochuang.appflow.domain.AppFlowNodeOpinions;
 import cn.com.chaochuang.appflow.domain.AppItemApply;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
+import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.AppItemApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 /**
  * @author LLM
@@ -45,6 +50,8 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
     private AppItemAttachService       attachService;
     @Autowired
     private AppTransactPersonalService appTransactPersonalService;
+    @Autowired
+    private DataUpdateService          dataUpdateService;
 
     @Override
     public SimpleDomainRepository<AppItemApply, Long> getRepository() {
@@ -99,5 +106,23 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo) {
+        if ("true".equals(backInfo)) {
+            // 删除DataUpdate对象
+            this.dataUpdateService.delete(dataUpdate);
+        } else {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(backInfo);
+            this.dataUpdateService.getRepository().save(dataUpdate);
+        }
+        // 删除待办
+        FdFordoApp fordo = fdFordoAppService.findByRmPendingId(nodeInfo.getPendingHandleId() + "");
+        if (fordo != null) {
+            fdFordoAppService.delete(fordo);
+        }
+
     }
 }

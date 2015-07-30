@@ -13,6 +13,8 @@ import java.util.List;
 import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 
 /**
  * @author LJX
@@ -33,4 +35,11 @@ public interface AipCaseApplyService extends CrudRestService<AipCaseApply, Long>
      * @param datas
      */
     void saveAipCaseApply(List<AipCaseShowData> datas);
+
+    /**
+     * @param dataUpdate
+     * @param backInfo
+     * @param nodeInfo
+     */
+    void deleteDataUpdateAndFordo(DataUpdate dataUpdate, String backInfo, AipCaseSubmitInfo nodeInfo);
 }

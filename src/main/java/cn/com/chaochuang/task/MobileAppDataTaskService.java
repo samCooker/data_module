@@ -19,6 +19,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
@@ -181,14 +182,7 @@ public class MobileAppDataTaskService {
             ObjectMapper mapper = new ObjectMapper();
             WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
             String backInfo = superviseWebService.submitAppItemInfo(nodeInfo);
-            if ("true".equals(backInfo)) {
-                // 删除DataUpdate对象
-                this.dataUpdateService.delete(dataUpdate);
-            } else {
-                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-                dataUpdate.setErrorInfo(backInfo);
-                this.dataUpdateService.getRepository().save(dataUpdate);
-            }
+            appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, backInfo);
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());
@@ -202,7 +196,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "15/20 * * * * ?")
+    @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

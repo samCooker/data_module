@@ -35,4 +35,5 @@ public interface FdFordoRepository extends SimpleDomainRepository<FdFordo, Long>
      * @return
      */
     FdFordo findByRmPendingItemId(String rmPendingItemId);
+
 }

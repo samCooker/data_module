@@ -71,4 +71,10 @@ public interface FdFordoAppService extends CrudRestService<FdFordoApp, Long> {
      * @param rmPendingId
      */
     void deleteExpirePending(String rmPendingId);
+
+    /**
+     * @param string
+     * @return
+     */
+    FdFordoApp findByRmPendingId(String fordoId);
 }

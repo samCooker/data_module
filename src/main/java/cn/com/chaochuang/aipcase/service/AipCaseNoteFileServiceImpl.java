@@ -77,11 +77,11 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
     @Override
     public void saveAipCaseNoteFile(List<AipLawContentData> datas) throws Exception {
         if (datas != null) {
-            for (AipLawContentData data : datas) {
-                AipCaseNoteFile noteFile = repository.findByRmNoteFileId(data.getRmNoteFileId());
+            for (AipLawContentData lawContent : datas) {
+                AipCaseNoteFile noteFile = repository.findByRmNoteFileId(lawContent.getRmNoteFileId());
                 if (noteFile == null) {
                     noteFile = new AipCaseNoteFile();
-                    BeanUtils.copyProperties(noteFile, data);
+                    BeanUtils.copyProperties(noteFile, lawContent);
                 }
                 noteFile.setLocalData(LocalData.非本地数据);
                 repository.save(noteFile);

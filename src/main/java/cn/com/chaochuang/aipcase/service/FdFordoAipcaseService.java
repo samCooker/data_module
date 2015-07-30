@@ -62,4 +62,12 @@ public interface FdFordoAipcaseService extends CrudRestService<FdFordoAipcase, L
      * @param rmPendingId
      */
     void updateLocalData(String rmPendingId);
+
+    /**
+     * 根据远程待办id查找待办
+     * 
+     * @param fordoId
+     * @return
+     */
+    FdFordoAipcase findByRmPendingId(String fordoId);
 }

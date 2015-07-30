@@ -151,4 +151,14 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
         }
     }
 
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.aipcase.service.FdFordoAipcaseService#findByRmPendingId(java.lang.Long)
+     */
+    @Override
+    public FdFordoAipcase findByRmPendingId(String fordoId) {
+        return repository.findByRmPendingId(fordoId);
+    }
+
 }

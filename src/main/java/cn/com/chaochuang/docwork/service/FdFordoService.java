@@ -40,4 +40,10 @@ public interface FdFordoService extends CrudRestService<FdFordo, Long> {
      */
     void insertFdFordos(List<OAPendingHandleInfo> pendingItems, FordoSource fordoSource);
 
+    /**
+     * @param fordoId
+     * @return
+     */
+    FdFordo findByRmPendingItemId(String fordoId);
+
 }
