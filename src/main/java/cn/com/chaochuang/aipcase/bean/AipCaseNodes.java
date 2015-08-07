@@ -37,6 +37,8 @@ public class AipCaseNodes {
     private Date   arriveTime;
     /** 完成时间 */
     private Date   finishTime;
+    /** 环节级别 */
+    private String nodeLevel;
 
     /**
      * @return the rmCaseApplyId
@@ -201,6 +203,21 @@ public class AipCaseNodes {
      */
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
+    }
+
+    /**
+     * @return the nodeLevel
+     */
+    public String getNodeLevel() {
+        return nodeLevel;
+    }
+
+    /**
+     * @param nodeLevel
+     *            the nodeLevel to set
+     */
+    public void setNodeLevel(String nodeLevel) {
+        this.nodeLevel = nodeLevel;
     }
 
 }

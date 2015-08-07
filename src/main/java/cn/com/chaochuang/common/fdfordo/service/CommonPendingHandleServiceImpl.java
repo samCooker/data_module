@@ -13,6 +13,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
+import cn.com.chaochuang.aipcase.repository.FdFordoAipcaseRepository;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
 import cn.com.chaochuang.common.fdfordo.reference.SystemType;
@@ -30,9 +32,11 @@ import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 public class CommonPendingHandleServiceImpl implements CommonPendingHandleService {
 
     @Autowired
-    private FdFordoRepository    oaRepository;
+    private FdFordoRepository        oaRepository;
     @Autowired
-    private FdFordoAppRepository supviseRepository;
+    private FdFordoAppRepository     supviseRepository;
+    @Autowired
+    private FdFordoAipcaseRepository aipcaseRepository;
 
     /**
      * (non-Javadoc)
@@ -72,7 +76,10 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             }
             break;
         case aipcase:// 办案系统
-            // undone
+            FdFordoAipcase aipcaseFordo = aipcaseRepository.findByRmPendingId(items[1]);
+            if (aipcaseFordo != null) {
+                aipcaseRepository.delete(aipcaseFordo);
+            }
             break;
         default:
             throw new RuntimeException("找不到对应的待办类型");

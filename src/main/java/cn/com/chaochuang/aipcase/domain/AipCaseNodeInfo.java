@@ -56,6 +56,9 @@ public class AipCaseNodeInfo extends LongIdEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date              finishTime;
 
+    /** 环节级别 */
+    private String            nodeLevel;
+
     /**
      * @return the caseApplyId
      */
@@ -234,6 +237,21 @@ public class AipCaseNodeInfo extends LongIdEntity {
      */
     public void setFinishTime(Date finishTime) {
         this.finishTime = finishTime;
+    }
+
+    /**
+     * @return the nodeLevel
+     */
+    public String getNodeLevel() {
+        return nodeLevel;
+    }
+
+    /**
+     * @param nodeLevel
+     *            the nodeLevel to set
+     */
+    public void setNodeLevel(String nodeLevel) {
+        this.nodeLevel = nodeLevel;
     }
 
 }

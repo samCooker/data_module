@@ -64,4 +64,18 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
         }
     }
 
+    @Override
+    public List<AipCaseAttach> selectUnLocalAttach() {
+        return repository.findByLocalData(LocalData.非本地数据);
+    }
+
+    @Override
+    public void saveDocFileAttachForLocal(AipCaseAttach attach, String localFileName) {
+        if (attach != null) {
+            attach.setSavePath(localFileName);
+            attach.setLocalData(LocalData.有本地数据);
+            repository.save(attach);
+        }
+    }
+
 }

@@ -26,6 +26,8 @@ public class AipCaseShowData {
     private Long                    rmCaseLawId;
     /** 案件名称 */
     private String                  caseName;
+    /** 案件来源 */
+    private String                  caseTypeName;
     /** 案由 */
     private String                  caseBrief;
     /** 当事人/企业编号 */
@@ -420,10 +422,25 @@ public class AipCaseShowData {
     }
 
     /**
-     * @param contentList the contentList to set
+     * @param contentList
+     *            the contentList to set
      */
     public void setContentList(List<AipLawContentData> contentList) {
         this.contentList = contentList;
+    }
+
+    /**
+     * @return the caseTypeName
+     */
+    public String getCaseTypeName() {
+        return caseTypeName;
+    }
+
+    /**
+     * @param caseTypeName the caseTypeName to set
+     */
+    public void setCaseTypeName(String caseTypeName) {
+        this.caseTypeName = caseTypeName;
     }
 
 }

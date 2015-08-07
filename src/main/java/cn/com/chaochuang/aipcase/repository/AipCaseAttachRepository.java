@@ -8,7 +8,10 @@
 
 package cn.com.chaochuang.aipcase.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 
 /**
@@ -24,5 +27,11 @@ public interface AipCaseAttachRepository extends SimpleDomainRepository<AipCaseA
      * @return
      */
     AipCaseAttach findByRmAttachId(Long rmAttachId);
+
+    /**
+     * @param localData
+     * @param page
+     */
+    List<AipCaseAttach> findByLocalData(LocalData localData);
 
 }

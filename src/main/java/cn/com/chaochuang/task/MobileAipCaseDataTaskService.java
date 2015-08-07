@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -25,22 +25,25 @@ import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
 import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
+import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
 import cn.com.chaochuang.aipcase.domain.AipCaseNoteFile;
 import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
+import cn.com.chaochuang.aipcase.service.AipCaseAttachService;
 import cn.com.chaochuang.aipcase.service.AipCaseNoteFileService;
 import cn.com.chaochuang.aipcase.service.FdFordoAipcaseService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.task.bean.AipCasePendingInfo;
 import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 import cn.com.chaochuang.task.bean.AipLawContentData;
-import cn.com.chaochuang.webservice.server.ITransferOAService;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -57,8 +60,6 @@ public class MobileAipCaseDataTaskService {
     private AipCaseWebService      transferAipCaseService;
     /** webservice 函数库 */
     @Autowired
-    private ITransferOAService     transferOAService;
-    @Autowired
     private AipCaseApplyService    aipCaseApplyService;
     /** FdFordoAipcaseService */
     @Autowired
@@ -67,22 +68,33 @@ public class MobileAipCaseDataTaskService {
     private AipCaseNoteFileService aipCaseNoteFileService;
     @Autowired
     private DataUpdateService      dataUpdateService;
+    @Autowired
+    private SysDataChangeService   dataChangeService;
+    @Autowired
+    private AipCaseAttachService   aipCaseAttachService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
     private String                 rootPath;
+    /** 办案系统附件路径 */
+    @Value("${aipcase.attach.path}")
+    private String                 aipcaseAttachPath;
     /** 文书html文件存放路径 */
     @Value("${htmlfile.savepath}")
     private String                 htmlFilePath;
 
     /** 获取案件办理阻塞标识 */
-    private static boolean         isGetAipCaseRunning   = false;
+    private static boolean         isGetAipCaseRunning       = false;
     /** 获取办案系统待办阻塞标识 */
-    private static boolean         isAipCaseFordoRunning = false;
+    private static boolean         isAipCaseFordoRunning     = false;
     /** 获取文书信息并转成pdf文件 阻塞标识 */
-    private static boolean         isTransferFileRunning = false;
+    private static boolean         isTransferFileRunning     = false;
     /** 提交或退回数据标识 */
-    private static boolean         isSubmitDataRunning   = false;
+    private static boolean         isSubmitDataRunning       = false;
+    /** 获取待办阻塞标识 */
+    private static boolean         isGetSysDataChangeRunning = false;
+    /** 下载公文附件阻塞标识 */
+    private static boolean         isDownLoadAttachRunning   = false;
 
     /**
      * 获取案件办理系统的待办记录
@@ -217,7 +229,8 @@ public class MobileAipCaseDataTaskService {
         }
         BufferedOutputStream bufferedOutputStream = null;
         try {
-            String localFileName = localFilePath + File.separatorChar + contentData.getRmNoteFileId() + ".html";
+            String localFileName = localFilePath + File.separatorChar + contentData.getNoteName() + "(rmid="
+                            + contentData.getRmNoteFileId() + ").html";
             String remoteFileName = contentData.getRmFilePath();
             file = new File(localFileName);
             bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
@@ -280,6 +293,85 @@ public class MobileAipCaseDataTaskService {
             ex.printStackTrace();
         } finally {
             isSubmitDataRunning = false;
+        }
+    }
+
+    /**
+     * 获取远程系统待办修改记录数据
+     */
+    @Scheduled(cron = "15/6 * * * * ?")
+    public void getOADataChange() {
+        if (isGetSysDataChangeRunning) {
+            return;
+        }
+        isGetSysDataChangeRunning = true;
+        try {
+            String json = this.transferAipCaseService.getDataChange();
+            if (Tools.isEmptyString(json)) {
+                return;
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, SysDataChange.class);
+            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+            this.dataChangeService.saveSysDataChange(datas);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isGetSysDataChangeRunning = false;
+        }
+    }
+
+    /**
+     * 获取公文的附件，拉到本地存储
+     */
+    @Scheduled(cron = "15/20 * * * * ?")
+    public void getDocFileAttachTask() {
+        if (isDownLoadAttachRunning) {
+            return;
+        }
+        isDownLoadAttachRunning = true;
+        BufferedOutputStream bufferedOutputStream = null;
+        try {
+            String localFilePath = this.rootPath + this.aipcaseAttachPath + Tools.DATE_FORMAT4.format(new Date());
+            // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
+            List<AipCaseAttach> datas = this.aipCaseAttachService.selectUnLocalAttach();
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            AipCaseAttach attach = datas.get(0);
+            File file = new File(localFilePath);
+            // 目录不存在则建立新目录
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            String localFileName = localFilePath + "/" + attach.getSaveName();
+            String remoteFileName = attach.getSavePath() + attach.getSaveName();
+            file = new File(localFileName);
+            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+            // 调用ITransferOAService的setDocTransactInfo的uploadStreamAttachFile方法
+            Long offset = Long.valueOf(0);
+            int uploadBlockSize = 10240;
+            byte[] buffer = this.transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            while (buffer.length > 0) {
+                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                offset += buffer.length;
+                buffer = new byte[uploadBlockSize];
+                buffer = this.transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            }
+            // 将附件localData标志置为本地数据("1")
+            this.aipCaseAttachService.saveDocFileAttachForLocal(attach, localFileName);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (bufferedOutputStream != null) {
+                try {
+                    bufferedOutputStream.flush();
+                    bufferedOutputStream.close();
+                } catch (IOException exf) {
+                    throw new RuntimeException(exf);
+                }
+            }
+            isDownLoadAttachRunning = false;
         }
     }
 }

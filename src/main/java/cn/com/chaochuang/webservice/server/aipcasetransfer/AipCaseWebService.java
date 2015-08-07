@@ -104,4 +104,13 @@ public interface AipCaseWebService {
     @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
     @WebMethod
     String submitOrRejectAipCaseApply(AipCaseSubmitInfo info);
+
+    /**
+     * 获取删除的待办信息
+     * 
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String getDataChange();
 }

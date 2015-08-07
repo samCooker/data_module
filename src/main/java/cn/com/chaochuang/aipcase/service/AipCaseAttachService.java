@@ -27,4 +27,17 @@ public interface AipCaseAttachService extends CrudRestService<AipCaseAttach, Lon
      */
     void saveAttachments(List<AipCaseAttachInfo> attachInfos);
 
+    /**
+     * 选择未下载附件
+     * 
+     * @return
+     */
+    List<AipCaseAttach> selectUnLocalAttach();
+
+    /**
+     * @param attach
+     * @param localFileName
+     */
+    void saveDocFileAttachForLocal(AipCaseAttach attach, String localFileName);
+
 }
