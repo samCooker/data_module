@@ -74,7 +74,7 @@ public interface AipCaseWebService {
 
     /**
      * 获取文书信息
-     * 
+     *
      * @param caseApplyId
      * @param dataMap
      * @return
@@ -85,7 +85,7 @@ public interface AipCaseWebService {
 
     /**
      * 获取附件信息
-     * 
+     *
      * @param fileName
      * @param offset
      * @param reads
@@ -97,7 +97,7 @@ public interface AipCaseWebService {
 
     /**
      * 提交审批或退回
-     * 
+     *
      * @param info
      * @return
      */
@@ -107,10 +107,31 @@ public interface AipCaseWebService {
 
     /**
      * 获取删除的待办信息
-     * 
+     *
      * @return
      */
     @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
     @WebMethod
     String getDataChange();
+
+    /**
+     * 获取处罚记录信息
+     *
+     * @param punishTime
+     * @param punishEntpId
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String selectPunishInfo(Date punishTime, Long punishEntpId);
+
+    /**
+     * 获取处罚记录信息
+     *
+     * @param punishEntpId
+     * @return
+     */
+    @WebResult(targetNamespace = "http://aipcasetransfer.server.webservice.chaochuang.com.cn/")
+    @WebMethod
+    String selectUpdatePunishInfo(Long punishEntpId);
 }

@@ -31,6 +31,8 @@ public class SysDepartment extends PersistEntity {
     private Long               parentDep;
     /** 祖先部门编号 */
     private Long               ancestorDep;
+    /** 机构代码 */
+    private String             code;
     /** 排序号 */
     private Long               orderNum;
     /** 部门别名 */
@@ -241,6 +243,21 @@ public class SysDepartment extends PersistEntity {
      */
     public void setParentDepartment(SysDepartment parentDepartment) {
         this.parentDepartment = parentDepartment;
+    }
+
+    /**
+     * @return the code
+     */
+    public String getCode() {
+        return code;
+    }
+
+    /**
+     * @param code
+     *            the code to set
+     */
+    public void setCode(String code) {
+        this.code = code;
     }
 
 }

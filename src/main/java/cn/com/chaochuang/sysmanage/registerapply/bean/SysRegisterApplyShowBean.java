@@ -31,6 +31,7 @@ public class SysRegisterApplyShowBean {
     private String        account;
     /** 申请时间 */
     private Date          applyTime;
+    /** 格式化申请时间 */
     private String        applyShowTime;
     /** 手机IMEI码 */
     private String        imeiCode;

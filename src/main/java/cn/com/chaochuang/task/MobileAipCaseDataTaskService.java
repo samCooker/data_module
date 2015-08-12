@@ -32,6 +32,7 @@ import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.service.AipCaseApplyService;
 import cn.com.chaochuang.aipcase.service.AipCaseAttachService;
 import cn.com.chaochuang.aipcase.service.AipCaseNoteFileService;
+import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
 import cn.com.chaochuang.aipcase.service.FdFordoAipcaseService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
@@ -44,6 +45,7 @@ import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.task.bean.AipCasePendingInfo;
 import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 import cn.com.chaochuang.task.bean.AipLawContentData;
+import cn.com.chaochuang.task.bean.AipPunishInfo;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -72,6 +74,8 @@ public class MobileAipCaseDataTaskService {
     private SysDataChangeService   dataChangeService;
     @Autowired
     private AipCaseAttachService   aipCaseAttachService;
+    @Autowired
+    private AipPunishEntpService   punishEntpService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
@@ -95,6 +99,8 @@ public class MobileAipCaseDataTaskService {
     private static boolean         isGetSysDataChangeRunning = false;
     /** 下载公文附件阻塞标识 */
     private static boolean         isDownLoadAttachRunning   = false;
+    /** 获取办案系统处罚记录阻塞标识 */
+    private static boolean         isAipCasePunishRunning    = false;
 
     /**
      * 获取案件办理系统的待办记录
@@ -213,7 +219,7 @@ public class MobileAipCaseDataTaskService {
 
     /**
      * 循环获取文件路径并下载到本地
-     * 
+     *
      * @param datas
      */
     private void downloadHtmlFile(AipLawContentData contentData) {
@@ -372,6 +378,38 @@ public class MobileAipCaseDataTaskService {
                 }
             }
             isDownLoadAttachRunning = false;
+        }
+    }
+
+    /**
+     * 获取企业处罚记录
+     */
+    @Scheduled(cron = "20/10 * * * * ?")
+    public void getAipCasePunishDataTask() {
+        if (isAipCasePunishRunning) {
+            return;
+        }
+        isAipCasePunishRunning = true;
+        try {
+            AipPunishInfo info = this.punishEntpService.selectMaxInputDate();
+            // 若lastOutputTime无效则不做下一步
+            if (info.getPunishTime() == null && info.getRmPunishEntpId() == null) {
+                return;
+            }
+            String json = this.transferAipCaseService.selectPunishInfo(info.getPunishTime(), info.getRmPunishEntpId());
+            // 将案件办理的待办记录写入待办事宜表
+            if (Tools.isEmptyString(json)) {
+                return;
+            }
+            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+            ObjectMapper mapper = new ObjectMapper();
+            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AipPunishInfo.class);
+            List<AipPunishInfo> datas = (List<AipPunishInfo>) mapper.readValue(json, javaType);
+            this.punishEntpService.savePunishInfo(datas);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isAipCasePunishRunning = false;
         }
     }
 }

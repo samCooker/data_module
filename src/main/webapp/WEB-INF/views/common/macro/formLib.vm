@@ -43,6 +43,9 @@
 #macro(formfilemulty $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
     #parse("/common/form/formfilemulti.vm")
 #end
+#macro(formapkfilemulty $__name $__value $__class $__title $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id)
+    #parse("/common/form/formapkfilemulti.vm")
+#end
 
 #macro(formfilemultyonline $__name $__value $__class $__title $__attachList $__downloadurl $__uploadable $__uploadurl $__deleteable $__inputatt $__id $__tabtitle $__url)
     #parse("/common/form/formfilemultionline.vm")

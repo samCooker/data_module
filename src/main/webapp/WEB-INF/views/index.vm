@@ -10,7 +10,7 @@
     #pageheader()
 </div>
 
-<div region="west" hide="true" split="true" title="移动平台" id="west">
+<div region="west" hide="true" split="true" title="移动执法办公终端" id="west">
     <div id='wnav' class="easyui-accordion" fit="true" border="false">
         <!--  导航内容 -->
     </div>

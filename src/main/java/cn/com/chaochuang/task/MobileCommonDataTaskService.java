@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
 import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
@@ -40,29 +41,23 @@ public class MobileCommonDataTaskService {
     /** webservice 函数库 */
     @Autowired
     private ITransferOAService         transferOAService;
-
     /** fdFordoService */
     @Autowired
     private CommonPendingHandleService commonFordoService;
-
     @Autowired
     private DocFileService             fileService;
-
     @Autowired
     private SysDataChangeService       dataChangeService;
-
     @Autowired
     private SysDepartmentService       departmentService;
-
     @Autowired
     private SysUserService             userService;
-
     @Autowired
     private DepLinkmanService          depLinkmanService;
-
     @Autowired
     private AppEntpService             appEntpService;
-
+    @Autowired
+    private AipPunishEntpService       punishEntpService;
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning  = false;
     /** 获取处理系统数据更改阻塞标识 */
@@ -130,6 +125,9 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.企业信息.getKey().equals(item.getChangeTableName())) {
                         // 企业信息的添加和更新
                         this.appEntpService.insertOrUpdataEntp(item);
+                    } else if (DataChangeTable.行政处罚信息.getKey().equals(item.getChangeTableName())) {
+                        // 行政处罚信息更新
+                        this.punishEntpService.savePunishInfo(item);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();

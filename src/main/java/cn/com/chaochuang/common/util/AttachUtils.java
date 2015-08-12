@@ -16,8 +16,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -212,6 +217,146 @@ public abstract class AttachUtils {
             if (!file.exists()) {
                 if (!file.mkdirs()) {
                     return;
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取文件的MD5
+     *
+     * @param fileName
+     *            文件名（包含文件的路径）
+     * @return
+     */
+    public static String getFileMD5(String fileName) {
+        File file = new File(fileName);
+        // 校验文件是否存在
+        if (!file.exists()) {
+            return "";
+        }
+        MessageDigest digest = null;
+        FileInputStream in = null;
+        byte buffer[] = new byte[1024];
+        int len;
+        try {
+            digest = MessageDigest.getInstance("MD5");
+            in = new FileInputStream(file);
+            while ((len = in.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, len);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        BigInteger bigInt = new BigInteger(1, digest.digest());
+        return bigInt.toString(16);
+    }
+
+    /**
+     * 删除文件
+     *
+     * @param fileName
+     *            文件名
+     * @return 删除结果
+     */
+    public static boolean removeFile(String fileName) {
+        try {
+            File file = new File(fileName);
+            // 若文件存在则删除
+            if (file.exists()) {
+                System.gc();
+                return file.delete();
+            }
+            return false;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    /**
+     * 删除文件列表指定的文件
+     *
+     * @param fileNameList
+     *            文件列表
+     */
+    public static void removeFiles(List fileNameList) {
+        if (fileNameList == null || fileNameList.size() == 0) {
+            return;
+        }
+        try {
+            for (int i = 0; i < fileNameList.size(); i++) {
+                AttachUtils.removeFile((String) fileNameList.get(i));
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+    }
+
+    /**
+     * 清空pathname目录，删除其下的所有文件和目录。
+     *
+     * @param pathname
+     *            要清空的目录路径名
+     */
+    public static void cleanFolder(String pathname) {
+        cleanFolder(new File(pathname));
+    }
+
+    /**
+     * 清空target目录，删除其下的所有文件和目录。
+     *
+     * @param target
+     *            要清空的目录
+     */
+    public static void cleanFolder(File target) {
+        if (target != null && target.exists()) {
+            try {
+                if (target.isDirectory()) {
+                    File[] subFile = target.listFiles();
+                    if (subFile != null) {
+                        for (int i = 0; i < subFile.length; i++) {
+                            File f = subFile[i];
+                            if (f.isDirectory()) {
+                                cleanFolder(f);
+                            }
+
+                            if (!f.delete()) {
+                                throw new RuntimeException("can not delete [" + f.getCanonicalPath()
+                                                + "] is no folder!!!");
+                            }
+                        }
+                    }
+                } else {
+                    throw new RuntimeException("[" + target.getCanonicalPath() + "] is no folder!!!");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * 清空指定文件夹下 指定前缀或后缀的文件
+     *
+     * @param filePath
+     *            文件路径
+     * @param prefix
+     *            前缀
+     * @param suffix
+     *            后缀
+     */
+    public static void cleanFolder(String filePath, String prefix, String suffix) {
+        File file = new File(filePath);
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                File tag = files[i];
+                Pattern p = Pattern.compile(prefix + "(.*)" + suffix);
+                Matcher m = p.matcher(tag.getName());
+                if (m.matches()) {
+                    tag.delete();
                 }
             }
         }
