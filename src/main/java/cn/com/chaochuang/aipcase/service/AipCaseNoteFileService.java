@@ -36,8 +36,9 @@ public interface AipCaseNoteFileService extends CrudRestService<AipCaseNoteFile,
      * 生成文书的html文件，保存文书信息
      * 
      * @param datas
+     * @param rmCaseApplyId
      */
-    public void saveAipCaseNoteFile(List<AipLawContentData> datas) throws Exception;
+    public void saveAipCaseNoteFile(List<AipLawContentData> datas, Long rmCaseApplyId) throws Exception;
 
     /**
      * 根据远程文书id查找文书记录,保存文书存放路径并localData=1

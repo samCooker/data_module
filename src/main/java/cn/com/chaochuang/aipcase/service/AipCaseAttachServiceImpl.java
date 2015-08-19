@@ -8,7 +8,6 @@
 
 package cn.com.chaochuang.aipcase.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -42,25 +41,33 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
     }
 
     @Override
-    public void saveAttachments(List<AipCaseAttachInfo> attachInfos) {
-        if (attachInfos == null) {
-            return;
-        }
-        for (AipCaseAttachInfo info : attachInfos) {
-            AipCaseAttach attach = repository.findByRmAttachId(info.getRmAttachId());
-            if (attach == null) {
-                attach = new AipCaseAttach();
-            }
-            try {
-                BeanUtils.copyProperties(attach, info);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            attach.setLocalData(LocalData.非本地数据);
-            repository.save(attach);
+    public void saveAttachments(List<AipCaseAttachInfo> attachInfos, Long rmCaseApplyId) {
+        // 查找出所有该案件的附件
+        List<AipCaseAttach> deleteAttachList = repository.findByRmCaseApplyId(rmCaseApplyId);
+        if (attachInfos != null) {
+            // 更新旧附件，保存新附件，删除不存在的附件
+            for (AipCaseAttachInfo info : attachInfos) {
+                AipCaseAttach attach = repository.findByRmAttachId(info.getRmAttachId());
+                if (attach == null) {
+                    attach = new AipCaseAttach();
+                }
+                if (deleteAttachList != null && attach != null) {
+                    // 存在的附件剔除出删除列表中
+                    deleteAttachList.remove(attach);
+                }
+                try {
+                    BeanUtils.copyProperties(attach, info);
+                } catch (Exception e) {
+                    e.printStackTrace();
 
+                }
+                attach.setLocalData(LocalData.非本地数据);
+                repository.save(attach);
+            }
+        }
+        if (deleteAttachList != null) {
+            // 删除多余的附件
+            repository.deleteInBatch(deleteAttachList);
         }
     }
 

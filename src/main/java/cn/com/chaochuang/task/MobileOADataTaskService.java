@@ -260,7 +260,7 @@ public class MobileOADataTaskService {
             int uploadBlockSize = 10240;
             byte[] buffer = this.transferOAService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
             while (buffer.length > 0) {
-                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                bufferedOutputStream.write(buffer, 0, buffer.length);
                 offset += buffer.length;
                 buffer = new byte[uploadBlockSize];
                 buffer = this.transferOAService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);

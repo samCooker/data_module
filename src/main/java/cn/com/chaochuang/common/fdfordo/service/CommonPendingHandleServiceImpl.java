@@ -10,6 +10,7 @@ package cn.com.chaochuang.common.fdfordo.service;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,8 @@ import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.FdFordoAipcaseRepository;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
-import cn.com.chaochuang.common.fdfordo.reference.SystemType;
-import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 
@@ -44,8 +44,8 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
      * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
      */
     @Override
-    public void analysisDataChange(SysDataChange dataChange) {
-        if (Tools.isEmptyString(dataChange.getChangeScript())) {
+    public void analysisDataChange(SysDataChange dataChange, DataChangeTable changeName) {
+        if (changeName == null || dataChange == null || StringUtils.isEmpty(dataChange.getChangeScript())) {
             return;
         }
         // 获取要操作的ID
@@ -53,29 +53,20 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
         if (items == null || items.length != 2) {
             return;
         }
-        // 判断要删除哪个系统的待办
-        if (dataChange.getChangeTableName() == null) {
-            return;
-        }
-        String[] type = dataChange.getChangeTableName().split("_");
-        SystemType systemType = SystemType.valueOf(type[0]);
-        if (systemType == null) {
-            return;
-        }
-        switch (systemType) {
-        case oa:// 公文系统
+        switch (changeName) {
+        case 公文待办:// 公文系统
             FdFordo oaFordo = this.oaRepository.findByRmPendingItemId(items[1]);
             if (oaFordo != null) {
                 oaRepository.delete(oaFordo);
             }
             break;
-        case supervise:// 审批系统
+        case 审批待办:// 审批系统
             FdFordoApp superviseFordo = supviseRepository.findByRmPendingId(items[1]);
             if (superviseFordo != null) {
                 supviseRepository.delete(superviseFordo);
             }
             break;
-        case aipcase:// 办案系统
+        case 办案待办:// 办案系统
             FdFordoAipcase aipcaseFordo = aipcaseRepository.findByRmPendingId(items[1]);
             if (aipcaseFordo != null) {
                 aipcaseRepository.delete(aipcaseFordo);

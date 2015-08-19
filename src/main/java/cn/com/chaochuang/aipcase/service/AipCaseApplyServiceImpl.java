@@ -96,18 +96,17 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
                     apply.setInputDate(new Date());
                 }
                 BeanUtils.copyProperties(apply, data);
-                this.repository.save(apply);
+                this.repository.saveAndFlush(apply);
                 // 保存办理环节记录
                 aipCaseNodeInfoService.saveNodeInfos(data.getNodeInfos());
                 // 保存附件记录
-                aipCaseAttachService.saveAttachments(data.getAttachInfos());
+                aipCaseAttachService.saveAttachments(data.getAttachInfos(), apply.getRmCaseApplyId());
                 // 保存文书记录
-                aipCaseNoteFileService.saveAipCaseNoteFile(data.getContentList());
+                aipCaseNoteFileService.saveAipCaseNoteFile(data.getContentList(), apply.getRmCaseApplyId());
                 // 更改待办
                 fdFordoAipcaseService.updateLocalData(data.getRmPendingId());
             } catch (Exception e) {
                 e.printStackTrace();
-                continue;// 有异常不影响其他
             }
         }
     }

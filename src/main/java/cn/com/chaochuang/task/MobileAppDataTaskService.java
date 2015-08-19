@@ -77,7 +77,7 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
      */
-    // @Scheduled(cron = "5/10 * * * * ?")
+//    @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -128,7 +128,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
+//    @Scheduled(cron = "10/10 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -160,7 +160,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    // @Scheduled(cron = "10/15 * * * * ?")
+//    @Scheduled(cron = "10/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -225,7 +225,7 @@ public class MobileAppDataTaskService {
             int uploadBlockSize = 10240;
             byte[] buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
             while (buffer.length > 0) {
-                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                bufferedOutputStream.write(buffer, 0, buffer.length);
                 offset += buffer.length;
                 buffer = new byte[uploadBlockSize];
                 buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);

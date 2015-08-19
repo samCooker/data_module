@@ -9,6 +9,7 @@
 package cn.com.chaochuang.common.fdfordo.service;
 
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 
 /**
  * @author Shicx
@@ -21,5 +22,5 @@ public interface CommonPendingHandleService {
      *
      * @param dataChange
      */
-    void analysisDataChange(SysDataChange dataChange);
+    void analysisDataChange(SysDataChange dataChange, DataChangeTable changName);
 }

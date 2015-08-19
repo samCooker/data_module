@@ -24,8 +24,9 @@ public interface AipCaseAttachService extends CrudRestService<AipCaseAttach, Lon
      * 保存附件信息
      * 
      * @param attachInfos
+     * @param rmCaseApplyId
      */
-    void saveAttachments(List<AipCaseAttachInfo> attachInfos);
+    void saveAttachments(List<AipCaseAttachInfo> attachInfos, Long rmCaseApplyId);
 
     /**
      * 选择未下载附件

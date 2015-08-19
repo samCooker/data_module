@@ -29,6 +29,14 @@ public interface AipCaseAttachRepository extends SimpleDomainRepository<AipCaseA
     AipCaseAttach findByRmAttachId(Long rmAttachId);
 
     /**
+     * 根据远程案件来源id查找附件
+     * 
+     * @param rmCaseApplyId
+     * @return
+     */
+    List<AipCaseAttach> findByRmCaseApplyId(Long rmCaseApplyId);
+
+    /**
      * @param localData
      * @param page
      */

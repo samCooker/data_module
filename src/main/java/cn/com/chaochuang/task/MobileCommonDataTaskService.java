@@ -66,7 +66,7 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "10/6 * * * * ?")
+//    @Scheduled(cron = "5/5 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -91,7 +91,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+//    @Scheduled(cron = "8/10 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -102,10 +102,15 @@ public class MobileCommonDataTaskService {
             List<SysDataChange> datas = page.getContent();
             for (SysDataChange item : datas) {
                 try {
-                    if (item.getChangeTableName() != null
-                                    && item.getChangeTableName().contains(DataChangeTable.待办事宜.getKey())) {
-                        // 如果处理的表表名包含pending_handle，则调用公用的待办方法分析处理过程
-                        this.commonFordoService.analysisDataChange(item);
+                    if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步公文系统的待办
+                        this.commonFordoService.analysisDataChange(item, DataChangeTable.公文待办);
+                    } else if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步审批系统的待办
+                        this.commonFordoService.analysisDataChange(item, DataChangeTable.审批待办);
+                    } else if (DataChangeTable.办案待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步办案系统的待办
+                        this.commonFordoService.analysisDataChange(item, DataChangeTable.办案待办);
                     } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
                         // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
                         String[] items = item.getChangeScript().split("=");
@@ -127,15 +132,15 @@ public class MobileCommonDataTaskService {
                         this.appEntpService.insertOrUpdataEntp(item);
                     } else if (DataChangeTable.行政处罚信息.getKey().equals(item.getChangeTableName())) {
                         // 行政处罚信息更新
-                        this.punishEntpService.savePunishInfo(item);
+                        // this.punishEntpService.savePunishInfo(item);
                     }
+                    // 删除变更数据
+                    this.dataChangeService.delete(item.getId());
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
                     continue;
                 }
-                // 删除变更数据
-                this.dataChangeService.delete(item.getId());
             }
         } catch (Exception ex) {
             ex.printStackTrace();

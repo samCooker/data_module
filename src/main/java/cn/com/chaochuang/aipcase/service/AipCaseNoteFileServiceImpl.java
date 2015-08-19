@@ -75,7 +75,8 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
      * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#saveLawContentDataAndHtmlFile(java.util.List)
      */
     @Override
-    public void saveAipCaseNoteFile(List<AipLawContentData> datas) throws Exception {
+    public void saveAipCaseNoteFile(List<AipLawContentData> datas, Long rmCaseApplyId) throws Exception {
+        List<AipCaseNoteFile> deleteNoteFileList = repository.findByRmCaseApplyId(rmCaseApplyId);
         if (datas != null) {
             for (AipLawContentData lawContent : datas) {
                 AipCaseNoteFile noteFile = repository.findByRmNoteFileId(lawContent.getRmNoteFileId());
@@ -83,9 +84,16 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
                     noteFile = new AipCaseNoteFile();
                     BeanUtils.copyProperties(noteFile, lawContent);
                 }
+                if (deleteNoteFileList != null && noteFile != null) {
+                    deleteNoteFileList.remove(noteFile);
+                }
                 noteFile.setLocalData(LocalData.非本地数据);
                 repository.save(noteFile);
             }
+        }
+        // 无新文书则删除原有文书
+        if (deleteNoteFileList != null) {
+            repository.deleteInBatch(deleteNoteFileList);
         }
     }
 
