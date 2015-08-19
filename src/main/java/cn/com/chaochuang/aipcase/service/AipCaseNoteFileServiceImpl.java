@@ -16,7 +16,6 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,21 +38,12 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
     @Autowired
     private AipCaseNoteFileRepository repository;
 
-    @Value("${transferFile.rootPath}")
-    private String                    transferFileRootPath;
-    @Value("${docFile.savePath}")
-    private String                    docFilePath;
-    @Value("${pdfFile.savePath}")
-    private String                    pdfFilePath;
-
     @Override
     public SimpleDomainRepository<AipCaseNoteFile, Long> getRepository() {
         return repository;
     }
 
     /**
-     * (non-Javadoc)
-     * 
      * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#noteFileTransferToMapByCaseApplyId(java.lang.Long)
      */
     @Override
@@ -70,8 +60,6 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
     }
 
     /**
-     * (non-Javadoc)
-     * 
      * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#saveLawContentDataAndHtmlFile(java.util.List)
      */
     @Override
@@ -97,6 +85,10 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
         }
     }
 
+    /**
+     * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#saveNoteFileForLocal(java.lang.Long,
+     *      java.lang.String)
+     */
     @Override
     public void saveNoteFileForLocal(Long rmNoteFileId, String localFileName) {
         AipCaseNoteFile noteFile = repository.findByRmNoteFileId(rmNoteFileId);
@@ -106,6 +98,10 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
         }
     }
 
+    /**
+     * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#findByLocalData(cn.com.chaochuang.aipcase.reference.LocalData,
+     *      org.springframework.data.domain.Pageable)
+     */
     @Override
     public List<AipCaseNoteFile> findByLocalData(LocalData localData, Pageable page) {
         return repository.findByLocalData(localData, page);
