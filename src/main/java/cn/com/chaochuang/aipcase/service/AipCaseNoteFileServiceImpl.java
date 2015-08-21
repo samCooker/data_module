@@ -90,10 +90,14 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
      *      java.lang.String)
      */
     @Override
-    public void saveNoteFileForLocal(Long rmNoteFileId, String localFileName) {
-        AipCaseNoteFile noteFile = repository.findByRmNoteFileId(rmNoteFileId);
+    public void saveNoteFileForLocal(AipLawContentData contentData, String localFileName) {
+        if (contentData == null) {
+            return;
+        }
+        AipCaseNoteFile noteFile = repository.findByRmNoteFileId(contentData.getRmNoteFileId());
         if (noteFile != null) {
             noteFile.setFilePath(localFileName);
+            noteFile.setMdfCode(contentData.getMdfCode());
             noteFile.setLocalData(LocalData.有本地数据);
         }
     }

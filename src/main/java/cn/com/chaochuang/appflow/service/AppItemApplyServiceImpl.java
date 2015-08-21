@@ -86,6 +86,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
                     for (AppFlowNodeInfo nodeInfo : applyData.getFlowNodeInfos()) {
                         this.nodeInfoService.saveFlowNodeInfo(nodeInfo);
                     }
+                    // 保存经办列表
                     appTransactPersonalService.saveAppTransactPersonalByFlowNodes(applyData.getFlowNodeInfos(), apply);
                 }
                 // 保存AppFlowNodeOpinions

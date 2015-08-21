@@ -45,16 +45,15 @@ import cn.com.chaochuang.task.bean.AipCasePendingInfo;
 public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoAipcase> implements
                 FdFordoAipcaseService {
     @PersistenceContext
-    private EntityManager            entityManager;
-
+    private EntityManager              entityManager;
     @Autowired
-    private FdFordoAipcaseRepository repository;
-
+    private FdFordoAipcaseRepository   repository;
     @Autowired
-    private SysUserRepository        userRepository;
-
+    private SysUserRepository          userRepository;
+    @Autowired
+    private AipTransactPersonalService aipTransactPersonalService;
     @Value("${getdata.timeinterval}")
-    private String                   timeInterval;
+    private String                     timeInterval;
 
     @Override
     public SimpleDomainRepository<FdFordoAipcase, Long> getRepository() {
@@ -116,6 +115,8 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
             fdFordo.setInputDate(currentDate);
             fdFordo.setLocalData(LocalData.非本地数据);
             this.repository.save(fdFordo);
+            // 保存经办记录
+            aipTransactPersonalService.saveTransactPersonalRecord(fdFordo);
         }
     }
 

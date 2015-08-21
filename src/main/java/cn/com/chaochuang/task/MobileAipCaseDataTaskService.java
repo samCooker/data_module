@@ -251,7 +251,7 @@ public class MobileAipCaseDataTaskService {
                 buffer = transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
             }
             // 将附件localData标志置为本地数据("1")
-            aipCaseNoteFileService.saveNoteFileForLocal(contentData.getRmNoteFileId(), localFileName);
+            aipCaseNoteFileService.saveNoteFileForLocal(contentData, localFileName);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -360,7 +360,7 @@ public class MobileAipCaseDataTaskService {
             int uploadBlockSize = 10240;
             byte[] buffer = this.transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
             while (buffer.length > 0) {
-                bufferedOutputStream.write(buffer, 0, uploadBlockSize);
+                bufferedOutputStream.write(buffer, 0, buffer.length);
                 offset += buffer.length;
                 buffer = new byte[uploadBlockSize];
                 buffer = this.transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);

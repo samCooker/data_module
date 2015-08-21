@@ -43,10 +43,10 @@ public interface AipCaseNoteFileService extends CrudRestService<AipCaseNoteFile,
     /**
      * 根据远程文书id查找文书记录,保存文书存放路径并localData=1
      * 
-     * @param rmNoteFileId
+     * @param contentData
      * @param localFileName
      */
-    public void saveNoteFileForLocal(Long rmNoteFileId, String localFileName);
+    public void saveNoteFileForLocal(AipLawContentData contentData, String localFileName);
 
     /**
      * @param localData

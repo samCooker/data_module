@@ -37,7 +37,7 @@ public class AipCaseApply extends LongIdEntity {
     private String            caseName;
     /** 案件来源 */
     private String            caseTypeName;
-    /** 案由 */
+    /** 案情摘要 */
     private String            caseBrief;
     /** 当事人/企业编号 */
     private Long              fillEntpId;
@@ -399,7 +399,8 @@ public class AipCaseApply extends LongIdEntity {
     }
 
     /**
-     * @param caseTypeName the caseTypeName to set
+     * @param caseTypeName
+     *            the caseTypeName to set
      */
     public void setCaseTypeName(String caseTypeName) {
         this.caseTypeName = caseTypeName;
