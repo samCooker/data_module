@@ -99,6 +99,7 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
             noteFile.setFilePath(localFileName);
             noteFile.setMdfCode(contentData.getMdfCode());
             noteFile.setLocalData(LocalData.有本地数据);
+            repository.save(noteFile);
         }
     }
 

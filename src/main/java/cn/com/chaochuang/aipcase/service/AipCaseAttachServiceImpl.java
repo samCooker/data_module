@@ -49,19 +49,22 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
             for (AipCaseAttachInfo info : attachInfos) {
                 AipCaseAttach attach = repository.findByRmAttachId(info.getRmAttachId());
                 if (attach == null) {
+                    // 保存新附件
                     attach = new AipCaseAttach();
+                    attach.setLocalData(LocalData.非本地数据);
+                    try {
+                        BeanUtils.copyProperties(attach, info);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // 更改旧附件名
+                    attach.setTrueName(info.getTrueName());
                 }
                 if (deleteAttachList != null && attach != null) {
                     // 存在的附件剔除出删除列表中
                     deleteAttachList.remove(attach);
                 }
-                try {
-                    BeanUtils.copyProperties(attach, info);
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                }
-                attach.setLocalData(LocalData.非本地数据);
                 repository.save(attach);
             }
         }
