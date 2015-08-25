@@ -20,9 +20,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cn.com.chaochuang.common.bean.EasyUIPage;
 import cn.com.chaochuang.common.bean.Result;
+import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.util.SearchBuilderHelper;
 import cn.com.chaochuang.common.util.SearchListHelper;
+import cn.com.chaochuang.synchdata.bean.SysSynchdataTaskShowBean;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
 import cn.com.chaochuang.synchdata.reference.SynchDataClearFlag;
 import cn.com.chaochuang.synchdata.reference.SynchDataFlag;
@@ -70,7 +72,7 @@ public class SynchDataController {
         listhelper.execute(searchBuilder, this.synchdataTaskService.getRepository(), page, rows);
 
         EasyUIPage p = new EasyUIPage();
-        p.setRows(listhelper.getList());
+        p.setRows(BeanCopyBuilder.buildList(listhelper.getList(), SysSynchdataTaskShowBean.class));
         p.setTotal(listhelper.getCount());
         return p;
     }

@@ -3,4 +3,36 @@
 </div>
 #parse("/synchdata/table.vm")
 #parse("/synchdata/synchdata.js.html")
-
+<div id="dlg" class="easyui-dialog" title="选择数据来源 " style="width: 300px;" data-options="closed:true">
+    <div id="tb" style="padding:2px 5px;">
+    <form id="choseform">
+        <input name="clearFlag" type="hidden" value="0"/>
+            <table class="tb2">
+            <tbody>
+                <tr>
+                    <th style="text-align:left;">数据来源：</th>
+                    <td style="text-align:right">
+                        <select class="easyui-combobox" panelheight="200px" style="width: 150px" id="synchDataFlag" name="synchDataFlag">
+                            #foreach($option in ${dict.synchdataflag.keySet()})
+                                <option value="$!{option}">${dict.synchdataflag.get($option)}<option/>
+                            #end
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+    </form>
+    </div>
+    <div class="messager-button">
+        <a class="l-btn l-btn-small" href="javascript:submit()" style="margin-left: 10px;">
+        <span class="l-btn-left">
+            <span class="l-btn-text">确定</span>
+        </span>
+        </a>
+        <a class="l-btn l-btn-small" href="javascript:close()" style="margin-left: 10px;">
+        <span class="l-btn-left">
+            <span class="l-btn-text">取消</span>
+        </span>
+        </a>
+    </div>
+</div>
