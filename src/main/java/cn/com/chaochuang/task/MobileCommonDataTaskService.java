@@ -132,7 +132,7 @@ public class MobileCommonDataTaskService {
                         this.appEntpService.insertOrUpdataEntp(item);
                     } else if (DataChangeTable.行政处罚信息.getKey().equals(item.getChangeTableName())) {
                         // 行政处罚信息更新
-                        // this.punishEntpService.savePunishInfo(item);
+                        this.punishEntpService.savePunishInfo(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());
