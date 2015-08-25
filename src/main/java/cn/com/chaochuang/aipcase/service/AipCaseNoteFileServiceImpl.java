@@ -112,4 +112,16 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
         return repository.findByLocalData(localData, page);
     }
 
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.aipcase.service.AipCaseNoteFileService#changeNoteFileLocalData(cn.com.chaochuang.aipcase.domain.AipCaseNoteFile,
+     *      cn.com.chaochuang.aipcase.reference.LocalData)
+     */
+    @Override
+    public void changeNoteFileLocalData(AipCaseNoteFile noteFile, LocalData localData) {
+        noteFile.setLocalData(localData);
+        repository.save(noteFile);
+    }
+
 }

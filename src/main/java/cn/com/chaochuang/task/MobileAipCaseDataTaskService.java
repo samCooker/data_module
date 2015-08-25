@@ -196,16 +196,21 @@ public class MobileAipCaseDataTaskService {
         try {
             // 查找AIP_CASE_NOTE_FILE表的非本地数据
             List<AipCaseNoteFile> noteFileList = aipCaseNoteFileService.findByLocalData(LocalData.非本地数据,
-                            new PageRequest(0, 5));
+                            new PageRequest(0, 10));
             if (noteFileList != null) {
                 ObjectMapper mapper = new ObjectMapper();
                 for (AipCaseNoteFile noteFile : noteFileList) {
                     String jsonData = transferAipCaseService.getLawContentData(noteFile.getRmNoteFileId(),
                                     noteFile.getMdfCode());
+                    AipLawContentData data = null;
                     if (StringUtils.isNotEmpty(jsonData)) {
-                        AipLawContentData data = mapper.readValue(jsonData, AipLawContentData.class);
+                        data = mapper.readValue(jsonData, AipLawContentData.class);
+                    }
+                    if (data != null && StringUtils.isNoneEmpty(data.getRmFilePath())) {
                         // 根据返回的文件路径获取文件到本地，并修改loaclData
                         downloadHtmlFile(data);
+                    } else {// 返回空说明该文书不存在或已经获取了文书的html文件
+                        aipCaseNoteFileService.changeNoteFileLocalData(noteFile, LocalData.有本地数据);
                     }
                 }
             }
@@ -223,9 +228,6 @@ public class MobileAipCaseDataTaskService {
      * @param datas
      */
     private void downloadHtmlFile(AipLawContentData contentData) {
-        if (contentData == null) {
-            return;
-        }
         String localFilePath = this.rootPath + this.htmlFilePath + File.separatorChar
                         + Tools.DATE_FORMAT4.format(new Date()) + File.separator + contentData.getRmCaseApplyId();
         File file = new File(localFilePath);

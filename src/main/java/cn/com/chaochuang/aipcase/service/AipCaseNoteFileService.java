@@ -55,4 +55,12 @@ public interface AipCaseNoteFileService extends CrudRestService<AipCaseNoteFile,
      */
     public List<AipCaseNoteFile> findByLocalData(LocalData localData, Pageable page);
 
+    /**
+     * 修改是否是本地数据
+     * 
+     * @param noteFile
+     * @param localData
+     */
+    public void changeNoteFileLocalData(AipCaseNoteFile noteFile, LocalData localData);
+
 }
