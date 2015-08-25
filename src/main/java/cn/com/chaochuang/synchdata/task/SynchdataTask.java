@@ -55,6 +55,7 @@ public class SynchdataTask {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            isSynchDataTaskRunning = false;
         } finally {
             isSynchDataTaskRunning = false;
         }

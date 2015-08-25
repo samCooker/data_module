@@ -102,7 +102,6 @@ public class SynchDataServiceImpl implements SynchDataService {
             // 需要同步的记录数
             Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
                             .getLong(3);
-            maxId = Long.valueOf(6103);
             if (count <= 0) {
                 task.setMemo("本次需同步数据记录数为0！");
                 task.setStatus(SynchDataStatus.同步完成);
@@ -316,7 +315,6 @@ public class SynchDataServiceImpl implements SynchDataService {
         try {
             for (Iterator it = dataMap.entrySet().iterator(); it.hasNext();) {
                 Entry entry = (Entry) it.next();
-                System.out.println("1.entry.getKey[" + fields.get(entry.getKey()) + "]=" + entry.getKey());
                 if (fields.containsKey(entry.getKey())) {
                     stat.setObject(fields.get(entry.getKey()), this.changeDataType(entry.getValue()));
                     fields.remove(entry.getKey());
@@ -324,7 +322,6 @@ public class SynchDataServiceImpl implements SynchDataService {
             }
             for (Iterator it = fields.entrySet().iterator(); it.hasNext();) {
                 Entry entry = (Entry) it.next();
-                System.out.println("2.entry.getKey[" + entry.getValue() + "]=" + entry.getKey());
                 stat.setObject(((Integer) entry.getValue()).intValue(), null);
             }
             stat.addBatch();
