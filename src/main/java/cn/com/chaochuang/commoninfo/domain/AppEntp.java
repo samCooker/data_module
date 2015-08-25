@@ -35,9 +35,9 @@ public class AppEntp extends LongIdEntity {
     /** 注册资金 */
     private Long              registerFund;
     /** 经度 */
-    private Long              longitude;
+    private Double            longitude;
     /** 纬度 */
-    private Long              latitude;
+    private Double            latitude;
     /** 企业名称 */
     private String            entpName;
     /** 省份 */
@@ -110,7 +110,7 @@ public class AppEntp extends LongIdEntity {
     /**
      * @return the longitude
      */
-    public Long getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
@@ -118,14 +118,14 @@ public class AppEntp extends LongIdEntity {
      * @param longitude
      *            the longitude to set
      */
-    public void setLongitude(Long longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
     /**
      * @return the latitude
      */
-    public Long getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
@@ -133,7 +133,7 @@ public class AppEntp extends LongIdEntity {
      * @param latitude
      *            the latitude to set
      */
-    public void setLatitude(Long latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 

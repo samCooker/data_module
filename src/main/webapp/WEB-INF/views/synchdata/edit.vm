@@ -1,0 +1,80 @@
+#set($bodyattr="class='easyui-layout' style='border:0px'")
+<div class="cc-tableWrap" data-options="region:'center',border:false" style="padding:5px;">
+    <form id="editForm" method="post">
+        <table style="margin:0px;" class="default-table self-table">
+            <input type="hidden" name="id" value="$!{mailUser.id}">
+            <tr>
+                <td style="background:#f3f4f4" colspan="2">
+                    <div class="btn-right right_tools">
+                        <a href="javascript:void(0)" iconcls="icon-save" plain="true" class="easyui-linkbutton" onClick="save()">保存</a>
+                        <a href="javascript:void(0)" iconcls="icon-back" plain="true"class="easyui-linkbutton" onClick="back()">返回</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>上传安装包</th>
+                <td id="upload_td" >
+                    #formapkfilemulty("attach", "", "", "", "#defaultDownloadUrl('apkattach')", true, "#defaultUploadUrl('apkattach')", true)
+                </td>
+            </tr>
+            <tr>
+                <th width="8%">安装包名称</th>
+                <td>
+                    <input data-options="validType:['length[0,50]']" style="width:400px;" id="packageName" name="packageName" class="easyui-textbox"/>
+                </td>
+            </tr>
+            <tr>
+                <th>安装包版本</th>
+                <td>
+                    <input data-options="validType:['length[0,20]']" style="width:400px;" id="version" name="version" class="easyui-textbox"/>
+                </td>
+            </tr>
+            <tr>
+                <th>更新才能使用</th>
+                <td>
+                    <select style="width:400px;" name="updateFlag" class="easyui-combobox" panelheight="auto">
+#foreach($option in ${dict.updateflag.keySet()})
+                        <option value="$option" #if("$!{apkInfo.updateFlag}"=="$!{option}")selected="selected"#end>${dict.updateflag.get($option)}</option>
+#end
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>安装包更新描述</th>
+                <td>
+                    <input data-options="validType:['length[0,100]']" style="width:99%;" name="packageScript" class="easyui-textbox easyui-validatebox" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+#@script()
+<style>
+    #upload_td div{
+        width:100%;
+        align:left;
+    }
+    #upload_td div .btn-success{
+        color:blue;
+        position:absolute;
+        left:0;
+    }
+    #upload_td div .uploadafter{
+        float:left;
+        display:inline;
+        width:auto;
+        line-height: 24px;
+    }
+    #upload_td div .uploadedfile{
+        float:left;
+        width:50%;
+        line-height: 24px;
+    }
+    #upload_td div .uploadafter a{
+        color:blue;
+    }
+</style>
+#end
+#parse("/apkmanage/apkinfo.js.html")
+#include("/common/easyui/crud.css.vm")
+

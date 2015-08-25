@@ -1,0 +1,6 @@
+<div id="tb" style="padding:2px 5px;">
+#parse("/synchdata/tools.vm")
+</div>
+#parse("/synchdata/table.vm")
+#parse("/synchdata/synchdata.js.html")
+

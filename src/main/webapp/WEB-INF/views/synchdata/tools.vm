@@ -1,0 +1,4 @@
+<a href="javascript:;" class="easyui-linkbutton" iconCls="icon-add"
+    plain="true" onClick="add()">选择同步数据</a>
+
+
