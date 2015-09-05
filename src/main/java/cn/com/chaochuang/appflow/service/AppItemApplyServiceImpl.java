@@ -20,7 +20,6 @@ import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppFlowNodeInfo;
 import cn.com.chaochuang.appflow.domain.AppFlowNodeOpinions;
 import cn.com.chaochuang.appflow.domain.AppItemApply;
-import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.AppItemApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -96,11 +95,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
                     }
                 }
                 // 保存AppItemAttach
-                if (Tools.isNotEmptyList(applyData.getAppItemAttachInfos())) {
-                    for (AppItemAttach nodeInfo : applyData.getAppItemAttachInfos()) {
-                        this.attachService.saveAppItemAttach(nodeInfo);
-                    }
-                }
+                this.attachService.saveAppItemAttach(applyData.getAppItemAttachInfos(), applyData.getRmItemApplyId());
                 // 更新待办事宜记录的本地记录状态
                 this.fdFordoAppService.updateLocalData(applyData.getPendingHandleId().toString());
             }

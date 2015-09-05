@@ -28,6 +28,14 @@ public interface AppItemAttachService extends CrudRestService<AppItemAttach, Lon
     void saveAppItemAttach(AppItemAttach info);
 
     /**
+     * 保存审批材料数据
+     * 
+     * @param attachList
+     * @param rmItemApplyId
+     */
+    void saveAppItemAttach(List<AppItemAttach> attachList, Long rmItemApplyId);
+
+    /**
      * 查询localData=0的附件信息
      *
      * @return

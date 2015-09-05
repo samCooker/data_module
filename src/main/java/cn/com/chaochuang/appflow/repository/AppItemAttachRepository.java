@@ -34,4 +34,12 @@ public interface AppItemAttachRepository extends SimpleDomainRepository<AppItemA
      * @return
      */
     List<AppItemAttach> findByLocalData(LocalData local);
+
+    /**
+     * 根据申请事项编号获取附件列表
+     * 
+     * @param rmItemApplyId
+     * @return
+     */
+    List<AppItemAttach> findByItemApplyId(Long rmItemApplyId);
 }

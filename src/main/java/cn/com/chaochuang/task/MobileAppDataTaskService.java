@@ -8,14 +8,23 @@
 
 package cn.com.chaochuang.task;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -47,37 +56,55 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class MobileAppDataTaskService {
 
-    @Autowired
-    private SuperviseWebService  superviseWebService;
-    @Autowired
-    private FdFordoAppService    fdFordoAppService;
-    @Autowired
-    private AppItemApplyService  appItemApplyService;
-    @Autowired
-    private DataUpdateService    dataUpdateService;
-    @Autowired
-    private AppItemAttachService appItemAttachService;
+    @Value("${httpClient.userName}")
+    private String                  userName;
+    @Value("${httpClient.pwd}")
+    private String                  pwd;
+    @Value("${httpClient.loginUrl}")
+    private String                  loginUrl;
+    @Value("${httpClient.getFordoDataUrl}")
+    private String                  getFordoDataUrl;
+    @Value("${httpClient.getSuperviseDataUrl}")
+    private String                  getSuperviseDataUrl;
+    @Value("${httpClient.submitUrl}")
+    private String                  submitUrl;
+    @Value("${httpClient.downloadUrl}")
+    private String                  downloadUrl;
 
+    @Autowired
+    private SuperviseWebService     superviseWebService;
+    @Autowired
+    private FdFordoAppService       fdFordoAppService;
+    @Autowired
+    private AppItemApplyService     appItemApplyService;
+    @Autowired
+    private DataUpdateService       dataUpdateService;
+    @Autowired
+    private AppItemAttachService    appItemAttachService;
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
-    private String               rootPath;
+    private String                  rootPath;
 
     /** 公文附件存放相对路径 */
     @Value("${supervisefile.attach.path}")
-    private String               docFileAttachPath;
+    private String                  docFileAttachPath;
     /** 获取公文阻塞标识 */
-    private static boolean       isFordoRunning          = false;
+    private static boolean          isFordoRunning          = false;
     /** 获取行政审批数据标识 */
-    private static boolean       isAppItemDataRunning    = false;
+    private static boolean          isAppItemDataRunning    = false;
     /** 提交行政审批数据标识 */
-    private static boolean       isSubmitDataRunning     = false;
+    private static boolean          isSubmitDataRunning     = false;
     /** 下载公文附件阻塞标识 */
-    private static boolean       isDownLoadAttachRunning = false;
+    private static boolean          isDownLoadAttachRunning = false;
+    /** 是否正在登录 */
+    private static boolean          isLoging                = false;
+
+    private static HttpClientHelper httpClientHelper        = HttpClientHelper.newHttpClientHelper();
 
     /**
-     * 向行政审批系统获取待办事宜数据 每10秒进行一次数据获取
+     * 向行政审批系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "5/10 * * * * ?")
+    @Scheduled(cron = "5/5 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -86,21 +113,48 @@ public class MobileAppDataTaskService {
         try {
             // 获取当前待办表中公文待办中最大的id，若无法获取时间值则获取距离当前时间一个月的时间值
             AppFlowPendingHandleInfo info = this.fdFordoAppService.selectMaxInputDate();
-            // 若lastOutputTime或rmPendingId无效则不做下一步
-            if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
-                isFordoRunning = false;
+            // 参数设置
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            if (info.getLastSendTime() != null) {
+                params.add(new BasicNameValuePair("lastOutputTime", info.getLastSendTime().getTime() + ""));
+            }
+            if (info.getRmPendingId() != null) {
+                params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
+            }
+            // 发送请求
+            String json = httpClientHelper.doPost(new HttpPost(getFordoDataUrl), params);
+            if (StringUtils.isBlank(json)) {
                 return;
             }
-            // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.superviseWebService.selectPendingHandleList(info.getLastSendTime(),
-                            Tools.isEmptyString(info.getRmPendingId()) ? null : Long.valueOf(info.getRmPendingId()));
-            // 将行政审批的待办记录写入待办事宜表
-            this.saveFdFordo(json);
+            if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                loginSuperviseSys();
+            } else {
+                this.saveFdFordo(json);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             isFordoRunning = false;
         }
+    }
+
+    /**
+     * 登录系统
+     */
+    private void loginSuperviseSys() {
+        if (isLoging) {
+            return;
+        }
+        isLoging = true;
+        try {
+            boolean isLogin = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(loginUrl));
+            System.out.println(isLogin);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isLoging = false;
+        }
+
     }
 
     /**
@@ -128,7 +182,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    @Scheduled(cron = "8/8 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -142,14 +196,26 @@ public class MobileAppDataTaskService {
                 return;
             }
             String pendingIds = Tools.changeArrayToString(datas, "rmPendingId", ",", false);
-            // 获取pendingIds指定的审批数据
-            String json = this.superviseWebService.selectAppItemApplyDates(pendingIds);
-            // 将行政审批的待办记录写入待办事宜表
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AppFlowShowData.class);
-            List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
-            // 保存并修改待办事宜 localData=1
-            this.appItemApplyService.saveAppItemApplyDatas(appDatas);
+            // 参数设置
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("pendingIds", pendingIds));
+            // 发送请求
+            String json = httpClientHelper.doPost(new HttpPost(getSuperviseDataUrl), params);
+            if (StringUtils.isBlank(json)) {
+                return;
+            }
+            if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                loginSuperviseSys();
+            } else {
+                // 将行政审批的待办记录写入待办事宜表
+                ObjectMapper mapper = new ObjectMapper();
+                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
+                                AppFlowShowData.class);
+                List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
+                // 保存并修改待办事宜 localData=1
+                this.appItemApplyService.saveAppItemApplyDatas(appDatas);
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -179,10 +245,29 @@ public class MobileAppDataTaskService {
                 return;
             }
             // 获取要提交的json字符串
+
             ObjectMapper mapper = new ObjectMapper();
             WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
-            String backInfo = superviseWebService.submitAppItemInfo(nodeInfo);
-            appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, backInfo);
+            // 参数设置
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
+            params.add(new BasicNameValuePair("assignee", nodeInfo.getAssignee()));
+            params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
+            params.add(new BasicNameValuePair("nodeType", nodeInfo.getNodeType()));
+            params.add(new BasicNameValuePair("timeLimitFlag", nodeInfo.getTimeLimitFlag()));
+            params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
+            params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
+            params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
+            params.add(new BasicNameValuePair("noPendingHandle", nodeInfo.isNoPendingHandle() + ""));
+            String json = httpClientHelper.doPost(new HttpPost(submitUrl), params);
+            if (StringUtils.isBlank(json)) {
+                return;
+            }
+            if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                loginSuperviseSys();
+            } else {
+                appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+            }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());
@@ -203,6 +288,9 @@ public class MobileAppDataTaskService {
         }
         isDownLoadAttachRunning = true;
         BufferedOutputStream bufferedOutputStream = null;
+        BufferedInputStream bis = null;
+        HttpGet downloadGet = null;
+        InputStream is = null;
         try {
             String localFilePath = this.rootPath + this.docFileAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
@@ -217,33 +305,68 @@ public class MobileAppDataTaskService {
                 file.mkdirs();
             }
             String localFileName = localFilePath + "/" + attach.getSaveName();
-            String remoteFileName = attach.getSavePath();
-            file = new File(localFileName);
-            bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
-            // 调用ITransferOAService的setDocTransactInfo的uploadStreamAttachFile方法
-            Long offset = Long.valueOf(0);
-            int uploadBlockSize = 10240;
-            byte[] buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
-            while (buffer.length > 0) {
-                bufferedOutputStream.write(buffer, 0, buffer.length);
-                offset += buffer.length;
-                buffer = new byte[uploadBlockSize];
-                buffer = this.superviseWebService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
+            // 参数设置
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("area", "appitem"));
+            params.add(new BasicNameValuePair("fileId", attach.getRmAttachId() + ""));
+            downloadGet = new HttpGet(downloadUrl);
+            CloseableHttpResponse response = httpClientHelper.doGet(downloadGet, params);
+            if (response == null) {
+                return;
             }
-            // 将附件localData标志置为本地数据("1")
-            this.appItemAttachService.saveDocFileAttachForLocal(attach, localFileName);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (HttpStatus.SC_OK == statusCode) {// 成功返回
+                file = new File(localFileName);
+                bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+                byte[] b = new byte[1024];
+                is = response.getEntity().getContent();
+                bis = new BufferedInputStream(is);
+                int len = -1;
+                while ((len = bis.read(b)) != -1) {
+                    bufferedOutputStream.write(b, 0, len);
+                }
+                bufferedOutputStream.flush();
+                // 将附件localData标志置为本地数据("1")
+                this.appItemAttachService.saveDocFileAttachForLocal(attach, localFileName);
+            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                loginSuperviseSys();
+            }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             if (bufferedOutputStream != null) {
                 try {
-                    bufferedOutputStream.flush();
                     bufferedOutputStream.close();
                 } catch (IOException exf) {
                     throw new RuntimeException(exf);
                 }
             }
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (downloadGet != null) {
+                downloadGet.releaseConnection();
+            }
             isDownLoadAttachRunning = false;
         }
     }
+
+    /**
+     * @return the httpClientHelper
+     */
+    public static HttpClientHelper getHttpClientHelper() {
+        return httpClientHelper;
+    }
+
 }

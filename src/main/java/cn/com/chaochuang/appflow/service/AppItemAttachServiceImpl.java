@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,8 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
  */
 @Service
 @Transactional
-public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppItemAttach> implements AppItemAttachService {
+public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppItemAttach> implements
+                AppItemAttachService {
     @Autowired
     private AppItemAttachRepository repository;
 
@@ -72,5 +74,45 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
             attach.setSavePath(localFileName);
             this.repository.save(attach);
         }
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#saveAppItemAttach(java.util.List)
+     */
+    @Override
+    public void saveAppItemAttach(List<AppItemAttach> attachList, Long rmItemApplyId) {
+        // 查找出所有该案件的附件
+        List<AppItemAttach> deleteAttachList = repository.findByItemApplyId(rmItemApplyId);
+        if (attachList != null) {
+            // 更新旧附件，保存新附件，删除不存在的附件
+            for (AppItemAttach info : attachList) {
+                AppItemAttach attach = this.repository.findByRmAttachId(info.getRmAttachId());
+                if (attach == null) {
+                    // 保存新附件
+                    attach = new AppItemAttach();
+                    try {
+                        BeanUtils.copyProperties(attach, info);
+                        attach.setLocalData(LocalData.非本地数据);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    // 更改旧附件名
+                    attach.setTrueName(info.getTrueName());
+                }
+                if (deleteAttachList != null && attach != null) {
+                    // 存在的附件剔除出删除列表中
+                    deleteAttachList.remove(attach);
+                }
+                repository.save(attach);
+            }
+        }
+        if (deleteAttachList != null) {
+            // 删除多余的附件
+            repository.deleteInBatch(deleteAttachList);
+        }
+
     }
 }
