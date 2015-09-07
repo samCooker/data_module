@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.AipCaseApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
@@ -95,7 +95,7 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
                     apply = new AipCaseApply();
                     apply.setInputDate(new Date());
                 }
-                BeanUtils.copyProperties(apply, data);
+                NullBeanUtils.copyProperties(apply, data);
                 this.repository.saveAndFlush(apply);
                 // 保存办理环节记录
                 aipCaseNodeInfoService.saveNodeInfos(data.getNodeInfos());

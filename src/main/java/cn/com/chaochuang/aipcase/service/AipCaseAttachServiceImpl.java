@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,7 @@ import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.repository.AipCaseAttachRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 
 /**
  * @author LJX
@@ -53,7 +53,7 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
                     attach = new AipCaseAttach();
                     attach.setLocalData(LocalData.非本地数据);
                     try {
-                        BeanUtils.copyProperties(attach, info);
+                        NullBeanUtils.copyProperties(attach, info);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

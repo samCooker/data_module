@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +31,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
 import cn.com.chaochuang.task.bean.AipCasePendingInfo;
@@ -99,7 +99,7 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
                 continue;
             }
             fdFordo = new FdFordoAipcase();
-            BeanUtils.copyProperties(item, fdFordo);
+            NullBeanUtils.copyProperties(fdFordo, item);
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
                 // 未读数据添加消息推送

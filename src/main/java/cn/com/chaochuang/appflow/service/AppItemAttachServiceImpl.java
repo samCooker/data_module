@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +20,7 @@ import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.appflow.repository.AppItemAttachRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 
 /**
  * @author LLM
@@ -92,12 +92,8 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
                 if (attach == null) {
                     // 保存新附件
                     attach = new AppItemAttach();
-                    try {
-                        BeanUtils.copyProperties(attach, info);
-                        attach.setLocalData(LocalData.非本地数据);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    NullBeanUtils.copyProperties(attach, info);
+                    attach.setLocalData(LocalData.非本地数据);
                 } else {
                     // 更改旧附件名
                     attach.setTrueName(info.getTrueName());

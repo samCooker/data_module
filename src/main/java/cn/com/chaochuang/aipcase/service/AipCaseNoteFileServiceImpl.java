@@ -14,7 +14,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.repository.AipCaseNoteFileRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.task.bean.AipLawContentData;
 
 /**
@@ -70,7 +70,7 @@ public class AipCaseNoteFileServiceImpl extends SimpleLongIdCrudRestService<AipC
                 AipCaseNoteFile noteFile = repository.findByRmNoteFileId(lawContent.getRmNoteFileId());
                 if (noteFile == null) {
                     noteFile = new AipCaseNoteFile();
-                    BeanUtils.copyProperties(noteFile, lawContent);
+                    NullBeanUtils.copyProperties(noteFile, lawContent);
                 }
                 if (deleteNoteFileList != null && noteFile != null) {
                     deleteNoteFileList.remove(noteFile);

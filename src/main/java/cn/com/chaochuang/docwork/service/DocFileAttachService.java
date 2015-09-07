@@ -21,7 +21,7 @@ import cn.com.chaochuang.task.bean.DocFileAttachInfo;
 public interface DocFileAttachService extends CrudRestService<DocFileAttach, Long> {
 
     /** 保存从远程取出的附件信息 */
-    void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId) throws Exception;
+    void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId);
 
     /**
      * 获取未移到本地的附件列表

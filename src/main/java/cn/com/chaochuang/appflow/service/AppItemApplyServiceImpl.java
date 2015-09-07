@@ -12,7 +12,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,7 @@ import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.AppItemApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
@@ -62,7 +62,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
      */
     @Override
     public void saveAppItemApplyDatas(List<AppFlowShowData> appDatas) {
-        if (!Tools.isNotEmptyList(appDatas)) {
+        if (appDatas == null) {
             return;
         }
         AppItemApply apply;
@@ -78,7 +78,7 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
                 if (apply == null) {
                     apply = new AppItemApply();
                 }
-                BeanUtils.copyProperties(apply, applyData);
+                NullBeanUtils.copyProperties(apply, applyData);
                 this.repository.save(apply);
                 // 保存AppFlowNodeInfo
                 if (Tools.isNotEmptyList(applyData.getFlowNodeInfos())) {

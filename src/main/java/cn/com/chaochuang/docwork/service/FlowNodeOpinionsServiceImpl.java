@@ -13,12 +13,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 import cn.com.chaochuang.docwork.repository.FlowNodeOpinionsRepository;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
@@ -29,7 +29,8 @@ import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
  */
 @Service
 @Transactional
-public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<FlowNodeOpinions> implements FlowNodeOpinionsService {
+public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<FlowNodeOpinions> implements
+                FlowNodeOpinionsService {
 
     @Autowired
     private FlowNodeOpinionsRepository repository;
@@ -41,7 +42,7 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
 
     /** 保存远程获取的意见表 */
     @Override
-    public void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId) throws Exception {
+    public void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId) {
         if (datas == null) {
             return;
         }
@@ -56,7 +57,7 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
             opinion = repository.findByRmNodeOpinionsId(nodeOp.getRmNodeOpinionsId());
             if (opinion == null) {
                 opinion = new FlowNodeOpinions();
-                BeanUtils.copyProperties(opinion, nodeOp);
+                NullBeanUtils.copyProperties(opinion, nodeOp);
                 opinion.setDocId(fileId);
                 opinionsList.add(opinion);
             }

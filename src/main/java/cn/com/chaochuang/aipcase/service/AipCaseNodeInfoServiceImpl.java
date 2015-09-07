@@ -8,12 +8,10 @@
 
 package cn.com.chaochuang.aipcase.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +20,7 @@ import cn.com.chaochuang.aipcase.domain.AipCaseNodeInfo;
 import cn.com.chaochuang.aipcase.repository.AipCaseNodeInfoRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 
 /**
  * @author LJX
@@ -50,13 +49,7 @@ public class AipCaseNodeInfoServiceImpl extends SimpleLongIdCrudRestService<AipC
             if (aipCaseNodeInfo == null) {
                 aipCaseNodeInfo = new AipCaseNodeInfo();
             }
-            try {
-                BeanUtils.copyProperties(aipCaseNodeInfo, node);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            NullBeanUtils.copyProperties(aipCaseNodeInfo, node);
             repository.save(aipCaseNodeInfo);
         }
     }

@@ -6,7 +6,7 @@
  * History:     2015年8月31日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.task;
+package cn.com.chaochuang.common.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,13 +40,13 @@ public class HttpClientHelper {
     /**
      * 重新登录系统标识
      */
-    public static final String RE_LOGIN = "relogin";
+    public static final String  RE_LOGIN = "relogin";
+
+    private CloseableHttpClient httpClient;
 
     public static HttpClientHelper newHttpClientHelper() {
         return new HttpClientHelper();
     }
-
-    private CloseableHttpClient httpClient;
 
     public HttpClientHelper() {
         super();

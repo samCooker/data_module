@@ -13,12 +13,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.reference.IsLocalData;
 import cn.com.chaochuang.docwork.repository.DocFileAttachRepository;
@@ -43,7 +43,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
 
     /** 保存从远程取出的附件信息 */
     @Override
-    public void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId) throws Exception {
+    public void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas, Long fileId) {
         if (datas == null) {
             return;
         }
@@ -54,7 +54,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
                 // 为空说明本地数据库无此附件信息，应添加
                 attachment = new DocFileAttach();
             }
-            BeanUtils.copyProperties(attachment, attachmentInfo);
+            NullBeanUtils.copyProperties(attachment, attachmentInfo);
             attachment.setDocId(fileId);
             attachment.setLocalData(IsLocalData.非本地数据);
             attachmentsList.add(attachment);

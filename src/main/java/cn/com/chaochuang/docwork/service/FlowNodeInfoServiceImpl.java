@@ -13,12 +13,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.repository.FlowNodeInfoRepository;
 import cn.com.chaochuang.task.bean.FlowNodeBeanInfo;
@@ -41,7 +41,7 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
 
     /** 保存从远程取出的节点信息 */
     @Override
-    public void saveRemoteFlowNodeInfo(List<FlowNodeBeanInfo> datas, Long fileId) throws Exception {
+    public void saveRemoteFlowNodeInfo(List<FlowNodeBeanInfo> datas, Long fileId) {
         if (datas == null) {
             return;
         }
@@ -52,7 +52,7 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
         for (FlowNodeBeanInfo nodeInfo : datas) {
             FlowNodeInfo node = new FlowNodeInfo();
             node.setRmPreInstnoId(nodeInfo.getRmLastInstnoId());
-            BeanUtils.copyProperties(node, nodeInfo);
+            NullBeanUtils.copyProperties(node, nodeInfo);
             node.setDocId(fileId);
             nodesList.add(node);
         }

@@ -17,13 +17,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
@@ -35,8 +36,6 @@ import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.OaSubmitInfo;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Shicx
@@ -81,7 +80,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
      *
      */
     @Override
-    public void saveDocFilesDatas(List<DocFileInfo> datas) throws Exception {
+    public void saveDocFilesDatas(List<DocFileInfo> datas) {
         if (datas == null) {
             return;
         }
@@ -92,7 +91,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 // 该公文记录不已存在，则添加
                 file = new DocFile();
             }
-            BeanUtils.copyProperties(file, fileInfo);
+            NullBeanUtils.copyProperties(file, fileInfo);
             file.setDocStatus(DocStatus.在办);
             file = repository.save(file);
             // 保存附件信息
@@ -133,11 +132,11 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     }
 
     @Override
-    public void finishDocFile(String hisNoJsonStr) throws Exception {
+    public void finishDocFile(String hisNoJsonStr) {
         if (Tools.isEmptyString(hisNoJsonStr)) {
             return;
         }
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.getInstance();
         DocFileInfo fileInfo = (DocFileInfo) mapper.readValue(hisNoJsonStr, DocFileInfo.class);
 
         if (fileInfo != null) {

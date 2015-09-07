@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +31,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
@@ -91,6 +91,9 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
      */
     @Override
     public void insertFdFordos(List<AppFlowPendingHandleInfo> pendingItems) {
+        if (pendingItems == null) {
+            return;
+        }
         FdFordoApp fdFordo;
         Date currentDate = new Date();
         for (AppFlowPendingHandleInfo item : pendingItems) {
@@ -105,7 +108,7 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
             fdFordo = new FdFordoApp();
             SysUser user = userRepository.findByrmUserInfoId(item.getRecipientId());
             item.setFordoType(item.getFordoType().substring(0, 3));
-            BeanUtils.copyProperties(item, fdFordo);
+            NullBeanUtils.copyProperties(fdFordo, item);
             // 将rmUserInfoId转成rmUserId
             fdFordo.setRecipientId(user.getRmUserId());
             if (item.getReadTime() == null) {

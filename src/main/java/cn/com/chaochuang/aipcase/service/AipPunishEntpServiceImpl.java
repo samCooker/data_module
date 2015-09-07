@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,12 +26,12 @@ import cn.com.chaochuang.aipcase.domain.AipPunishEntp;
 import cn.com.chaochuang.aipcase.repository.AipPunishEntpRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.task.bean.AipPunishInfo;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -88,15 +87,11 @@ public class AipPunishEntpServiceImpl extends SimpleLongIdCrudRestService<AipPun
     @Override
     public void savePunishInfo(AipPunishInfo info) {
         AipPunishEntp punish = this.repository.findByRmPunishEntpId(info.getRmPunishEntpId());
-        try {
-            if (punish == null) {
-                punish = new AipPunishEntp();
-            }
-            BeanUtils.copyProperties(punish, info);
-            this.repository.save(punish);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        if (punish == null) {
+            punish = new AipPunishEntp();
         }
+        NullBeanUtils.copyProperties(punish, info);
+        this.repository.save(punish);
     }
 
     /**
@@ -125,21 +120,17 @@ public class AipPunishEntpServiceImpl extends SimpleLongIdCrudRestService<AipPun
         if (items == null || items.length != 2) {
             return;
         }
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.getInstance();
         String updataInfo = this.transferAipCaseService.selectUpdatePunishInfo(new Long(items[1]));
-        try {
-            if (StringUtils.isNotEmpty(updataInfo)) {
-                AipPunishInfo updateEntp = mapper.readValue(updataInfo, AipPunishInfo.class);
-                AipPunishEntp punish = this.repository.findByRmPunishEntpId(updateEntp.getRmPunishEntpId());
-                if (punish == null) {
-                    // 为空则保存新的处罚信息
-                    punish = new AipPunishEntp();
-                }
-                BeanUtils.copyProperties(punish, updateEntp);
-                repository.save(punish);
+        if (StringUtils.isNotEmpty(updataInfo)) {
+            AipPunishInfo updateEntp = mapper.readValue(updataInfo, AipPunishInfo.class);
+            AipPunishEntp punish = this.repository.findByRmPunishEntpId(updateEntp.getRmPunishEntpId());
+            if (punish == null) {
+                // 为空则保存新的处罚信息
+                punish = new AipPunishEntp();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            NullBeanUtils.copyProperties(punish, updateEntp);
+            repository.save(punish);
         }
     }
 

@@ -24,13 +24,13 @@ import cn.com.chaochuang.task.bean.OaSubmitInfo;
 public interface DocFileService extends CrudRestService<DocFile, Long> {
 
     /** 保存远程获取的公文数据，包括附件信息和流程信息 */
-    void saveDocFilesDatas(List<DocFileInfo> datas) throws Exception;
+    void saveDocFilesDatas(List<DocFileInfo> datas);
 
     /** 获取公文数据最大的导入时间 */
     FlowNodeOpinionsInfo getDocFileMaxInputDate();
 
     /** 1获取oa的历史节点信息，将mobile端的节点信息删除，添加获取的历史节点信息，2将公文状态改为办结 */
-    void finishDocFile(String hisNoJsonStr) throws Exception;
+    void finishDocFile(String hisNoJsonStr);
 
     /**
      * @param dataUpdate

@@ -20,6 +20,7 @@ import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
 import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.AppEntpService;
 import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
@@ -30,7 +31,6 @@ import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -77,8 +77,8 @@ public class MobileCommonDataTaskService {
             if (Tools.isEmptyString(json)) {
                 return;
             }
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, SysDataChange.class);
+            JsonMapper mapper = JsonMapper.getInstance();
+            JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
             List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
             this.dataChangeService.saveSysDataChange(datas);
         } catch (Exception ex) {

@@ -38,16 +38,16 @@ import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.FdFordoAppService;
+import cn.com.chaochuang.common.util.HttpClientHelper;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
-import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -71,8 +71,6 @@ public class MobileAppDataTaskService {
     @Value("${httpClient.downloadUrl}")
     private String                  downloadUrl;
 
-    @Autowired
-    private SuperviseWebService     superviseWebService;
     @Autowired
     private FdFordoAppService       fdFordoAppService;
     @Autowired
@@ -123,9 +121,6 @@ public class MobileAppDataTaskService {
             }
             // 发送请求
             String json = httpClientHelper.doPost(new HttpPost(getFordoDataUrl), params);
-            if (StringUtils.isBlank(json)) {
-                return;
-            }
             if (HttpClientHelper.RE_LOGIN.equals(json)) {
                 loginSuperviseSys();
             } else {
@@ -163,20 +158,11 @@ public class MobileAppDataTaskService {
      * @param jsonData
      */
     private void saveFdFordo(String jsonData) {
-        if (Tools.isEmptyString(jsonData)) {
-            return;
-        }
-        try {
-            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            AppFlowPendingHandleInfo.class);
-            List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper
-                            .readValue(jsonData, javaType);
-            this.fdFordoAppService.insertFdFordos(datas);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+        JsonMapper mapper = JsonMapper.getInstance();
+        JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+        List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(jsonData, javaType);
+        this.fdFordoAppService.insertFdFordos(datas);
     }
 
     /**
@@ -201,16 +187,12 @@ public class MobileAppDataTaskService {
             params.add(new BasicNameValuePair("pendingIds", pendingIds));
             // 发送请求
             String json = httpClientHelper.doPost(new HttpPost(getSuperviseDataUrl), params);
-            if (StringUtils.isBlank(json)) {
-                return;
-            }
             if (HttpClientHelper.RE_LOGIN.equals(json)) {
                 loginSuperviseSys();
             } else {
                 // 将行政审批的待办记录写入待办事宜表
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                AppFlowShowData.class);
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowShowData.class);
                 List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
                 // 保存并修改待办事宜 localData=1
                 this.appItemApplyService.saveAppItemApplyDatas(appDatas);
@@ -246,7 +228,7 @@ public class MobileAppDataTaskService {
             }
             // 获取要提交的json字符串
 
-            ObjectMapper mapper = new ObjectMapper();
+            JsonMapper mapper = JsonMapper.getInstance();
             WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();

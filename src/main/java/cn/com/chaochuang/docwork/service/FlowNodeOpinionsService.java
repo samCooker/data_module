@@ -21,6 +21,6 @@ import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 public interface FlowNodeOpinionsService extends CrudRestService<FlowNodeOpinions, Long> {
 
     /** 保存远程获取的意见表 */
-    void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId) throws Exception;
+    void saveRemoteFlowNodeOpinions(List<FlowNodeOpinionsInfo> datas, Long fileId);
 
 }

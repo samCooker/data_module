@@ -12,7 +12,6 @@ import java.util.Date;
 
 import javax.jws.WebMethod;
 import javax.jws.WebResult;
-import javax.jws.WebService;
 
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
@@ -20,7 +19,8 @@ import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
  * @author LLM
  *
  */
-@WebService(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+//2015年9月6日 已修改，不使用cxf方法
+// @WebService(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
 public interface SuperviseWebService {
     /**
      * 根据指定的时间或待办编号获取待办事宜

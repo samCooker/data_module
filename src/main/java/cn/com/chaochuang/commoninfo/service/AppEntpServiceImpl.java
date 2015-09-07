@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
@@ -25,16 +24,15 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.HttpClientHelper;
+import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.bean.AppEntpUpdataInfo;
 import cn.com.chaochuang.commoninfo.domain.AppEntp;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
-import cn.com.chaochuang.task.HttpClientHelper;
 import cn.com.chaochuang.task.MobileAppDataTaskService;
-import cn.com.chaochuang.webservice.server.SuperviseWebService;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -44,11 +42,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Transactional
 public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> implements AppEntpService {
     @Autowired
-    private AppEntpRepository   repository;
-    @Autowired
-    private SuperviseWebService superviseWebService;
+    private AppEntpRepository repository;
     @Value("${httpClient.entpChangeInfoUrl}")
-    private String              entpChangeInfoUrl;
+    private String            entpChangeInfoUrl;
 
     @Override
     public SimpleDomainRepository<AppEntp, Long> getRepository() {
@@ -79,7 +75,7 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
         if (items == null || items.length != 2) {
             return;
         }
-        ObjectMapper mapper = new ObjectMapper();
+        JsonMapper mapper = JsonMapper.getInstance();
         // 参数设置
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("entpId", items[1]));
@@ -88,20 +84,15 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
         if (StringUtils.isBlank(updataInfo) || HttpClientHelper.RE_LOGIN.equals(updataInfo)) {
             return;// 获取失败或者需要用户登录才能获取信息（此处不进行登录，登录的设置在MobileAppDataTaskService.java中）
         }
-        // String updataInfo = superviseWebService.getChangeEntpInfo(new Long(items[1]));
-        try {
-            AppEntpUpdataInfo updataEntp = mapper.readValue(updataInfo, AppEntpUpdataInfo.class);
-            AppEntp entp = findByRmEntpId(new Long(items[1]));
-            if (entp == null) {
-                // 为空则保存新的企业信息
-                entp = new AppEntp();
-                entp.setInputDate(new Date());
-            }
-            BeanUtils.copyProperties(entp, updataEntp);
-            repository.save(entp);
-        } catch (Exception e) {
-            e.printStackTrace();
+        AppEntpUpdataInfo updataEntp = mapper.readValue(updataInfo, AppEntpUpdataInfo.class);
+        AppEntp entp = findByRmEntpId(new Long(items[1]));
+        if (entp == null) {
+            // 为空则保存新的企业信息
+            entp = new AppEntp();
+            entp.setInputDate(new Date());
         }
+        NullBeanUtils.copyProperties(entp, updataEntp);
+        repository.save(entp);
 
     }
 }

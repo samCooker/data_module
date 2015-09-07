@@ -33,6 +33,7 @@ import cn.com.chaochuang.aipcase.service.AipCaseAttachService;
 import cn.com.chaochuang.aipcase.service.AipCaseNoteFileService;
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
 import cn.com.chaochuang.aipcase.service.FdFordoAipcaseService;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
@@ -48,7 +49,6 @@ import cn.com.chaochuang.task.bean.AipPunishInfo;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -104,7 +104,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取案件办理系统的待办记录
      */
-    // @Scheduled(cron = "10/30 * * * * ?")
+//     @Scheduled(cron = "10/30 * * * * ?")
     public void getAipCaseFordo() {
         if (isAipCaseFordoRunning) {
             return;
@@ -137,16 +137,11 @@ public class MobileAipCaseDataTaskService {
         if (Tools.isEmptyString(jsonData)) {
             return;
         }
-        try {
-            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            AipCasePendingInfo.class);
-            List<AipCasePendingInfo> datas = (List<AipCasePendingInfo>) mapper.readValue(jsonData, javaType);
-            this.fdFordoService.insertFdFordos(datas);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+        JsonMapper mapper = JsonMapper.getInstance();
+        JavaType javaType = mapper.constructParametricType(ArrayList.class, AipCasePendingInfo.class);
+        List<AipCasePendingInfo> datas = (List<AipCasePendingInfo>) mapper.readValue(jsonData, javaType);
+        this.fdFordoService.insertFdFordos(datas);
     }
 
     /**
@@ -170,9 +165,8 @@ public class MobileAipCaseDataTaskService {
             String json = this.transferAipCaseService.selectAipCaseApplyDates(pendingIds);
             if (!Tools.isEmptyString(json)) {
                 // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-                ObjectMapper mapper = new ObjectMapper();
-                JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                AipCaseShowData.class);
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, AipCaseShowData.class);
                 List<AipCaseShowData> datas = (List<AipCaseShowData>) mapper.readValue(json, javaType);
                 this.aipCaseApplyService.saveAipCaseApply(datas);
             }
@@ -197,7 +191,7 @@ public class MobileAipCaseDataTaskService {
             List<AipCaseNoteFile> noteFileList = aipCaseNoteFileService.findByLocalData(LocalData.非本地数据,
                             new PageRequest(0, 10));
             if (noteFileList != null) {
-                ObjectMapper mapper = new ObjectMapper();
+                JsonMapper mapper = JsonMapper.getInstance();
                 for (AipCaseNoteFile noteFile : noteFileList) {
                     String jsonData = transferAipCaseService.getLawContentData(noteFile.getRmNoteFileId(),
                                     noteFile.getMdfCode());
@@ -290,7 +284,7 @@ public class MobileAipCaseDataTaskService {
                 return;
             }
             // 获取要提交的json字符串
-            ObjectMapper mapper = new ObjectMapper();
+            JsonMapper mapper = JsonMapper.getInstance();
             AipCaseSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), AipCaseSubmitInfo.class);
             String backInfo = transferAipCaseService.submitOrRejectAipCaseApply(nodeInfo);
             aipCaseApplyService.deleteDataUpdateAndFordo(dataUpdate, backInfo, nodeInfo);
@@ -318,8 +312,8 @@ public class MobileAipCaseDataTaskService {
             if (Tools.isEmptyString(json)) {
                 return;
             }
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, SysDataChange.class);
+            JsonMapper mapper = JsonMapper.getInstance();
+            JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
             List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
             this.dataChangeService.saveSysDataChange(datas);
         } catch (Exception ex) {
@@ -404,8 +398,8 @@ public class MobileAipCaseDataTaskService {
                 return;
             }
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class, AipPunishInfo.class);
+            JsonMapper mapper = JsonMapper.getInstance();
+            JavaType javaType = mapper.constructParametricType(ArrayList.class, AipPunishInfo.class);
             List<AipPunishInfo> datas = (List<AipPunishInfo>) mapper.readValue(json, javaType);
             this.punishEntpService.savePunishInfo(datas);
         } catch (Exception ex) {

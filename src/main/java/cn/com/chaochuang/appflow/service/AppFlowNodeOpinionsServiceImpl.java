@@ -10,7 +10,6 @@ package cn.com.chaochuang.appflow.service;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +17,7 @@ import cn.com.chaochuang.appflow.domain.AppFlowNodeOpinions;
 import cn.com.chaochuang.appflow.repository.AppFlowNodeOpinionsRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 
 /**
  * @author LLM
@@ -25,7 +25,8 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
  */
 @Service
 @Transactional
-public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeOpinions> implements AppFlowNodeOpinionsService {
+public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<AppFlowNodeOpinions> implements
+                AppFlowNodeOpinionsService {
     @Autowired
     private AppFlowNodeOpinionsRepository repository;
 
@@ -41,14 +42,10 @@ public class AppFlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<
     public void saveFlowNodeOpinions(AppFlowNodeOpinions info) {
         AppFlowNodeOpinions node = this.repository.findByRmNodeOpinionsId(info.getRmNodeOpinionsId());
         if (node != null) {
-            try {
-                // 避免id置空
-                info.setId(node.getId());
-                BeanUtils.copyProperties(node, info);
-                this.repository.save(node);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            // 避免id置空
+            info.setId(node.getId());
+            NullBeanUtils.copyProperties(node, info);
+            this.repository.save(node);
         } else {
             this.repository.save(info);
         }

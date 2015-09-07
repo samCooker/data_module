@@ -24,5 +24,5 @@ public interface FlowTransactPersonalService extends CrudRestService<FlowTransac
     /**
      * 根据公文的不同共享标识保存公文的经办列表
      * */
-    void saveFlowTransactPersonalInfo(List<FlowNodeBeanInfo> flowNodeInfoList, DocFile file, Long redactDeptId) throws Exception;
+    void saveFlowTransactPersonalInfo(List<FlowNodeBeanInfo> flowNodeInfoList, DocFile file, Long redactDeptId);
 }

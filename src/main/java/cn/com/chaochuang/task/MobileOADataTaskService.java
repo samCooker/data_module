@@ -20,10 +20,12 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
@@ -46,7 +48,6 @@ import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author LLM
@@ -111,7 +112,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "8/15 * * * * ?")
+    @Scheduled(cron = "8/15 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -149,9 +150,8 @@ public class MobileOADataTaskService {
         }
         try {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            ObjectMapper mapper = new ObjectMapper();
-            JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                            OAPendingHandleInfo.class);
+            JsonMapper mapper = JsonMapper.getInstance();
+            JavaType javaType = mapper.constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
             List<OAPendingHandleInfo> datas = (List<OAPendingHandleInfo>) mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
@@ -162,7 +162,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    // @Scheduled(cron = "5/10 * * * * ?")
+    @Scheduled(cron = "5/10 * * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -177,9 +177,8 @@ public class MobileOADataTaskService {
                     return;
                 }
                 try {
-                    ObjectMapper mapper = new ObjectMapper();
-                    JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                    DocFileInfo.class);
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
                     List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
                     fileService.saveDocFilesDatas(datas);
                 } catch (Exception ex) {
@@ -195,7 +194,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    // @Scheduled(cron = "3/10 * * * * ?")
+    @Scheduled(cron = "3/10 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -215,7 +214,7 @@ public class MobileOADataTaskService {
             }
             // 获取要提交的json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
             String backInfo = transferOAService.setDocTransactInfo(dataUpdate.getContent());
-            ObjectMapper mapper = new ObjectMapper();
+            JsonMapper mapper = JsonMapper.getInstance();
             OaSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), OaSubmitInfo.class);
             fileService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, backInfo);
         } catch (Exception ex) {
@@ -231,7 +230,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -285,7 +284,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "40/40 * * * * ?")
+    @Scheduled(cron = "40/40 * * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -304,9 +303,8 @@ public class MobileOADataTaskService {
                 String json = this.transferOAService.getPublicDataInfo(lastInputTime);
                 try {
                     if (StringUtils.isNotEmpty(json)) {
-                        ObjectMapper mapper = new ObjectMapper();
-                        JavaType javaType = mapper.getTypeFactory().constructParametricType(ArrayList.class,
-                                        PubInfoBean.class);
+                        JsonMapper mapper = JsonMapper.getInstance();
+                        JavaType javaType = mapper.constructParametricType(ArrayList.class, PubInfoBean.class);
                         List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
                         pubInfoService.savePubInfoDatas(datas);
                     }
