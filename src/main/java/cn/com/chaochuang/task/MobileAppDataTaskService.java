@@ -28,7 +28,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
@@ -102,7 +101,7 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+    // @Scheduled(cron = "5/5 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -168,7 +167,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "8/8 * * * * ?")
+    // @Scheduled(cron = "8/8 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -208,7 +207,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    @Scheduled(cron = "10/15 * * * * ?")
+    // @Scheduled(cron = "10/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -263,7 +262,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/20 * * * * ?")
+    // @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

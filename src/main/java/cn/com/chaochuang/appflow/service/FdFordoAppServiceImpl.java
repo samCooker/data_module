@@ -106,7 +106,7 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
                 continue;
             }
             fdFordo = new FdFordoApp();
-            SysUser user = userRepository.findByrmUserInfoId(item.getRecipientId());
+            SysUser user = userRepository.findByRmUserInfoId(item.getRecipientId());
             item.setFordoType(item.getFordoType().substring(0, 3));
             NullBeanUtils.copyProperties(fdFordo, item);
             // 将rmUserInfoId转成rmUserId
@@ -149,7 +149,7 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see cn.com.chaochuang.appflow.service.FdFordoAppService#selectUnLocalData(org.springframework.data.domain.Pageable)
      */
     @Override
@@ -182,7 +182,7 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see cn.com.chaochuang.appflow.service.FdFordoAppService#findByRmPendingId(java.lang.String)
      */
     @Override

@@ -21,6 +21,12 @@
     >
     </jaxws:client>
 
+    <jaxws:client
+        id="ITransferVoiceServiceClientFactory"
+        serviceClass="cn.com.chaochuang.webservice.server.IVoiceWebService"
+        address="${nnccvoice.webservice.url}"
+    >
+    </jaxws:client>
 <!--     <jaxws:client -->
 <!--         id="ITransferSuperviseServiceClientFactory" -->
 <!--         serviceClass="cn.com.chaochuang.webservice.server.SuperviseWebService" -->

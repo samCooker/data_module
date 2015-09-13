@@ -104,7 +104,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取案件办理系统的待办记录
      */
-//     @Scheduled(cron = "10/30 * * * * ?")
+    // @Scheduled(cron = "10/30 * * * * ?")
     public void getAipCaseFordo() {
         if (isAipCaseFordoRunning) {
             return;
