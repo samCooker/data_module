@@ -13,8 +13,8 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author LLM
@@ -43,7 +43,7 @@ public class DocFileAttach extends LongIdEntity {
     /** 原远程附件id */
     private String            rmAttachId;
     /** 是否本地数据 */
-    private IsLocalData       localData;
+    private LocalData         localData;
 
     /**
      * @return the saveName
@@ -153,7 +153,7 @@ public class DocFileAttach extends LongIdEntity {
     /**
      * @return the localData
      */
-    public IsLocalData getLocalData() {
+    public LocalData getLocalData() {
         return localData;
     }
 
@@ -161,7 +161,7 @@ public class DocFileAttach extends LongIdEntity {
      * @param localData
      *            the localData to set
      */
-    public void setLocalData(IsLocalData localData) {
+    public void setLocalData(LocalData localData) {
         this.localData = localData;
     }
 

@@ -16,11 +16,11 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
-import cn.com.chaochuang.docwork.reference.IsLocalData;
 import cn.com.chaochuang.docwork.repository.DocFileAttachRepository;
 import cn.com.chaochuang.task.bean.DocFileAttachInfo;
 
@@ -56,7 +56,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
             }
             NullBeanUtils.copyProperties(attachment, attachmentInfo);
             attachment.setDocId(fileId);
-            attachment.setLocalData(IsLocalData.非本地数据);
+            attachment.setLocalData(LocalData.非本地数据);
             attachmentsList.add(attachment);
         }
         repository.save(attachmentsList);
@@ -67,7 +67,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
      */
     @Override
     public List<DocFileAttach> selectUnLocalAttach() {
-        return this.repository.findByLocalData(IsLocalData.非本地数据);
+        return this.repository.findByLocalData(LocalData.非本地数据);
     }
 
     /**
@@ -77,7 +77,7 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
     @Override
     public void saveDocFileAttachForLocal(Long attachId, String newFilePath) {
         DocFileAttach attach = this.repository.findOne(attachId);
-        attach.setLocalData(IsLocalData.有本地数据);
+        attach.setLocalData(LocalData.有本地数据);
         attach.setSavePath(newFilePath);
         this.repository.save(attach);
     }

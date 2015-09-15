@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum FordoStatus implements IDictionary {
-    未读("0"), 已读("1");
+    未读("0"), 已读("1"), 已提交("9");
     private String key;
     private String value;
 

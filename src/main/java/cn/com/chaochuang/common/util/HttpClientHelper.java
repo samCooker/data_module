@@ -40,7 +40,15 @@ public class HttpClientHelper {
     /**
      * 重新登录系统标识
      */
-    public static final String  RE_LOGIN = "relogin";
+    public static final String  RE_LOGIN    = "relogin";
+    /**
+     * 提交表单编码-gbk
+     * */
+    public static final String  ENCODE_GBK  = "GBK";
+    /**
+     * 提交表单编码-utf-8
+     * */
+    public static final String  ENCODE_UTF8 = "UTF-8";
 
     private CloseableHttpClient httpClient;
 
@@ -74,11 +82,11 @@ public class HttpClientHelper {
      */
     public boolean loginSuperviseSys(String userName, String pwd, HttpPost post) throws Exception {
         try {
-            if (httpClient == null) {
-                throw new RuntimeException("请先初始化HttpClient");
+            if (post == null) {
+                return false;
             }
             if (StringUtils.isBlank(userName) || StringUtils.isBlank(pwd)) {
-                throw new RuntimeException("用户名或密码为空");
+                return false;
             }
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("account", userName));
@@ -107,14 +115,15 @@ public class HttpClientHelper {
      * 发送post请求
      * 
      * @param httpClient
-     * @param url
+     * @param charset
+     *            为空则使用gbk
      * @param params
      * @return
      */
-    public String doPost(HttpPost post, List<NameValuePair> params) {
+    public String doPost(HttpPost post, List<NameValuePair> params, String charset) {
         try {
-            // 设置参数
-            post.setEntity(new UrlEncodedFormEntity(params, "gbk"));
+            // 设置参数及表单编码，charset为空则使用gbk
+            post.setEntity(new UrlEncodedFormEntity(params, StringUtils.isNotBlank(charset) ? charset : ENCODE_GBK));
             CloseableHttpResponse response = httpClient.execute(post);
             if (response == null) {
                 return null;
@@ -138,11 +147,44 @@ public class HttpClientHelper {
     /**
      * Get请求
      * 
-     * @param url
+     * @param httpget
      * @param params
      * @return
      */
-    public CloseableHttpResponse doGet(HttpGet httpget, List<NameValuePair> params) {
+    public String doGet(HttpGet httpget, List<NameValuePair> params) {
+        try {
+            // 设置参数
+            String str = EntityUtils.toString(new UrlEncodedFormEntity(params));
+            httpget.setURI(new URI(httpget.getURI().toString() + "?" + str));
+            // 发送请求
+            CloseableHttpResponse response = httpClient.execute(httpget);
+            if (response == null) {
+                return null;
+            }
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (HttpStatus.SC_OK == statusCode) {
+                return EntityUtils.toString(response.getEntity());
+            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                return RE_LOGIN;
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get请求
+     * 
+     * @param httpget
+     * @param params
+     * @return
+     */
+    public CloseableHttpResponse doGetAndReturnResponse(HttpGet httpget, List<NameValuePair> params) {
         try {
             // 设置参数
             String str = EntityUtils.toString(new UrlEncodedFormEntity(params));

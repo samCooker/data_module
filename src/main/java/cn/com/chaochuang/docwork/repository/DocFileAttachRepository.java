@@ -10,9 +10,9 @@ package cn.com.chaochuang.docwork.repository;
 
 import java.util.List;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
-import cn.com.chaochuang.docwork.reference.IsLocalData;
 
 /**
  * @author Shicx
@@ -26,7 +26,7 @@ public interface DocFileAttachRepository extends SimpleDomainRepository<DocFileA
      * @param localDate
      * @return
      */
-    List<DocFileAttach> findByLocalData(IsLocalData localDate);
+    List<DocFileAttach> findByLocalData(LocalData localDate);
 
     /**
      * 通过原远程附件id查找附件信息

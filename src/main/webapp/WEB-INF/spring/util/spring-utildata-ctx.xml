@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+                        http://www.springframework.org/schema/util
+                        http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+>
+    <description>集合工具配置</description>
+  <util:list id="complaintStatus" list-class="java.util.ArrayList" >
+        <!--要获取的投诉举报待办状态 受理,部门处理,领导审批,反馈处理-->
+       <value>受理</value>
+       <value>部门处理</value>
+       <value>领导审批</value>
+       <value>反馈处理</value>
+  </util:list>
+ 
+    
+    
+    
+</beans>

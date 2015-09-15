@@ -10,8 +10,6 @@ package cn.com.chaochuang.common.util;
 
 import java.io.IOException;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -89,20 +87,16 @@ public class JsonMapper extends ObjectMapper {
     }
 
     /**
-     * 重写readValue方法，捕获抛出的异常
-     * 
-     * 反序列化POJO或简单Collection如List<String>.
-     * 
-     * 如果JSON字符串为Null或"null"字符串, 返回Null. 如果JSON字符串为"[]", 返回空集合.
+     * 重写readValue方法，捕获抛出的异常。反序列化POJO或简单Collection如List<String>。 如果JSON字符串为Null或"null"字符串, 返回Null. 如果JSON字符串为"[]",
+     * 返回空集合。
      * 
      * 如需反序列化复杂Collection如List<MyBean>, 请使用readValue(String,JavaType)
      * 
-     * @see #readValue(String, JavaType)
+     * @param jsonString
+     *            不能为空，否则抛出异常
+     * @param javaType
      */
     public <T> T readValue(String jsonString, Class<T> clazz) {
-        if (StringUtils.isBlank(jsonString)) {
-            return null;
-        }
         try {
             return super.readValue(jsonString, clazz);
         } catch (JsonParseException e) {
@@ -120,13 +114,11 @@ public class JsonMapper extends ObjectMapper {
      * 
      * 反序列化复杂Collection如List<Bean>, 先使用函數createCollectionType构造类型,然后调用本函数.
      * 
-     * @see #createCollectionType(Class, Class...)
+     * @param jsonString
+     *            不能为空，否则抛出异常
+     * @param javaType
      */
-    @SuppressWarnings("unchecked")
     public <T> T readValue(String jsonString, JavaType javaType) {
-        if (StringUtils.isBlank(jsonString)) {
-            return null;
-        }
         try {
             return (T) super.readValue(jsonString, javaType);
         } catch (JsonParseException e) {

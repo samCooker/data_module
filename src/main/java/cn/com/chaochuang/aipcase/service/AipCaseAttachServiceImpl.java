@@ -61,7 +61,7 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
                     // 更改旧附件名
                     attach.setTrueName(info.getTrueName());
                 }
-                if (deleteAttachList != null && attach != null) {
+                if (deleteAttachList != null) {
                     // 存在的附件剔除出删除列表中
                     deleteAttachList.remove(attach);
                 }

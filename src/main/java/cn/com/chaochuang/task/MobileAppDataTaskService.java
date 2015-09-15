@@ -55,19 +55,21 @@ import com.fasterxml.jackson.databind.JavaType;
 @Component
 public class MobileAppDataTaskService {
 
-    @Value("${httpClient.userName}")
+    @Value("${supervise.userName}")
     private String                  userName;
-    @Value("${httpClient.pwd}")
+    @Value("${supervise.pwd}")
     private String                  pwd;
-    @Value("${httpClient.loginUrl}")
+    @Value("${supervise.baseUrl}")
+    private String                  baseUrl;
+    @Value("${supervise.loginUrl}")
     private String                  loginUrl;
-    @Value("${httpClient.getFordoDataUrl}")
+    @Value("${supervise.getFordoDataUrl}")
     private String                  getFordoDataUrl;
-    @Value("${httpClient.getSuperviseDataUrl}")
+    @Value("${supervise.getSuperviseDataUrl}")
     private String                  getSuperviseDataUrl;
-    @Value("${httpClient.submitUrl}")
+    @Value("${supervise.submitUrl}")
     private String                  submitUrl;
-    @Value("${httpClient.downloadUrl}")
+    @Value("${supervise.downloadUrl}")
     private String                  downloadUrl;
 
     @Autowired
@@ -95,7 +97,7 @@ public class MobileAppDataTaskService {
     private static boolean          isDownLoadAttachRunning = false;
     /** 是否正在登录 */
     private static boolean          isLoging                = false;
-
+    /** 创建httpClient对象 */
     private static HttpClientHelper httpClientHelper        = HttpClientHelper.newHttpClientHelper();
 
     /**
@@ -119,11 +121,19 @@ public class MobileAppDataTaskService {
                 params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
             }
             // 发送请求
-            String json = httpClientHelper.doPost(new HttpPost(getFordoDataUrl), params);
-            if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                loginSuperviseSys();
-            } else {
-                this.saveFdFordo(json);
+            String json = httpClientHelper.doPost(new HttpPost(baseUrl + getFordoDataUrl), params,
+                            HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isNotBlank(json)) {
+                if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                    loginSuperviseSys();
+                } else {
+                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+                    List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(json,
+                                    javaType);
+                    this.fdFordoAppService.insertFdFordos(datas);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -141,7 +151,7 @@ public class MobileAppDataTaskService {
         }
         isLoging = true;
         try {
-            boolean isLogin = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(loginUrl));
+            boolean isLogin = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
             System.out.println(isLogin);
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,19 +159,6 @@ public class MobileAppDataTaskService {
             isLoging = false;
         }
 
-    }
-
-    /**
-     * 保存待办记录
-     *
-     * @param jsonData
-     */
-    private void saveFdFordo(String jsonData) {
-        // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-        JsonMapper mapper = JsonMapper.getInstance();
-        JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
-        List<AppFlowPendingHandleInfo> datas = (List<AppFlowPendingHandleInfo>) mapper.readValue(jsonData, javaType);
-        this.fdFordoAppService.insertFdFordos(datas);
     }
 
     /**
@@ -185,18 +182,20 @@ public class MobileAppDataTaskService {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("pendingIds", pendingIds));
             // 发送请求
-            String json = httpClientHelper.doPost(new HttpPost(getSuperviseDataUrl), params);
-            if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                loginSuperviseSys();
-            } else {
-                // 将行政审批的待办记录写入待办事宜表
-                JsonMapper mapper = JsonMapper.getInstance();
-                JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowShowData.class);
-                List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
-                // 保存并修改待办事宜 localData=1
-                this.appItemApplyService.saveAppItemApplyDatas(appDatas);
+            String json = httpClientHelper.doPost(new HttpPost(baseUrl + getSuperviseDataUrl), params,
+                            HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isNotBlank(json)) {
+                if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                    loginSuperviseSys();
+                } else {
+                    // 将行政审批的待办记录写入待办事宜表
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowShowData.class);
+                    List<AppFlowShowData> appDatas = (List<AppFlowShowData>) mapper.readValue(json, javaType);
+                    // 保存并修改待办事宜 localData=1
+                    this.appItemApplyService.saveAppItemApplyDatas(appDatas);
+                }
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -240,14 +239,14 @@ public class MobileAppDataTaskService {
             params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
             params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
             params.add(new BasicNameValuePair("noPendingHandle", nodeInfo.isNoPendingHandle() + ""));
-            String json = httpClientHelper.doPost(new HttpPost(submitUrl), params);
-            if (StringUtils.isBlank(json)) {
-                return;
-            }
-            if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                loginSuperviseSys();
-            } else {
-                appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+            String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
+                            HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isNotBlank(json)) {
+                if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                    loginSuperviseSys();
+                } else {
+                    appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+                }
             }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
@@ -290,8 +289,8 @@ public class MobileAppDataTaskService {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("area", "appitem"));
             params.add(new BasicNameValuePair("fileId", attach.getRmAttachId() + ""));
-            downloadGet = new HttpGet(downloadUrl);
-            CloseableHttpResponse response = httpClientHelper.doGet(downloadGet, params);
+            downloadGet = new HttpGet(baseUrl + downloadUrl);
+            CloseableHttpResponse response = httpClientHelper.doGetAndReturnResponse(downloadGet, params);
             if (response == null) {
                 return;
             }

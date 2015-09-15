@@ -1,42 +1,50 @@
 /*
- * FileName:    PubInfoAttach.java
+ * FileName:    ComplaintAttachInfo.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年3月19日 (LLM) 1.0 Create
+ * History:     2015年9月13日 (Shicx) 1.0 Create
  */
 
-package cn.com.chaochuang.commoninfo.domain;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import cn.com.chaochuang.aipcase.reference.LocalData;
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
+package cn.com.chaochuang.casecomplaint.bean;
 
 /**
- * @author LLM
+ * @author Shicx
  *
  */
-@Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "attach_id")) })
-public class PubInfoAttach extends LongIdEntity {
+public class ComplaintAttachInfo {
+
+    /** 远程附件id */
+    private Long   fileId;
     /** 附件保存名 */
-    private String    saveName;
-    /** 文件原名 */
-    private String    trueName;
-    /** 文件大小 */
-    private Long      fileSize;
+    private String saveName;
+    /** 附件真实名称 */
+    private String trueName;
+    /** 附件大小 */
+    private Long   fileSize;
     /** 是否是图片 */
-    private String    isImage;
-    /** 文件路径 */
-    private String    savePath;
-    /** 公共信息表编号 */
-    private Long      pubInfoId;
-    /** 是否本地数据 */
-    private LocalData localData;
+    private String isImage;
+    /** 保存路径 */
+    private String savePath;
+    /** 附件标识 ！ */
+    private String affixId;
+    /** 是否是pdf */
+    private String pdfFlag;
+
+    /**
+     * @return the fileId
+     */
+    public Long getFileId() {
+        return fileId;
+    }
+
+    /**
+     * @param fileId
+     *            the fileId to set
+     */
+    public void setFileId(Long fileId) {
+        this.fileId = fileId;
+    }
 
     /**
      * @return the saveName
@@ -114,33 +122,33 @@ public class PubInfoAttach extends LongIdEntity {
     }
 
     /**
-     * @return the pubInfoId
+     * @return the affixId
      */
-    public Long getPubInfoId() {
-        return pubInfoId;
+    public String getAffixId() {
+        return affixId;
     }
 
     /**
-     * @param pubInfoId
-     *            the pubInfoId to set
+     * @param affixId
+     *            the affixId to set
      */
-    public void setPubInfoId(Long pubInfoId) {
-        this.pubInfoId = pubInfoId;
+    public void setAffixId(String affixId) {
+        this.affixId = affixId;
     }
 
     /**
-     * @return the localData
+     * @return the pdfFlag
      */
-    public LocalData getLocalData() {
-        return localData;
+    public String getPdfFlag() {
+        return pdfFlag;
     }
 
     /**
-     * @param localData
-     *            the localData to set
+     * @param pdfFlag
+     *            the pdfFlag to set
      */
-    public void setLocalData(LocalData localData) {
-        this.localData = localData;
+    public void setPdfFlag(String pdfFlag) {
+        this.pdfFlag = pdfFlag;
     }
 
 }
