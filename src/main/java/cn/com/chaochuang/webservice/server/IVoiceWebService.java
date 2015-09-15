@@ -29,26 +29,36 @@ public interface IVoiceWebService {
     @WebMethod
     String selectPendingVoiceInfo(String lastOutputTime, String pendingInfoId);
 
-    // /**
-    // * 获取指定ID的舆情
-    // *
-    // * @param infoId
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String selectVoiceInfo(Long infoId);
-    //
-    // /**
-    // * 获取新加舆情事件
-    // *
-    // * @param lastOutputTime
-    // * @param pendingEventId
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String selectPendingVoiceEvent(String lastOutputTime, Long pendingEventId);
+    /**
+     * 获取指定ID的舆情
+     *
+     * @param infoId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String selectVoiceInfo(Long infoId);
+
+    /**
+     * 保存舆情到事件
+     *
+     * @param jsonStr
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String saveVoiceInfoEvent(String jsonStr);
+
+    /**
+     * 获取新加舆情事件
+     *
+     * @param lastOutputTime
+     * @param eventId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String selectVoiceEventPending(String lastOutputTime, String eventId);
     //
     // /**
     // * 获取指定ID的舆情事件

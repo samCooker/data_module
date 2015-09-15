@@ -87,8 +87,6 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
     }
 
     /**
-     * (non-Javadoc)
-     *
      * @see cn.com.chaochuang.common.user.service.SysUserService#findByRmUserId(java.lang.Long)
      */
     @Override
@@ -105,6 +103,21 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
     @Override
     public SysUser findByRmUserInfoId(Long rmUserInfoId) {
         return repository.findByRmUserInfoId(rmUserInfoId);
+    }
+
+    /**
+     * @see cn.com.chaochuang.common.user.service.SysUserService#selectUserIdByInfoId(java.lang.Long)
+     */
+    @Override
+    public Long selectUserIdByInfoId(Long rmUserInfoId) {
+        if (rmUserInfoId == null) {
+            return null;
+        }
+        SysUser user = this.findByRmUserInfoId(rmUserInfoId);
+        if (user == null) {
+            return null;
+        }
+        return user.getRmUserId();
     }
 
 }

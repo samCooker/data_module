@@ -1,9 +1,9 @@
 /*
- * FileName:    VoiceEventStatus.java
+ * FileName:    VoiceEventHandleApproveStatus.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年9月13日 (LLM) 1.0 Create
+ * History:     2015年9月15日 (LLM) 1.0 Create
  */
 
 package cn.com.chaochuang.voice.reference;
@@ -15,8 +15,8 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  * @author LLM
  *
  */
-public enum VoiceEventStatus implements IDictionary {
-    撤回("0"), 新建("1"), 办理中("2"), 交办("3"), 办结("4"), 送批审("5"), 批复("6");
+public enum VoiceEventHandleApproveStatus implements IDictionary {
+    审批("0"), 正在办理("1"), 办结("2"), 交办("3");
 
     private String key;
     private String value;
@@ -24,7 +24,7 @@ public enum VoiceEventStatus implements IDictionary {
     /**
      * @param key
      */
-    private VoiceEventStatus(String key) {
+    private VoiceEventHandleApproveStatus(String key) {
         this(key, null);
         DictionaryRefresher.getInstance().refreshIDictionary(this);
     }
@@ -33,7 +33,7 @@ public enum VoiceEventStatus implements IDictionary {
      * @param key
      * @param value
      */
-    private VoiceEventStatus(String key, String value) {
+    private VoiceEventHandleApproveStatus(String key, String value) {
         this.key = key;
         this.value = value;
         DictionaryRefresher.getInstance().refreshIDictionary(this);

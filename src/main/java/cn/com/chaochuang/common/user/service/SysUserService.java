@@ -37,4 +37,12 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
      * @return
      */
     public SysUser findByRmUserInfoId(Long rmUserInfoId);
+
+    /**
+     * 根据rmUserInfoId获取rmUserId
+     * 
+     * @param rmUserInfoId
+     * @return
+     */
+    public Long selectUserIdByInfoId(Long rmUserInfoId);
 }

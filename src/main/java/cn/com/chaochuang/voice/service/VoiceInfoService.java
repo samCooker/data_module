@@ -28,10 +28,16 @@ public interface VoiceInfoService extends CrudRestService<VoiceInfo, Long> {
     VoiceInfoPendingInfo selectMaxInputDate();
 
     /**
-     * 保存舆情信息
+     * 批量保存舆情信息
      *
      * @param pendingItems
      */
     void insertVoiceInfo(List<VoiceInfoPendingInfo> pendingItems);
 
+    /**
+     * 保存舆情信息
+     * 
+     * @param pending
+     */
+    void insertVoiceInfo(VoiceInfoPendingInfo pending);
 }

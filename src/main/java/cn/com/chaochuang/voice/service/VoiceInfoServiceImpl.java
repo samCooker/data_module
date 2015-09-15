@@ -50,7 +50,7 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     private VoiceInfoAttachRepository attachRepository;
     @Autowired
     private SysUserRepository         userRepository;
-    @Value("${getdata.timeinterval}")
+    @Value("${getvoiceinfodata.timeinterval}")
     private String                    timeInterval;
 
     @Override
@@ -89,32 +89,40 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
      */
     @Override
     public void insertVoiceInfo(List<VoiceInfoPendingInfo> pendingItems) {
-        VoiceInfo voiceInfo;
         for (VoiceInfoPendingInfo item : pendingItems) {
-            // 判断当前记录是否已经存在,不存在的情况下才写入voiceInfo表
-            voiceInfo = this.repository.findByRmInfoId(item.getRmInfoId());
-            if (voiceInfo != null) {
-                continue;
-            }
-            voiceInfo = new VoiceInfo();
-            BeanUtils.copyProperties(item, voiceInfo);
-            // 设置为非本地数据，表示相关的附件信息没有下载到移动服务器
-            voiceInfo.setLocalData(LocalData.非本地数据);
-            // 设置发布人的ID，原舆情系统用的是userInfoId，需要转成userId，在移动系统中都使用userId
-            SysUser user = userRepository.findByRmUserInfoId(voiceInfo.getVoiceInfoDiscoverUser());
-            if (user != null) {
-                voiceInfo.setVoiceInfoDiscoverUser(user.getId());
-            }
-            // 写入附件记录
-            if (Tools.isNotEmptyList(item.getAffixItems())) {
-                VoiceInfoAttach attach;
-                for (VoiceInfoAffixItem affixItem : item.getAffixItems()) {
-                    attach = new VoiceInfoAttach();
-                    BeanUtils.copyProperties(affixItem, attach);
-                    this.attachRepository.save(attach);
-                }
-            }
-            this.repository.save(voiceInfo);
+            this.insertVoiceInfo(item);
         }
     }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceInfoService#insertVoiceInfo(cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo)
+     */
+    @Override
+    public void insertVoiceInfo(VoiceInfoPendingInfo pending) {
+        // 判断当前记录是否已经存在,不存在的情况下才写入voiceInfo表
+        VoiceInfo voiceInfo = this.repository.findByRmInfoId(pending.getRmInfoId());
+        if (voiceInfo != null) {
+            return;
+        }
+        voiceInfo = new VoiceInfo();
+        BeanUtils.copyProperties(pending, voiceInfo);
+        // 设置为非本地数据，表示相关的附件信息没有下载到移动服务器
+        voiceInfo.setLocalData(LocalData.非本地数据);
+        // 设置发布人的ID，原舆情系统用的是userInfoId，需要转成userId，在移动系统中都使用userId
+        SysUser user = userRepository.findByRmUserInfoId(voiceInfo.getVoiceInfoDiscoverUser());
+        if (user != null) {
+            voiceInfo.setVoiceInfoDiscoverUser(user.getId());
+        }
+        // 写入附件记录
+        if (Tools.isNotEmptyList(pending.getAffixItems())) {
+            VoiceInfoAttach attach;
+            for (VoiceInfoAffixItem affixItem : pending.getAffixItems()) {
+                attach = new VoiceInfoAttach();
+                BeanUtils.copyProperties(affixItem, attach);
+                this.attachRepository.save(attach);
+            }
+        }
+        this.repository.save(voiceInfo);
+    }
+
 }

@@ -19,8 +19,6 @@ import javax.persistence.Entity;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.voice.reference.VoiceEventStatus;
-import cn.com.chaochuang.voice.reference.VoiceEventStatusConverter;
 
 /**
  * @author LLM
@@ -30,23 +28,22 @@ import cn.com.chaochuang.voice.reference.VoiceEventStatusConverter;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_id")) })
 public class VoiceEvent extends LongIdEntity {
     /** 原系统事件流水号 */
-    private Long             rmEventId;
+    private Long      rmEventId;
     /** 舆情等级 */
-    private String           grade;
+    private String    grade;
     /** 舆情事件标题 */
-    private String           title;
+    private String    title;
     /** 状态 */
-    @Convert(converter = VoiceEventStatusConverter.class)
-    private VoiceEventStatus status;
+    private String    status;
     /** 创建事件 */
-    private Date             createTime;
+    private Date      createTime;
     /** 创建人编号 */
-    private Long             createrId;
+    private Long      createrId;
     /** 创建人姓名 */
-    private String           createrName;
+    private String    createrName;
     /** 是否本地新增数据 */
     @Convert(converter = LocalDataConverter.class)
-    private LocalData        localNewData;
+    private LocalData localNewData;
 
     /**
      * @return the rmEventId
@@ -96,7 +93,7 @@ public class VoiceEvent extends LongIdEntity {
     /**
      * @return the status
      */
-    public VoiceEventStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -104,7 +101,7 @@ public class VoiceEvent extends LongIdEntity {
      * @param status
      *            the status to set
      */
-    public void setStatus(VoiceEventStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

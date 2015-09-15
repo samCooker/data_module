@@ -33,6 +33,33 @@
     </bean>
 
     <bean
+        id="voiceSynchDataSourceService"
+        class="cn.com.chaochuang.synchdata.service.VoiceSynchDataSourceService" parent="localDataSourceService"
+    >
+        <property
+            name="driver"
+            value="${voice.jdbc.driver}" />
+        <property
+            name="url"
+            value="${voice.jdbc.url}" />
+        <property
+            name="userName"
+            value="${voice.jdbc.username}" />
+        <property
+            name="passwd"
+            value="${voice.jdbc.password}" />
+        <property
+            name="minIdle"
+            value="${voice.jdbc.minidle}" />
+        <property
+            name="maxIdle"
+            value="${voice.jdbc.maxidle}" />
+        <property
+            name="maxActive"
+            value="${voice.jdbc.maxactive}" />
+    </bean>
+
+    <bean
         id="localDataSourceService"
         class="cn.com.chaochuang.synchdata.service.LocalDataSourceService"
     >

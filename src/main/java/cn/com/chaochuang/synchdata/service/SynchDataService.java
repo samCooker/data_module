@@ -17,8 +17,15 @@ import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
 public interface SynchDataService {
     /**
      * 同步行政相对人库的信息
-     * 
+     *
      * @param task
      */
     void synchAppEntpData(SysSynchdataTask task);
+
+    /**
+     * 同步舆情事件信息
+     * 
+     * @param task
+     */
+    void synchVoiceEventData(SysSynchdataTask task);
 }

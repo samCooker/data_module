@@ -19,8 +19,6 @@ import javax.persistence.Entity;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
-import cn.com.chaochuang.voice.reference.VoiceInfoStatus;
-import cn.com.chaochuang.voice.reference.VoiceInfoStatusConverter;
 
 /**
  * @author LLM
@@ -30,51 +28,50 @@ import cn.com.chaochuang.voice.reference.VoiceInfoStatusConverter;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "info_id")) })
 public class VoiceInfo extends LongIdEntity {
     /** 原系统流水号 */
-    private Long            rmInfoId;
+    private Long      rmInfoId;
     /** 规则编号 */
-    private Long            ruleId;
+    private Long      ruleId;
     /** 规则名称 */
-    private String          ruleName;
+    private String    ruleName;
     /** 是否首页 */
-    private String          voiceInfoIsHome;
+    private String    voiceInfoIsHome;
     /** 舆情标题 */
-    private String          voiceInfoTitle;
+    private String    voiceInfoTitle;
     /** 舆情内容 */
-    private String          voiceInfoContent;
+    private String    voiceInfoContent;
     /** 舆情来源名 */
-    private String          voiceInfoSource;
+    private String    voiceInfoSource;
     /** 舆情来源URL */
-    private String          voiceInfoSourceUrl;
+    private String    voiceInfoSourceUrl;
     /** 舆情作者 */
-    private String          voiceInfoAuthor;
+    private String    voiceInfoAuthor;
     /** 舆情发布时间 */
-    private Date            voiceInfoIssueTime;
+    private Date      voiceInfoIssueTime;
     /** 舆情状态 */
-    @Convert(converter = VoiceInfoStatusConverter.class)
-    private VoiceInfoStatus voiceInfoStatus;
+    private String    voiceInfoStatus;
     /** 舆情收录时间 */
-    private Date            voiceInfoDiscoverTime;
+    private Date      voiceInfoDiscoverTime;
     /** 舆情收录人 */
-    private Long            voiceInfoDiscoverUser;
+    private Long      voiceInfoDiscoverUser;
     /** 舆情性质 */
-    private String          voiceInfoNature;
+    private String    voiceInfoNature;
     /** 是否本地舆情 */
-    private String          voiceInfoIsLocal;
+    private String    voiceInfoIsLocal;
     /** 媒体类型 */
-    private String          metaType;
+    private String    metaType;
     /** 转载量 */
-    private String          transmitconut;
+    private String    transmitconut;
     /** 是否敏感 */
-    private String          voiceInfoIsSensitive;
+    private String    voiceInfoIsSensitive;
     /** 点击量 */
-    private String          clickcount;
+    private String    clickcount;
     /** 舆情附件标识 */
-    private String          rmAffixId;
+    private String    rmAffixId;
     /** 内容区域标识 */
-    private String          contentArea;
+    private String    contentArea;
     /** 本地数据标识 0：非本地数据（默认）1：有本地数据 */
     @Convert(converter = LocalDataConverter.class)
-    private LocalData       localData;
+    private LocalData localData;
 
     /**
      * @return the rmInfoId
@@ -214,7 +211,7 @@ public class VoiceInfo extends LongIdEntity {
     /**
      * @return the voiceInfoStatus
      */
-    public VoiceInfoStatus getVoiceInfoStatus() {
+    public String getVoiceInfoStatus() {
         return voiceInfoStatus;
     }
 
@@ -222,7 +219,7 @@ public class VoiceInfo extends LongIdEntity {
      * @param voiceInfoStatus
      *            the voiceInfoStatus to set
      */
-    public void setVoiceInfoStatus(VoiceInfoStatus voiceInfoStatus) {
+    public void setVoiceInfoStatus(String voiceInfoStatus) {
         this.voiceInfoStatus = voiceInfoStatus;
     }
 
