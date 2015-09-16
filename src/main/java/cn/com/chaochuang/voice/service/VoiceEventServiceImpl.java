@@ -27,13 +27,16 @@ import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.voice.bean.VoiceEventHandleApproveInfo;
+import cn.com.chaochuang.voice.bean.VoiceEventHandleOpinionInfo;
 import cn.com.chaochuang.voice.bean.VoiceEventPendingInfo;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceEvent;
 import cn.com.chaochuang.voice.domain.VoiceEventHandle;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleApprove;
+import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
 import cn.com.chaochuang.voice.domain.VoiceInfoEvent;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleApproveRepository;
+import cn.com.chaochuang.voice.repository.VoiceEventHandleOpinionRepository;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleRepository;
 import cn.com.chaochuang.voice.repository.VoiceEventRepository;
 import cn.com.chaochuang.voice.repository.VoiceInfoEventRepository;
@@ -55,6 +58,8 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     private VoiceEventHandleApproveRepository eventHandleApproveRepository;
     @Autowired
     private VoiceInfoEventRepository          voiceInfoEventRepository;
+    @Autowired
+    private VoiceEventHandleOpinionRepository eventHandleOpinionRepository;
     @Autowired
     private SysUserService                    userService;
     @Autowired
@@ -132,7 +137,9 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                     if (Tools.isNotEmptyList(info.getVoiceEventHandleApproves())) {
                         // 保存审批意见对象，注意要将userInfoId改成userId
                         VoiceEventHandleApprove approve;
+                        VoiceEventHandleOpinion opinion;
                         for (VoiceEventHandleApproveInfo approveInfo : info.getVoiceEventHandleApproves()) {
+                            // 保存审批环节对象
                             approve = new VoiceEventHandleApprove();
                             NullBeanUtils.copyProperties(approve, approveInfo);
                             approve.setRmEventHandleId(info.getRmEventHandleId());
@@ -140,6 +147,14 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                             approve.setAssigngeeId(this.userService.selectUserIdByInfoId(approve.getAssigngeeId()));
                             approve.setAssigngeeNode(this.userService.selectUserIdByInfoId(approve.getAssigngeeNode()));
                             this.eventHandleApproveRepository.save(approve);
+                            // 保存审批意见对象
+                            for (VoiceEventHandleOpinionInfo opinionInfo : approveInfo.getOpinions()) {
+                                opinion = new VoiceEventHandleOpinion();
+                                NullBeanUtils.copyProperties(opinion, opinionInfo);
+                                opinion.setRmEventHandleId(approve.getRmEventHandleId());
+                                opinion.setRmHandleApproveId(approve.getRmHandleApproveId());
+                                this.eventHandleOpinionRepository.save(opinion);
+                            }
                         }
                     }
                 }

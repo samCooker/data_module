@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum WorkType implements IDictionary {
-    公文办理提交("00"), 用户账户修改提交("01"), 行政审批提交("02"), 案件办理提交("03");
+    公文办理提交("00"), 用户账户修改提交("01"), 行政审批提交("02"), 案件办理提交("03"), 舆情信息提交("04"), 舆情事件提交("05");
 
     private String key;
     private String value;

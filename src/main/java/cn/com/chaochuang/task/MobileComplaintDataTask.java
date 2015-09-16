@@ -20,7 +20,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.casecomplaint.repository.FdFordoCaseRepository;
@@ -97,7 +96,7 @@ public class MobileComplaintDataTask {
     /**
      * 获取待办信息（通过待办id或指定时间获取）
      * */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoData() {
         if (isGettingFordoData) {
             return;
@@ -137,7 +136,7 @@ public class MobileComplaintDataTask {
     /**
      * 查询待办localData=0的待办,根据远程待办id获取投诉举报信息
      * */
-    @Scheduled(cron = "8/8 * * * * ?")
+    // @Scheduled(cron = "8/8 * * * * ?")
     public void getComplaintInfoByFordoId() {
         if (isGettingComplaintData) {
             return;

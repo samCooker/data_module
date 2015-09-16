@@ -8,7 +8,9 @@
 
 package cn.com.chaochuang.voice.bean;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author LLM
@@ -16,31 +18,31 @@ import java.util.Date;
  */
 public class VoiceEventHandleApproveInfo {
     /** 原系统审批流水号 */
-    private Long   rmHandleApproveId;
-    /** 办理意见 */
-    private String handleApprove;
-    /** 创建日期 */
-    private Date   creatTime;
+    private Long                              rmHandleApproveId;
     /** 办结时间 */
-    private Date   finishTime;
-    /** 办理人姓名 */
-    private String name;
-    /** 办理人部门 */
-    private Long   depId;
-    /** 办理人编号 */
-    private Long   userInfoId;
+    private Date                              finishTime;
     /** 状态 */
-    private String status;
+    private String                            status;
+    /** 办理人姓名 */
+    private String                            name;
+    /** 办理人部门 */
+    private Long                              depId;
+    /** 办理人部门名称 */
+    private String                            depName;
+    /** 办理人编号 */
+    private Long                              userInfoId;
     /** 环节角色 */
-    private String chainName;
+    private String                            chainName;
     /** 交办人 */
-    private Long   assigneeId;
+    private Long                              assigngeeId;
     /** 添加交办节点（上一个交办人 id） */
-    private Long   assigngeeNode;
+    private Long                              assigngeeNode;
     /** 交办人姓名 */
-    private String assigneeName;
+    private String                            assigneeName;
     /** 交办时间 */
-    private Date   assigneeTime;
+    private Date                              assigneeTime;
+    /** 环节对应的审批意见记录 */
+    private List<VoiceEventHandleOpinionInfo> opinions = new ArrayList();
 
     /**
      * @return the rmHandleApproveId
@@ -55,51 +57,6 @@ public class VoiceEventHandleApproveInfo {
      */
     public void setRmHandleApproveId(Long rmHandleApproveId) {
         this.rmHandleApproveId = rmHandleApproveId;
-    }
-
-    /**
-     * @return the handleApprove
-     */
-    public String getHandleApprove() {
-        return handleApprove;
-    }
-
-    /**
-     * @param handleApprove
-     *            the handleApprove to set
-     */
-    public void setHandleApprove(String handleApprove) {
-        this.handleApprove = handleApprove;
-    }
-
-    /**
-     * @return the creatTime
-     */
-    public Date getCreatTime() {
-        return creatTime;
-    }
-
-    /**
-     * @param creatTime
-     *            the creatTime to set
-     */
-    public void setCreatTime(Date creatTime) {
-        this.creatTime = creatTime;
-    }
-
-    /**
-     * @return the finishTime
-     */
-    public Date getFinishTime() {
-        return finishTime;
-    }
-
-    /**
-     * @param finishTime
-     *            the finishTime to set
-     */
-    public void setFinishTime(Date finishTime) {
-        this.finishTime = finishTime;
     }
 
     /**
@@ -133,6 +90,21 @@ public class VoiceEventHandleApproveInfo {
     }
 
     /**
+     * @return the depName
+     */
+    public String getDepName() {
+        return depName;
+    }
+
+    /**
+     * @param depName
+     *            the depName to set
+     */
+    public void setDepName(String depName) {
+        this.depName = depName;
+    }
+
+    /**
      * @return the userInfoId
      */
     public Long getUserInfoId() {
@@ -145,6 +117,21 @@ public class VoiceEventHandleApproveInfo {
      */
     public void setUserInfoId(Long userInfoId) {
         this.userInfoId = userInfoId;
+    }
+
+    /**
+     * @return the finishTime
+     */
+    public Date getFinishTime() {
+        return finishTime;
+    }
+
+    /**
+     * @param finishTime
+     *            the finishTime to set
+     */
+    public void setFinishTime(Date finishTime) {
+        this.finishTime = finishTime;
     }
 
     /**
@@ -163,18 +150,18 @@ public class VoiceEventHandleApproveInfo {
     }
 
     /**
-     * @return the assigneeId
+     * @return the assigngeeId
      */
-    public Long getAssigneeId() {
-        return assigneeId;
+    public Long getAssigngeeId() {
+        return assigngeeId;
     }
 
     /**
-     * @param assigneeId
-     *            the assigneeId to set
+     * @param assigngeeId
+     *            the assigngeeId to set
      */
-    public void setAssigneeId(Long assigneeId) {
-        this.assigneeId = assigneeId;
+    public void setAssigngeeId(Long assigngeeId) {
+        this.assigngeeId = assigngeeId;
     }
 
     /**
@@ -235,6 +222,21 @@ public class VoiceEventHandleApproveInfo {
      */
     public void setAssigngeeNode(Long assigngeeNode) {
         this.assigngeeNode = assigngeeNode;
+    }
+
+    /**
+     * @return the opinions
+     */
+    public List<VoiceEventHandleOpinionInfo> getOpinions() {
+        return opinions;
+    }
+
+    /**
+     * @param opinions
+     *            the opinions to set
+     */
+    public void setOpinions(List<VoiceEventHandleOpinionInfo> opinions) {
+        this.opinions = opinions;
     }
 
 }

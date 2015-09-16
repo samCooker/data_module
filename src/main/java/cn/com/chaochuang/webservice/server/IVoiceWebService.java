@@ -59,6 +59,16 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String selectVoiceEventPending(String lastOutputTime, String eventId);
+
+    /**
+     * 更新舆情事件审批数据
+     *
+     * @param jsonStr
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String setVoiceEventHandleInfo(String jsonStr);
     //
     // /**
     // * 获取指定ID的舆情事件

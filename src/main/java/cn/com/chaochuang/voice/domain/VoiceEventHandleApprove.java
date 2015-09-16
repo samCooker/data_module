@@ -28,22 +28,20 @@ public class VoiceEventHandleApprove extends LongIdEntity {
     private Long   rmHandleApproveId;
     /** 原系统审批编号 */
     private Long   rmEventHandleId;
-    /** 办理意见 */
-    private String handleApprove;
-    /** 创建日期 */
-    private Date   creatTime;
     /** 办结时间 */
     private Date   finishTime;
-    /** 办理人姓名 */
-    private String name;
-    /** 办理人部门 */
-    private Long   depId;
-    /** 办理人编号 */
-    private Long   userId;
     /** 状态 */
     private String status;
     /** 环节角色 */
     private String chainName;
+    /** 办理人姓名 */
+    private String name;
+    /** 办理人部门 */
+    private Long   depId;
+    /** 办理人部门名称 */
+    private String depName;
+    /** 办理人编号 */
+    private Long   userId;
     /** 交办人 */
     private Long   assigngeeId;
     /** 添加交办节点（上一个交办人 id） */
@@ -52,66 +50,6 @@ public class VoiceEventHandleApprove extends LongIdEntity {
     private String assigneeName;
     /** 交办时间 */
     private Date   assigneeTime;
-
-    /**
-     * @return the rmHandleApproveId
-     */
-    public Long getRmHandleApproveId() {
-        return rmHandleApproveId;
-    }
-
-    /**
-     * @param rmHandleApproveId
-     *            the rmHandleApproveId to set
-     */
-    public void setRmHandleApproveId(Long rmHandleApproveId) {
-        this.rmHandleApproveId = rmHandleApproveId;
-    }
-
-    /**
-     * @return the rmEventHandleId
-     */
-    public Long getRmEventHandleId() {
-        return rmEventHandleId;
-    }
-
-    /**
-     * @param rmEventHandleId
-     *            the rmEventHandleId to set
-     */
-    public void setRmEventHandleId(Long rmEventHandleId) {
-        this.rmEventHandleId = rmEventHandleId;
-    }
-
-    /**
-     * @return the handleApprove
-     */
-    public String getHandleApprove() {
-        return handleApprove;
-    }
-
-    /**
-     * @param handleApprove
-     *            the handleApprove to set
-     */
-    public void setHandleApprove(String handleApprove) {
-        this.handleApprove = handleApprove;
-    }
-
-    /**
-     * @return the creatTime
-     */
-    public Date getCreatTime() {
-        return creatTime;
-    }
-
-    /**
-     * @param creatTime
-     *            the creatTime to set
-     */
-    public void setCreatTime(Date creatTime) {
-        this.creatTime = creatTime;
-    }
 
     /**
      * @return the name
@@ -144,6 +82,21 @@ public class VoiceEventHandleApprove extends LongIdEntity {
     }
 
     /**
+     * @return the depName
+     */
+    public String getDepName() {
+        return depName;
+    }
+
+    /**
+     * @param depName
+     *            the depName to set
+     */
+    public void setDepName(String depName) {
+        this.depName = depName;
+    }
+
+    /**
      * @return the userId
      */
     public Long getUserId() {
@@ -156,6 +109,36 @@ public class VoiceEventHandleApprove extends LongIdEntity {
      */
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    /**
+     * @return the rmHandleApproveId
+     */
+    public Long getRmHandleApproveId() {
+        return rmHandleApproveId;
+    }
+
+    /**
+     * @param rmHandleApproveId
+     *            the rmHandleApproveId to set
+     */
+    public void setRmHandleApproveId(Long rmHandleApproveId) {
+        this.rmHandleApproveId = rmHandleApproveId;
+    }
+
+    /**
+     * @return the rmEventHandleId
+     */
+    public Long getRmEventHandleId() {
+        return rmEventHandleId;
+    }
+
+    /**
+     * @param rmEventHandleId
+     *            the rmEventHandleId to set
+     */
+    public void setRmEventHandleId(Long rmEventHandleId) {
+        this.rmEventHandleId = rmEventHandleId;
     }
 
     /**
