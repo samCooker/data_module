@@ -44,7 +44,7 @@ public class VoiceEventHandleApprove extends LongIdEntity {
     private Long   userId;
     /** 交办人 */
     private Long   assigngeeId;
-    /** 添加交办节点（上一个交办人 id） */
+    /** 添加交办节点（上一个交办环节id） */
     private Long   assigngeeNode;
     /** 交办人姓名 */
     private String assigneeName;

@@ -10,7 +10,11 @@ package cn.com.chaochuang.voice.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +39,7 @@ import cn.com.chaochuang.voice.domain.VoiceEventHandle;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleApprove;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
 import cn.com.chaochuang.voice.domain.VoiceInfoEvent;
+import cn.com.chaochuang.voice.reference.VoiceEventStatus;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleApproveRepository;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleOpinionRepository;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleRepository;
@@ -64,6 +69,8 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     private SysUserService                    userService;
     @Autowired
     private VoiceInfoService                  voiceInfoService;
+    @Autowired
+    private VoiceEventFordoService            voiceEventFordoService;
     @Value("${getvoiceeventdata.timeinterval}")
     private String                            timeInterval;
 
@@ -105,6 +112,7 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     public void insertVoiceEvent(List<VoiceEventPendingInfo> pendingItems) {
         // 保存VoiceEvent对象，再保存VoiceInfo、VoiceInfoAttach、VoiceEventHandle等对象
         VoiceEvent event;
+        Map<Long, VoiceEventHandleApprove> fordoApproves = new HashMap();
         for (VoiceEventPendingInfo info : pendingItems) {
             // 若数据库中已经有相同的事件则不做处理
             event = this.repository.findOne(info.getRmEventId());
@@ -155,6 +163,26 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                                 opinion.setRmHandleApproveId(approve.getRmHandleApproveId());
                                 this.eventHandleOpinionRepository.save(opinion);
                             }
+                            // 若审批环节的状态为EVENT_STATE_NEW(1)或EVENT_STATE_HANDING(2)则判断最大的rmHandleApproveId是否比当前的rmHandleApproveId小，是则写入待办表
+                            if (VoiceEventStatus.新建.getKey().equals(approve.getStatus())
+                                            || VoiceEventStatus.办理中.getKey().equals(approve.getStatus())) {
+                                if (fordoApproves.containsKey(approve.getUserId())
+                                                && fordoApproves.get(approve.getUserId()).getRmHandleApproveId() < approve
+                                                                .getRmHandleApproveId()) {
+                                    fordoApproves.put(approve.getUserId(), approve);
+                                } else if (!fordoApproves.containsKey(approve.getUserId())) {
+                                    fordoApproves.put(approve.getUserId(), approve);
+                                }
+                            }
+                        }
+                        // 若有待办保存记录则写入数据库
+                        if (Tools.isNotEmptyMap(fordoApproves)) {
+                            for (Iterator it = fordoApproves.entrySet().iterator(); it.hasNext();) {
+                                Entry entry = (Entry) it.next();
+                                this.voiceEventFordoService.saveVoiceEventFordo(event,
+                                                (VoiceEventHandleApprove) entry.getValue());
+                            }
+                            fordoApproves = new HashMap();
                         }
                     }
                 }
