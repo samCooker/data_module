@@ -35,22 +35,26 @@ public class DataUpdate extends LongIdEntity {
     /**
      *
      */
-    private static final long serialVersionUID = 1L;
+    private static final long  serialVersionUID = 1L;
+
+    /** 提交成功标识 */
+    public static final String SUBMIT_SUCCESS   = "true";
+
     /** 业务类型 */
     @Convert(converter = WorkTypeConverter.class)
-    private WorkType          workType;
+    private WorkType           workType;
     /** 操作类型 */
     @Convert(converter = OperationTypeConverter.class)
-    private OperationType     operationType;
+    private OperationType      operationType;
     /** 更新内容 */
-    private String            content;
+    private String             content;
     /** 数据输入时间 */
     @Temporal(TemporalType.TIMESTAMP)
-    private Date              inputDate;
+    private Date               inputDate;
     /** 0:未执行;1:执行错误 */
-    private ExecuteFlag       executeFlag;
+    private ExecuteFlag        executeFlag;
     /** 错误内容 */
-    private String            errorInfo;
+    private String             errorInfo;
 
     /**
      * @return the workType

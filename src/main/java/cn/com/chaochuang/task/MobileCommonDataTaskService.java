@@ -110,6 +110,9 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.办案待办.getKey().equals(item.getChangeTableName())) {
                         // 同步办案系统的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.办案待办);
+                    } else if (DataChangeTable.投诉举报待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步投诉举报的待办
+                        this.commonFordoService.analysisDataChange(item, DataChangeTable.投诉举报待办);
                     } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
                         // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
                         String[] items = item.getChangeScript().split("=");

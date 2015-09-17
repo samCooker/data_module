@@ -94,7 +94,7 @@ public class MobileAipCaseDataTaskService {
     private static boolean         isTransferFileRunning     = false;
     /** 提交或退回数据标识 */
     private static boolean         isSubmitDataRunning       = false;
-    /** 获取待办阻塞标识 */
+    /** 获取修改数据阻塞标识 */
     private static boolean         isGetSysDataChangeRunning = false;
     /** 下载公文附件阻塞标识 */
     private static boolean         isDownLoadAttachRunning   = false;
@@ -335,7 +335,7 @@ public class MobileAipCaseDataTaskService {
         BufferedOutputStream bufferedOutputStream = null;
         try {
             String localFilePath = this.rootPath + this.aipcaseAttachPath + Tools.DATE_FORMAT4.format(new Date());
-            // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
+            // 获取行政办案的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
             List<AipCaseAttach> datas = this.aipCaseAttachService.selectUnLocalAttach();
             if (!Tools.isNotEmptyList(datas)) {
                 return;

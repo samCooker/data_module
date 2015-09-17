@@ -13,6 +13,7 @@ import java.util.Date;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -20,6 +21,7 @@ import javax.persistence.TemporalType;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
+import cn.com.chaochuang.docwork.reference.FordoStatusConverter;
 
 /**
  * @author Shicx
@@ -47,6 +49,7 @@ public class FdFordoCase extends LongIdEntity {
     /** 发送人所在部门 */
     private String      senderDeptName;
     /** 已读状态 0:未读 1:已读 */
+    @Convert(converter = FordoStatusConverter.class)
     private FordoStatus status;
     /** 限制时间 */
     @Temporal(TemporalType.TIMESTAMP)

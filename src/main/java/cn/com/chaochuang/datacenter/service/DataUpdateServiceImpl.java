@@ -13,11 +13,11 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
-import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.OperationType;
@@ -43,21 +43,24 @@ public class DataUpdateServiceImpl extends SimpleLongIdCrudRestService<DataUpdat
         return repository;
     }
 
-    /**
-     * @see cn.com.chaochuang.datacenter.service.DataUpdateService#selectDocFileDataUpdate()
-     */
     @Override
     public List<DataUpdate> selectDocFileDataUpdate(WorkType workType) {
-        return this.repository.findByWorkTypeAndOperationTypeAndExecuteFlag(workType, OperationType.修改, ExecuteFlag.未执行);
+        return repository.findByWorkTypeAndOperationTypeAndExecuteFlag(workType, OperationType.修改, ExecuteFlag.未执行);
     }
 
-    /**
-     * @see cn.com.chaochuang.datacenter.service.DataUpdateService#docFileDataUpdate(cn.com.chaochuang.datacenter.bean.DocFileUpdate)
-     */
     @Override
-    public void docFileDataUpdate(DocFileUpdate updateInfo) {
-        // TODO Auto-generated method stub
+    public List<DataUpdate> selectDfferentDataByWorkType(WorkType workType, Pageable page) {
+        return repository.findByWorkTypeAndOperationTypeAndExecuteFlag(workType, OperationType.修改, ExecuteFlag.未执行,
+                        page);
+    }
 
+    @Override
+    public void saveErrorInfo(DataUpdate dataUpdate, String backInfo) {
+        if (dataUpdate != null) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(backInfo);
+            repository.save(dataUpdate);
+        }
     }
 
 }

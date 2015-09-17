@@ -8,6 +8,11 @@
 
 package cn.com.chaochuang.casecomplaint.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.casecomplaint.bean.BaseCaseComplaintInfo;
 import cn.com.chaochuang.casecomplaint.domain.CaseComplaintAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
@@ -24,5 +29,20 @@ public interface CaseComplaintAttachService extends CrudRestService<CaseComplain
      * @param baseInfo
      */
     void saveComplaintAttach(BaseCaseComplaintInfo baseInfo);
+
+    /**
+     * @param localData
+     * @param page
+     * @return
+     */
+    List<CaseComplaintAttach> findAttachByLocalData(LocalData localData, Pageable page);
+
+    /**
+     * 保存附件的路径信息并将localData置为1
+     * 
+     * @param attach
+     * @param localFileName
+     */
+    void saveAttachForLocal(CaseComplaintAttach attach, String localFileName);
 
 }

@@ -30,6 +30,8 @@ import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -45,6 +47,8 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
     private FdFordoCaseRepository repository;
     @Autowired
     private SysUserService        sysUserService;
+    @Autowired
+    private DataUpdateService     dataUpdateService;
 
     @Override
     public SimpleDomainRepository<FdFordoCase, Long> getRepository() {
@@ -99,5 +103,31 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
             }
         }
 
+    }
+
+    @Override
+    public void deleteFordoAndDataUpdate(String taskId, DataUpdate dataUpdate, String backInfo) {
+        // 根据taskId查找待办
+        List<FdFordoCase> fordoList = repository.findByNodeId(taskId);
+        if (fordoList != null && fordoList.size() > 0) {
+            // 删除待办
+            repository.delete(fordoList);
+        }
+        if (DataUpdate.SUBMIT_SUCCESS.equals(backInfo)) {
+            // 删除提交记录
+            dataUpdateService.delete(dataUpdate);
+        } else {
+            // 保存错误信息
+            dataUpdateService.saveErrorInfo(dataUpdate, backInfo);
+        }
+    }
+
+    @Override
+    public void deleteFordoByRmPendingId(String pendingId) {
+        List<FdFordoCase> fordoList = repository.findByRmPendingId(pendingId);
+        // 删除待办
+        if (fordoList != null) {
+            repository.delete(fordoList);
+        }
     }
 }

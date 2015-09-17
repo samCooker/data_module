@@ -10,8 +10,9 @@ package cn.com.chaochuang.datacenter.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.bean.DocFileUpdate;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 
@@ -29,9 +30,26 @@ public interface DataUpdateService extends CrudRestService<DataUpdate, Long> {
     List<DataUpdate> selectDocFileDataUpdate(WorkType workType);
 
     /**
+     * 通过不同的提交类型获取要提交的数据信息
+     * 
+     * @param workType
+     * @param page
+     * @return
+     */
+    List<DataUpdate> selectDfferentDataByWorkType(WorkType workType, Pageable page);
+
+    /**
+     * 保存错误信息
+     * 
+     * @param dataUpdate
+     * @param backInfo
+     */
+    void saveErrorInfo(DataUpdate dataUpdate, String backInfo);
+
+    /**
      * 更新公文提交数据
      *
      * @param updateInfo
      */
-    void docFileDataUpdate(DocFileUpdate updateInfo);
+    // void docFileDataUpdate(DocFileUpdate updateInfo);
 }

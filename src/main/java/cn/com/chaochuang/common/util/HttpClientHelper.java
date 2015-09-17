@@ -133,6 +133,8 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity());
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 return RE_LOGIN;
+            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                throw new RuntimeException("服务器返回404错误");
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -154,8 +156,10 @@ public class HttpClientHelper {
     public String doGet(HttpGet httpget, List<NameValuePair> params) {
         try {
             // 设置参数
-            String str = EntityUtils.toString(new UrlEncodedFormEntity(params));
-            httpget.setURI(new URI(httpget.getURI().toString() + "?" + str));
+            if (params != null) {
+                String str = EntityUtils.toString(new UrlEncodedFormEntity(params));
+                httpget.setURI(new URI(httpget.getURI().toString() + "?" + str));
+            }
             // 发送请求
             CloseableHttpResponse response = httpClient.execute(httpget);
             if (response == null) {
@@ -166,6 +170,8 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity());
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 return RE_LOGIN;
+            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
+                throw new RuntimeException("服务器返回404错误");
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

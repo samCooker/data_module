@@ -18,6 +18,7 @@ import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.FdFordoAipcaseRepository;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
+import cn.com.chaochuang.casecomplaint.service.FdFordoCaseService;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -37,6 +38,8 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     private FdFordoAppRepository     supviseRepository;
     @Autowired
     private FdFordoAipcaseRepository aipcaseRepository;
+    @Autowired
+    private FdFordoCaseService       fdFordoCaseService;
 
     /**
      * (non-Javadoc)
@@ -71,6 +74,9 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             if (aipcaseFordo != null) {
                 aipcaseRepository.delete(aipcaseFordo);
             }
+            break;
+        case 投诉举报待办:// 投诉举报系统
+            fdFordoCaseService.deleteFordoByRmPendingId(items[1]);
             break;
         default:
             throw new RuntimeException("找不到对应的待办类型");

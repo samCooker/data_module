@@ -221,9 +221,6 @@ public class MobileAppDataTaskService {
                 return;
             }
             dataUpdate = (DataUpdate) datas.get(0);
-            if (dataUpdate == null) {
-                return;
-            }
             // 获取要提交的json字符串
 
             JsonMapper mapper = JsonMapper.getInstance();
@@ -273,7 +270,7 @@ public class MobileAppDataTaskService {
         InputStream is = null;
         try {
             String localFilePath = this.rootPath + this.docFileAttachPath + Tools.DATE_FORMAT4.format(new Date());
-            // 获取公文OA的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
+            // 获取行政审批的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
             List<AppItemAttach> datas = this.appItemAttachService.selectUnLocalAttach();
             if (!Tools.isNotEmptyList(datas)) {
                 return;

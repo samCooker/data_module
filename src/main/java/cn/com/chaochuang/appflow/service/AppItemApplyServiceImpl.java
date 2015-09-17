@@ -26,7 +26,6 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
@@ -106,13 +105,12 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
 
     @Override
     public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo) {
-        if ("true".equals(backInfo)) {
+        if (DataUpdate.SUBMIT_SUCCESS.equals(backInfo)) {
             // 删除DataUpdate对象
-            this.dataUpdateService.delete(dataUpdate);
+            dataUpdateService.delete(dataUpdate);
         } else {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(backInfo);
-            this.dataUpdateService.getRepository().save(dataUpdate);
+            // 保存错误信息
+            dataUpdateService.saveErrorInfo(dataUpdate, backInfo);
         }
         // 删除待办
         FdFordoApp fordo = fdFordoAppService.findByRmPendingId(nodeInfo.getPendingHandleId() + "");

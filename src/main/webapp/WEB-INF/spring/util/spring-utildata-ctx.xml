@@ -9,13 +9,18 @@
                         http://www.springframework.org/schema/util/spring-util-3.1.xsd"
 >
     <description>集合工具配置</description>
-  <util:list id="complaintStatus" list-class="java.util.ArrayList" >
-        <!--要获取的投诉举报待办状态 受理,部门处理,领导审批,反馈处理-->
-       <value>受理</value>
-       <value>部门处理</value>
-       <value>领导审批</value>
-       <value>反馈处理</value>
-  </util:list>
+  <bean id="complaintStatus" class="org.springframework.beans.factory.config.ListFactoryBean" >  
+    <property name="targetListClass" value="java.util.ArrayList"/>  
+    <property name="sourceList">  
+        <list>  
+           <!--要获取的投诉举报待办状态 受理,部门处理,领导审批,反馈处理-->
+           <value>受理</value>
+           <value>部门处理</value>
+           <value>领导审批</value>
+           <value>反馈处理</value> 
+        </list>  
+    </property>  
+  </bean> 
  
     
     

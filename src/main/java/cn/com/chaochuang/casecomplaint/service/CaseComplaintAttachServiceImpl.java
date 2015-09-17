@@ -15,6 +15,7 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -64,7 +65,7 @@ public class CaseComplaintAttachServiceImpl extends SimpleLongIdCrudRestService<
                     CaseComplaintAttach attach = repository.findByRmAttachId(attachInfo.getFileId());
                     if (attach == null) {
                         attach = new CaseComplaintAttach();
-                        attach.setLocalData(LocalData.非本地数据.getKey());
+                        attach.setLocalData(LocalData.非本地数据);
                         NullBeanUtils.copyProperties(attach, attachInfo);
                         attach.setRmAttachId(attachInfo.getFileId());
                         attach.setRmAffixId(attachInfo.getAffixId());
@@ -81,6 +82,20 @@ public class CaseComplaintAttachServiceImpl extends SimpleLongIdCrudRestService<
             }
         }
 
+    }
+
+    @Override
+    public List<CaseComplaintAttach> findAttachByLocalData(LocalData localData, Pageable page) {
+        return repository.findByLocalData(localData, page);
+    }
+
+    @Override
+    public void saveAttachForLocal(CaseComplaintAttach attach, String localFileName) {
+        if (attach != null) {
+            attach.setLocalData(LocalData.有本地数据);
+            attach.setSavePath(localFileName);// 修改保存路径
+            repository.save(attach);
+        }
     }
 
 }

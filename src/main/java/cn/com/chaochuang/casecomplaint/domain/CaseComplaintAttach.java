@@ -11,8 +11,11 @@ package cn.com.chaochuang.casecomplaint.domain;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
+import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 
 /**
@@ -23,24 +26,25 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @Entity
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "ATTACH_ID")) })
 public class CaseComplaintAttach extends LongIdEntity {
-    /** 远程附件id */
-    private Long   rmAttachId;
+    /** 远程附件id，对应远程的fileId */
+    private Long      rmAttachId;
     /** 附件保存名 */
-    private String saveName;
+    private String    saveName;
     /** 附件真实名称 */
-    private String trueName;
+    private String    trueName;
     /** 附件大小 */
-    private Long   fileSize;
+    private Long      fileSize;
     /** 是否是图片 */
-    private String isImage;
+    private String    isImage;
     /** 保存路径 */
-    private String savePath;
+    private String    savePath;
     /** 原附件标识 */
-    private String rmAffixId;
+    private String    rmAffixId;
     /** 是否是pdf */
-    private String pdfFlag;
-    /** 是否有本地时间 */
-    private String localData;
+    private String    pdfFlag;
+    /** 是否有本地数据 */
+    @Convert(converter = LocalDataConverter.class)
+    private LocalData localData;
 
     public void setSaveName(String saveName) {
         this.saveName = saveName;
@@ -106,11 +110,11 @@ public class CaseComplaintAttach extends LongIdEntity {
         return rmAttachId;
     }
 
-    public void setLocalData(String localData) {
+    public void setLocalData(LocalData localData) {
         this.localData = localData;
     }
 
-    public String getLocalData() {
+    public LocalData getLocalData() {
         return localData;
     }
 

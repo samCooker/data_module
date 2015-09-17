@@ -47,10 +47,18 @@ public interface FdFordoCaseRepository extends SimpleDomainRepository<FdFordoCas
     public FdFordoCase findByRmPendingIdAndRecipientId(String pendingHandleId, Long recipientId);
 
     /**
-     * 通过远程待办id查找待办信息，由于同一个待办id可为多人接收，因此返回一个集合
+     * 通过远程待办id查找待办信息，由于同一个待办id可为多人接收(坐席待办)，因此返回一个集合
      * 
      * @param pendingId
      */
     public List<FdFordoCase> findByRmPendingId(String pendingId);
+
+    /**
+     * 根据nodeId查找待办，坐席的待办可能有多个
+     * 
+     * @param nodeId
+     * @return
+     */
+    public List<FdFordoCase> findByNodeId(String nodeId);
 
 }

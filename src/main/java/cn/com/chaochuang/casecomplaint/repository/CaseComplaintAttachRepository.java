@@ -11,6 +11,9 @@ package cn.com.chaochuang.casecomplaint.repository;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Pageable;
+
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.casecomplaint.domain.CaseComplaintAttach;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 
@@ -35,5 +38,12 @@ public interface CaseComplaintAttachRepository extends SimpleDomainRepository<Ca
      * @return
      */
     CaseComplaintAttach findByRmAttachId(Long fileId);
+
+    /**
+     * @param localData
+     * @param page
+     * @return
+     */
+    List<CaseComplaintAttach> findByLocalData(LocalData localData, Pageable page);
 
 }
