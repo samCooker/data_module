@@ -69,6 +69,15 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String setVoiceEventHandleInfo(String jsonStr);
+
+    /**
+     * 获取数据变动记录
+     *
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getDataChange();
     //
     // /**
     // * 获取指定ID的舆情事件
@@ -111,12 +120,4 @@ public interface IVoiceWebService {
     // @WebMethod
     // String setVoiceEventHandleInfo(String jsonStr);
     //
-    // /**
-    // * 获取数据变动记录
-    // *
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String getDataChange();
 }

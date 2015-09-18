@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.voice.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
 
@@ -17,4 +19,11 @@ import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
  */
 public interface VoiceInfoAttachRepository extends SimpleDomainRepository<VoiceInfoAttach, Long> {
 
+    /**
+     * 根据附件标识获取附件
+     * 
+     * @param rmAffixId
+     * @return
+     */
+    List<VoiceInfoAttach> findByRmAffixId(String rmAffixId);
 }

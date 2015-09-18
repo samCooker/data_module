@@ -11,6 +11,7 @@ package cn.com.chaochuang.voice.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceInfo;
 
@@ -36,8 +37,22 @@ public interface VoiceInfoService extends CrudRestService<VoiceInfo, Long> {
 
     /**
      * 保存舆情信息
-     * 
+     *
      * @param pending
      */
     void insertVoiceInfo(VoiceInfoPendingInfo pending);
+
+    /**
+     * 更新舆情基础信息
+     *
+     * @param dataChange
+     */
+    void updateVoiceInfo(SysDataChange dataChange);
+
+    /**
+     * 删除舆情相关信息
+     * 
+     * @param infoId
+     */
+    void deleteVoiceInfo(Long infoId);
 }

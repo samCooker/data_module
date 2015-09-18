@@ -18,9 +18,11 @@ import org.springframework.stereotype.Component;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.voice.bean.VoiceEventPendingInfo;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.service.VoiceEventService;
@@ -37,20 +39,24 @@ import com.fasterxml.jackson.databind.JavaType;
 @Component
 public class MobileVoiceDataTaskService {
     @Autowired
-    private VoiceInfoService  voiceInfoService;
+    private VoiceInfoService     voiceInfoService;
     @Autowired
-    private IVoiceWebService  voiceWebService;
+    private IVoiceWebService     voiceWebService;
     @Autowired
-    private VoiceEventService voiceEventService;
+    private VoiceEventService    voiceEventService;
     @Autowired
-    private DataUpdateService dataUpdateService;
+    private DataUpdateService    dataUpdateService;
+    @Autowired
+    private SysDataChangeService dataChangeService;
 
     /** 舆情信息阻塞标识 */
-    private static boolean    isGetVoiceInfoPendingRunning  = false;
+    private static boolean       isGetVoiceInfoPendingRunning  = false;
     /** 舆情事件阻塞标识 */
-    private static boolean    isGetVoiceEventPendingRunning = false;
+    private static boolean       isGetVoiceEventPendingRunning = false;
     /** 舆情事件数据提交阻塞标识 */
-    private static boolean    isGetVoiceEventSubmitRunning  = false;
+    private static boolean       isGetVoiceEventSubmitRunning  = false;
+    /** 变更数据获取阻塞标识 */
+    private static boolean       isGetSysDataChangeRunning     = false;
 
     /**
      * 获取舆情的待办记录
@@ -161,6 +167,28 @@ public class MobileVoiceDataTaskService {
                 this.dataUpdateService.getRepository().save(dataUpdate);
             }
             isGetVoiceEventSubmitRunning = false;
+        }
+    }
+
+    @Scheduled(cron = "5/5 * * * * ?")
+    public void getDataChange() {
+        if (isGetSysDataChangeRunning) {
+            return;
+        }
+        isGetSysDataChangeRunning = true;
+        try {
+            String json = this.voiceWebService.getDataChange();
+            if (Tools.isEmptyString(json)) {
+                return;
+            }
+            JsonMapper mapper = JsonMapper.getInstance();
+            JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
+            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+            this.dataChangeService.saveSysDataChange(datas);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isGetSysDataChangeRunning = false;
         }
     }
 }

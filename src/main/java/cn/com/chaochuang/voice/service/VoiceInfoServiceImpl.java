@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,13 +28,21 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import cn.com.chaochuang.common.util.AttachUtils;
+import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.voice.bean.VoiceInfoAffixItem;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceInfo;
 import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
+import cn.com.chaochuang.voice.domain.VoiceInfoEvent;
 import cn.com.chaochuang.voice.repository.VoiceInfoAttachRepository;
+import cn.com.chaochuang.voice.repository.VoiceInfoEventRepository;
 import cn.com.chaochuang.voice.repository.VoiceInfoRepository;
+import cn.com.chaochuang.webservice.server.IVoiceWebService;
 
 /**
  * @author LLM
@@ -45,9 +54,13 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     @PersistenceContext
     private EntityManager             entityManager;
     @Autowired
+    private IVoiceWebService          voiceWebService;
+    @Autowired
     private VoiceInfoRepository       repository;
     @Autowired
     private VoiceInfoAttachRepository attachRepository;
+    @Autowired
+    private VoiceInfoEventRepository  voiceInfoEventRepository;
     @Autowired
     private SysUserRepository         userRepository;
     @Value("${getvoiceinfodata.timeinterval}")
@@ -123,6 +136,66 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
             }
         }
         this.repository.save(voiceInfo);
+    }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceInfoService#updateVoiceInfo(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void updateVoiceInfo(SysDataChange dataChange) {
+        if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的ID
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+        JsonMapper mapper = JsonMapper.getInstance();
+        VoiceInfo info = this.repository.findByRmInfoId(Long.valueOf(items[1]));
+        // 若舆情信息存在则更新舆情
+        if (info == null) {
+            return;
+        }
+        // 删除相应的舆情信息
+        if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+            this.deleteVoiceInfo(info.getId());
+            return;
+        }
+        String updateInfo = this.voiceWebService.selectVoiceInfo(info.getId());
+        if (StringUtils.isNotEmpty(updateInfo)) {
+            VoiceInfo updateVoice = mapper.readValue(updateInfo, VoiceInfo.class);
+            NullBeanUtils.copyProperties(info, updateVoice);
+            repository.save(updateVoice);
+        }
+    }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceInfoService#deleteVoiceInfo(java.lang.Long)
+     */
+    @Override
+    public void deleteVoiceInfo(Long infoId) {
+        VoiceInfo info = this.repository.findOne(infoId);
+        if (info == null) {
+            return;
+        }
+        // 删除附件
+        if (!Tools.isEmptyString(info.getRmAffixId())) {
+            List<VoiceInfoAttach> attachs = this.attachRepository.findByRmAffixId(info.getRmAffixId());
+            for (VoiceInfoAttach attach : attachs) {
+                if (LocalData.有本地数据.getKey().equals(attach.getLocalData())) {
+                    AttachUtils.removeFile(attach.getSavePath());
+                }
+                this.attachRepository.delete(attach);
+            }
+        }
+        // 删除事件舆情信息关联表
+        List<VoiceInfoEvent> infoEvents = this.voiceInfoEventRepository.findByRmVoiceInfoId(infoId);
+        if (Tools.isNotEmptyList(infoEvents)) {
+            this.voiceInfoEventRepository.delete(infoEvents);
+        }
+        // 删除舆情
+        this.repository.delete(info);
     }
 
 }
