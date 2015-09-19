@@ -78,16 +78,16 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String getDataChange();
-    //
-    // /**
-    // * 获取指定ID的舆情事件
-    // *
-    // * @param eventId
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String selectVoiceEvent(Long eventId);
+
+    /**
+     * 获取指定ID的舆情事件
+     *
+     * @param eventId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String selectVoiceEvent(Long eventId);
     //
     // /**
     // * 获取公文数据，将其转成json字符串格式

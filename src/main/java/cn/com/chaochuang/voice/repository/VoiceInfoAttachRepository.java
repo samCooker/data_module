@@ -21,9 +21,17 @@ public interface VoiceInfoAttachRepository extends SimpleDomainRepository<VoiceI
 
     /**
      * 根据附件标识获取附件
-     * 
+     *
      * @param rmAffixId
      * @return
      */
     List<VoiceInfoAttach> findByRmAffixId(String rmAffixId);
+
+    /**
+     * 根据原系统附件编号获取附件
+     * 
+     * @param rmAttachId
+     * @return
+     */
+    VoiceInfoAttach findByRmAttachId(Long rmAttachId);
 }

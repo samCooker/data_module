@@ -26,8 +26,7 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
-import cn.com.chaochuang.common.user.domain.SysUser;
-import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.AttachUtils;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
@@ -62,7 +61,7 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     @Autowired
     private VoiceInfoEventRepository  voiceInfoEventRepository;
     @Autowired
-    private SysUserRepository         userRepository;
+    private SysUserService            userService;
     @Value("${getvoiceinfodata.timeinterval}")
     private String                    timeInterval;
 
@@ -111,31 +110,35 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
      * @see cn.com.chaochuang.voice.service.VoiceInfoService#insertVoiceInfo(cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo)
      */
     @Override
-    public void insertVoiceInfo(VoiceInfoPendingInfo pending) {
+    public boolean insertVoiceInfo(VoiceInfoPendingInfo pending) {
         // 判断当前记录是否已经存在,不存在的情况下才写入voiceInfo表
         VoiceInfo voiceInfo = this.repository.findByRmInfoId(pending.getRmInfoId());
         if (voiceInfo != null) {
-            return;
+            return false;
         }
-        voiceInfo = new VoiceInfo();
-        BeanUtils.copyProperties(pending, voiceInfo);
-        // 设置为非本地数据，表示相关的附件信息没有下载到移动服务器
-        voiceInfo.setLocalData(LocalData.非本地数据);
-        // 设置发布人的ID，原舆情系统用的是userInfoId，需要转成userId，在移动系统中都使用userId
-        SysUser user = userRepository.findByRmUserInfoId(voiceInfo.getVoiceInfoDiscoverUser());
-        if (user != null) {
-            voiceInfo.setVoiceInfoDiscoverUser(user.getId());
-        }
-        // 写入附件记录
-        if (Tools.isNotEmptyList(pending.getAffixItems())) {
-            VoiceInfoAttach attach;
-            for (VoiceInfoAffixItem affixItem : pending.getAffixItems()) {
-                attach = new VoiceInfoAttach();
-                BeanUtils.copyProperties(affixItem, attach);
-                this.attachRepository.save(attach);
+        try {
+            voiceInfo = new VoiceInfo();
+            BeanUtils.copyProperties(pending, voiceInfo);
+            // 设置为非本地数据，表示相关的附件信息没有下载到移动服务器
+            voiceInfo.setLocalData(LocalData.非本地数据);
+            // 设置发布人的ID，原舆情系统用的是userInfoId，需要转成userId，在移动系统中都使用userId
+            voiceInfo.setVoiceInfoDiscoverUser(this.userService.selectUserIdByInfoId(voiceInfo
+                            .getVoiceInfoDiscoverUser()));
+            // 写入附件记录
+            if (Tools.isNotEmptyList(pending.getAffixItems())) {
+                VoiceInfoAttach attach;
+                for (VoiceInfoAffixItem affixItem : pending.getAffixItems()) {
+                    attach = new VoiceInfoAttach();
+                    BeanUtils.copyProperties(affixItem, attach);
+                    this.attachRepository.save(attach);
+                }
             }
+            this.repository.save(voiceInfo);
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
         }
-        this.repository.save(voiceInfo);
     }
 
     /**
@@ -162,11 +165,23 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
             this.deleteVoiceInfo(info.getId());
             return;
         }
-        String updateInfo = this.voiceWebService.selectVoiceInfo(info.getId());
+        String updateInfo = this.voiceWebService.selectVoiceInfo(info.getRmInfoId());
         if (StringUtils.isNotEmpty(updateInfo)) {
-            VoiceInfo updateVoice = mapper.readValue(updateInfo, VoiceInfo.class);
+            VoiceInfoPendingInfo updateVoice = mapper.readValue(updateInfo, VoiceInfoPendingInfo.class);
             NullBeanUtils.copyProperties(info, updateVoice);
-            repository.save(updateVoice);
+            info.setVoiceInfoDiscoverUser(this.userService.selectUserIdByInfoId(updateVoice.getVoiceInfoDiscoverUser()));
+            repository.save(info);
+            // 若有附件则保存附件
+            if (Tools.isNotEmptyList(updateVoice.getAffixItems())) {
+                VoiceInfoAttach attach;
+                for (VoiceInfoAffixItem affixItem : updateVoice.getAffixItems()) {
+                    if (this.attachRepository.findByRmAttachId(affixItem.getRmAttachId()) == null) {
+                        attach = new VoiceInfoAttach();
+                        BeanUtils.copyProperties(affixItem, attach);
+                        this.attachRepository.save(attach);
+                    }
+                }
+            }
         }
     }
 

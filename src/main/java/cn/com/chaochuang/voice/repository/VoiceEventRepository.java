@@ -17,4 +17,11 @@ import cn.com.chaochuang.voice.domain.VoiceEvent;
  */
 public interface VoiceEventRepository extends SimpleDomainRepository<VoiceEvent, Long> {
 
+    /**
+     * 根据原系统事件编号获取事件记录
+     * 
+     * @param rmEventId
+     * @return
+     */
+    VoiceEvent findByRmEventId(Long rmEventId);
 }

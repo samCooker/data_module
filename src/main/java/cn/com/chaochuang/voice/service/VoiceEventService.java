@@ -11,6 +11,7 @@ package cn.com.chaochuang.voice.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.voice.bean.VoiceEventPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceEvent;
 
@@ -32,4 +33,18 @@ public interface VoiceEventService extends CrudRestService<VoiceEvent, Long> {
      * @param pendingItems
      */
     void insertVoiceEvent(List<VoiceEventPendingInfo> pendingItems);
+
+    /**
+     * 舆情事件内容变更
+     *
+     * @param dataChange
+     */
+    void updateVoiceInfoEvent(SysDataChange dataChange);
+
+    /**
+     * 舆情事件变更
+     * 
+     * @param dataChange
+     */
+    void saveVoiceEvent(SysDataChange dataChange);
 }

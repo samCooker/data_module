@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.voice.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
 
@@ -17,4 +19,11 @@ import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
  */
 public interface VoiceEventHandleOpinionRepository extends SimpleDomainRepository<VoiceEventHandleOpinion, Long> {
 
+    /**
+     * 根据事件审批流程编号删除审批意见
+     *
+     * @param rmEventHandleId
+     * @return
+     */
+    List<VoiceEventHandleOpinion> findByRmEventHandleId(Long rmEventHandleId);
 }

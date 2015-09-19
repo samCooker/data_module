@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
@@ -27,6 +28,8 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.service.DocFileService;
+import cn.com.chaochuang.voice.service.VoiceEventService;
+import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -57,6 +60,10 @@ public class MobileCommonDataTaskService {
     private AppEntpService             appEntpService;
     @Autowired
     private AipPunishEntpService       punishEntpService;
+    @Autowired
+    private VoiceInfoService           voiceInfoService;
+    @Autowired
+    private VoiceEventService          voiceEventService;
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning  = false;
     /** 获取处理系统数据更改阻塞标识 */
@@ -90,7 +97,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    // @Scheduled(cron = "8/10 * * * * ?")
+    @Scheduled(cron = "8/10 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -136,7 +143,11 @@ public class MobileCommonDataTaskService {
                         // 行政处罚信息更新
                         this.punishEntpService.savePunishInfo(item);
                     } else if (DataChangeTable.舆情信息.getKey().equals(item.getChangeTableName())) {
-
+                        this.voiceInfoService.updateVoiceInfo(item);
+                    } else if (DataChangeTable.舆情事件内容.getKey().equals(item.getChangeTableName())) {
+                        this.voiceEventService.updateVoiceInfoEvent(item);
+                    } else if (DataChangeTable.舆情事件.getKey().equals(item.getChangeTableName())) {
+                        this.voiceEventService.saveVoiceEvent(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());

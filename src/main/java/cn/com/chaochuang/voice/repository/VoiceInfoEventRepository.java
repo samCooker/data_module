@@ -35,4 +35,13 @@ public interface VoiceInfoEventRepository extends SimpleDomainRepository<VoiceIn
      * @return
      */
     List<VoiceInfoEvent> findByRmVoiceInfoId(Long rmVoiceInfoId);
+
+    /**
+     * 通过原系统的事件编号查询和舆情基本编号查询事件舆情映射记录
+     *
+     * @param rmVoiceEventId
+     * @param rmVoiceInfoId
+     * @return
+     */
+    VoiceInfoEvent findByRmVoiceEventIdAndRmVoiceInfoId(Long rmVoiceEventId, Long rmVoiceInfoId);
 }

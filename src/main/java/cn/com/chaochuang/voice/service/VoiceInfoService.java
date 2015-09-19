@@ -40,7 +40,7 @@ public interface VoiceInfoService extends CrudRestService<VoiceInfo, Long> {
      *
      * @param pending
      */
-    void insertVoiceInfo(VoiceInfoPendingInfo pending);
+    boolean insertVoiceInfo(VoiceInfoPendingInfo pending);
 
     /**
      * 更新舆情基础信息
@@ -51,7 +51,7 @@ public interface VoiceInfoService extends CrudRestService<VoiceInfo, Long> {
 
     /**
      * 删除舆情相关信息
-     * 
+     *
      * @param infoId
      */
     void deleteVoiceInfo(Long infoId);
