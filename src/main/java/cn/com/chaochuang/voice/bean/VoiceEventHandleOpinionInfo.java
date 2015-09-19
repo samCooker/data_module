@@ -17,6 +17,10 @@ import java.util.Date;
 public class VoiceEventHandleOpinionInfo {
     /** 原系统审批流水号 */
     private Long   rmOpinionId;
+    /** 原系统审批环节编号 */
+    private Long   rmHandleApproveId;
+    /** 原系统审批流程编号 */
+    private Long   rmEventHandleId;
     /** 办理意见 */
     private String handleApprove;
     /** 办理人姓名 */
@@ -82,6 +86,36 @@ public class VoiceEventHandleOpinionInfo {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    /**
+     * @return the rmHandleApproveId
+     */
+    public Long getRmHandleApproveId() {
+        return rmHandleApproveId;
+    }
+
+    /**
+     * @param rmHandleApproveId
+     *            the rmHandleApproveId to set
+     */
+    public void setRmHandleApproveId(Long rmHandleApproveId) {
+        this.rmHandleApproveId = rmHandleApproveId;
+    }
+
+    /**
+     * @return the rmEventHandleId
+     */
+    public Long getRmEventHandleId() {
+        return rmEventHandleId;
+    }
+
+    /**
+     * @param rmEventHandleId
+     *            the rmEventHandleId to set
+     */
+    public void setRmEventHandleId(Long rmEventHandleId) {
+        this.rmEventHandleId = rmEventHandleId;
     }
 
 }

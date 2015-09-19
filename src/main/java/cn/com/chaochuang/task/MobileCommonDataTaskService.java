@@ -148,6 +148,10 @@ public class MobileCommonDataTaskService {
                         this.voiceEventService.updateVoiceInfoEvent(item);
                     } else if (DataChangeTable.舆情事件.getKey().equals(item.getChangeTableName())) {
                         this.voiceEventService.saveVoiceEvent(item);
+                    } else if (DataChangeTable.舆情事件办理.getKey().equals(item.getChangeTableName())) {
+
+                    } else if (DataChangeTable.舆情事件办理意见.getKey().equals(item.getChangeTableName())) {
+
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());

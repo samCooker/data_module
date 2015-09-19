@@ -21,9 +21,17 @@ public interface VoiceEventHandleRepository extends SimpleDomainRepository<Voice
 
     /**
      * 根据原系统事件编号获取审批流程
-     * 
+     *
      * @param rmEventId
      * @return
      */
     List<VoiceEventHandle> findByRmEventIdOrderByRmEventHandleIdDesc(Long rmEventId);
+
+    /**
+     * 根据原系统事件办理编号获取审批流程
+     * 
+     * @param rmEventHandleId
+     * @return
+     */
+    VoiceEventHandle findByRmEventHandleId(Long rmEventHandleId);
 }

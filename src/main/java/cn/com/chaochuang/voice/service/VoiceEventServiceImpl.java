@@ -179,8 +179,6 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                         for (VoiceEventHandleOpinionInfo opinionInfo : approveInfo.getOpinions()) {
                             opinion = new VoiceEventHandleOpinion();
                             NullBeanUtils.copyProperties(opinion, opinionInfo);
-                            opinion.setRmEventHandleId(approve.getRmEventHandleId());
-                            opinion.setRmHandleApproveId(approve.getRmHandleApproveId());
                             this.eventHandleOpinionRepository.save(opinion);
                         }
                         // 若审批环节的状态为EVENT_STATE_NEW(1)或EVENT_STATE_HANDING(2)则判断最大的rmHandleApproveId是否比当前的rmHandleApproveId小，是则写入待办表
@@ -228,32 +226,37 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
         }
         Long infoId = Long.valueOf(items[0].split("=")[1]);
         Long eventId = Long.valueOf(items[1].split("=")[1]);
-        // 删除相应的舆情事件映射记录
-        if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
-            VoiceInfoEvent voiceInfoEvent = this.voiceInfoEventRepository.findByRmVoiceEventIdAndRmVoiceInfoId(eventId,
-                            infoId);
-            if (voiceInfoEvent != null) {
-                this.voiceInfoEventRepository.delete(voiceInfoEvent);
+        try {
+            // 删除相应的舆情事件映射记录
+            if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+                VoiceInfoEvent voiceInfoEvent = this.voiceInfoEventRepository.findByRmVoiceEventIdAndRmVoiceInfoId(
+                                eventId, infoId);
+                if (voiceInfoEvent != null) {
+                    this.voiceInfoEventRepository.delete(voiceInfoEvent);
+                }
+                return;
             }
-            return;
-        }
-        // 新增映射记录，先校验事件是否存在，仅在事件存在情况下才检查舆情基础信息是否存在，存在直接添加映射记录，否则远程获取舆情基础信息后才添加映射记录
-        if (this.repository.findByRmEventId(eventId) != null) {
-            if (this.voiceInfoRepository.findByRmInfoId(infoId) != null) {
-                // 直接添加映射记录
-                this.voiceInfoEventRepository.save(new VoiceInfoEvent(eventId, infoId));
-            } else {
-                // 远程获取舆情基础信息后才添加映射记录
-                String addVoice = this.voiceWebService.selectVoiceInfo(infoId);
-                JsonMapper mapper = JsonMapper.getInstance();
-                if (StringUtils.isNotEmpty(addVoice)) {
-                    VoiceInfoPendingInfo voice = mapper.readValue(addVoice, VoiceInfoPendingInfo.class);
-                    if (this.voiceInfoService.insertVoiceInfo(voice)) {
-                        // 添加映射记录
-                        this.voiceInfoEventRepository.save(new VoiceInfoEvent(eventId, infoId));
+            // 新增映射记录，先校验事件是否存在，仅在事件存在情况下才检查舆情基础信息是否存在，存在直接添加映射记录，否则远程获取舆情基础信息后才添加映射记录
+            if (this.repository.findByRmEventId(eventId) != null) {
+                if (this.voiceInfoRepository.findByRmInfoId(infoId) != null) {
+                    // 直接添加映射记录
+                    this.voiceInfoEventRepository.save(new VoiceInfoEvent(eventId, infoId));
+                } else {
+                    // 远程获取舆情基础信息后才添加映射记录
+                    String addVoice = this.voiceWebService.selectVoiceInfo(infoId);
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    if (StringUtils.isNotEmpty(addVoice)) {
+                        VoiceInfoPendingInfo voice = mapper.readValue(addVoice, VoiceInfoPendingInfo.class);
+                        if (this.voiceInfoService.insertVoiceInfo(voice)) {
+                            // 添加映射记录
+                            this.voiceInfoEventRepository.save(new VoiceInfoEvent(eventId, infoId));
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
@@ -272,41 +275,145 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
             return;
         }
         Long eventId = Long.valueOf(items[1]);
-        VoiceEvent event = this.repository.findByRmEventId(eventId);
-        if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
-            // 新增事件，从远程获取事件信息保存
-            String addVoiceEvent = this.voiceWebService.selectVoiceEvent(eventId);
-            JsonMapper mapper = JsonMapper.getInstance();
-            if (StringUtils.isNotEmpty(addVoiceEvent)) {
-                VoiceEventPendingInfo eventInfo = mapper.readValue(addVoiceEvent, VoiceEventPendingInfo.class);
-                this.insertVoiceEvent(eventInfo);
+        try {
+            VoiceEvent event = this.repository.findByRmEventId(eventId);
+            if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                // 新增事件，从远程获取事件信息保存
+                String addVoiceEvent = this.voiceWebService.selectVoiceEvent(eventId);
+                JsonMapper mapper = JsonMapper.getInstance();
+                if (StringUtils.isNotEmpty(addVoiceEvent)) {
+                    VoiceEventPendingInfo eventInfo = mapper.readValue(addVoiceEvent, VoiceEventPendingInfo.class);
+                    this.insertVoiceEvent(eventInfo);
+                }
+            } else if (OperationType.修改.getKey().equals(dataChange.getOperationType())) {
+                // 要更新的舆情事件必须存在
+                if (event == null) {
+                    return;
+                }
+                String addVoiceEvent = this.voiceWebService.selectVoiceEvent(eventId);
+                JsonMapper mapper = JsonMapper.getInstance();
+                if (StringUtils.isNotEmpty(addVoiceEvent)) {
+                    VoiceEventPendingInfo eventInfo = mapper.readValue(addVoiceEvent, VoiceEventPendingInfo.class);
+                    NullBeanUtils.copyProperties(event, eventInfo);
+                    event.setCreaterId(this.userService.selectUserIdByInfoId(eventInfo.getCreaterId()));
+                    this.repository.save(event);
+                }
+            } else {
+                // 事件删除,先删除voiceEventHandleOpinion、voiceEventHandleApprove、voiceEventHandle、voiceInfoEvent、voiceEvent
+                List<VoiceEventHandle> eventHandles = this.eventHandleRepository
+                                .findByRmEventIdOrderByRmEventHandleIdDesc(eventId);
+                if (Tools.isNotEmptyList(eventHandles)) {
+                    this.eventHandleOpinionRepository.delete(this.eventHandleOpinionRepository
+                                    .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
+                    this.eventHandleApproveRepository.delete(this.eventHandleApproveRepository
+                                    .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
+                    this.eventHandleRepository.delete(eventHandles.get(0));
+                }
+                this.voiceInfoEventRepository.delete(this.voiceInfoEventRepository.findByRmVoiceEventId(eventId));
+                this.repository.delete(event);
             }
-        } else if (OperationType.修改.getKey().equals(dataChange.getOperationType())) {
-            // 要更新的舆情事件必须存在
-            if (event == null) {
-                return;
-            }
-            String addVoiceEvent = this.voiceWebService.selectVoiceEvent(eventId);
-            JsonMapper mapper = JsonMapper.getInstance();
-            if (StringUtils.isNotEmpty(addVoiceEvent)) {
-                VoiceEventPendingInfo eventInfo = mapper.readValue(addVoiceEvent, VoiceEventPendingInfo.class);
-                NullBeanUtils.copyProperties(event, eventInfo);
-                event.setCreaterId(this.userService.selectUserIdByInfoId(eventInfo.getCreaterId()));
-                this.repository.save(event);
-            }
-        } else {
-            // 事件删除,先删除voiceEventHandleOpinion、voiceEventHandleApprove、voiceEventHandle、voiceInfoEvent、voiceEvent
-            List<VoiceEventHandle> eventHandles = this.eventHandleRepository
-                            .findByRmEventIdOrderByRmEventHandleIdDesc(eventId);
-            if (Tools.isNotEmptyList(eventHandles)) {
-                this.eventHandleOpinionRepository.delete(this.eventHandleOpinionRepository
-                                .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
-                this.eventHandleApproveRepository.delete(this.eventHandleApproveRepository
-                                .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
-                this.eventHandleRepository.delete(eventHandles.get(0));
-            }
-            this.voiceInfoEventRepository.delete(this.voiceInfoEventRepository.findByRmVoiceEventId(eventId));
-            this.repository.delete(event);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleApprove(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void saveVoiceEventHandleApprove(SysDataChange dataChange) {
+        // 分解变更内容
+        if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的事件审批编号
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+
+        Long handleApproveId = Long.valueOf(items[1]);
+        try {
+            VoiceEventHandleApprove approve = this.eventHandleApproveRepository
+                            .findByRmHandleApproveId(handleApproveId);
+            if (OperationType.新增.getKey().equals(dataChange.getOperationType())
+                            || OperationType.修改.getKey().equals(dataChange.getOperationType())) {
+                // 若本地数据库中不存在则新建对象
+                if (approve == null) {
+                    approve = new VoiceEventHandleApprove();
+                }
+                String addApprove = this.voiceWebService.getVoiceEventHandleInfo(handleApproveId);
+                JsonMapper mapper = JsonMapper.getInstance();
+                if (!Tools.isEmptyString(addApprove)) {
+                    VoiceEventPendingInfo eventInfo = mapper.readValue(addApprove, VoiceEventPendingInfo.class);
+                    if (Tools.isNotEmptyList(eventInfo.getVoiceEventHandleApproves())) {
+                        // 保存审批环节
+                        NullBeanUtils.copyProperties(approve, eventInfo.getVoiceEventHandleApproves().get(0));
+                        approve.setRmEventHandleId(eventInfo.getRmEventHandleId());
+                        approve.setUserId(this.userService.selectUserIdByInfoId(eventInfo.getVoiceEventHandleApproves()
+                                        .get(0).getUserInfoId()));
+                        approve.setAssigngeeId(this.userService.selectUserIdByInfoId(approve.getAssigngeeId()));
+                        approve.setAssigngeeNode(this.userService.selectUserIdByInfoId(approve.getAssigngeeNode()));
+                        this.eventHandleApproveRepository.save(approve);
+                        // 保存办理流程(仅status属性可能会改变)
+                        VoiceEventHandle handle = this.eventHandleRepository.findByRmEventHandleId(approve
+                                        .getRmEventHandleId());
+                        handle.setStatus(eventInfo.getEventHandleStatus());
+                        this.eventHandleRepository.save(handle);
+                    }
+                }
+            } else if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+                if (approve == null) {
+                    return;
+                }
+                List<VoiceEventHandleOpinion> opinionDatas = this.eventHandleOpinionRepository
+                                .findByRmHandleApproveId(handleApproveId);
+                // 删除审批意见集合
+                this.eventHandleOpinionRepository.delete(opinionDatas);
+                // 删除审批环节
+                this.eventHandleApproveRepository.delete(approve);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleOpinion(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void saveVoiceEventHandleOpinion(SysDataChange dataChange) {
+        // 分解变更内容
+        if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的事件审批编号
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+
+        Long opinionId = Long.valueOf(items[1]);
+        try {
+            VoiceEventHandleOpinion opinion = this.eventHandleOpinionRepository.findByRmOpinionId(opinionId);
+            if (opinion != null) {
+                return;
+            }
+            opinion = new VoiceEventHandleOpinion();
+            if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                String addOpinion = this.voiceWebService.getVoiceEventHandleOpinion(opinionId);
+                JsonMapper mapper = JsonMapper.getInstance();
+                VoiceEventHandleOpinionInfo opinionInfo = mapper.readValue(addOpinion,
+                                VoiceEventHandleOpinionInfo.class);
+                NullBeanUtils.copyProperties(opinion, opinionInfo);
+                this.eventHandleOpinionRepository.save(opinion);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
+
 }

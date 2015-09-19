@@ -20,10 +20,26 @@ import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
 public interface VoiceEventHandleOpinionRepository extends SimpleDomainRepository<VoiceEventHandleOpinion, Long> {
 
     /**
-     * 根据事件审批流程编号删除审批意见
+     * 根据事件审批流程编号查询审批意见
      *
      * @param rmEventHandleId
      * @return
      */
     List<VoiceEventHandleOpinion> findByRmEventHandleId(Long rmEventHandleId);
+
+    /**
+     * 根据事件审批环节编号查询审批意见
+     *
+     * @param rmHandleApproveId
+     * @return
+     */
+    List<VoiceEventHandleOpinion> findByRmHandleApproveId(Long rmHandleApproveId);
+
+    /**
+     * 根据审批意见编号查询意见
+     * 
+     * @param rmOpinionId
+     * @return
+     */
+    VoiceEventHandleOpinion findByRmOpinionId(Long rmOpinionId);
 }

@@ -30,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -138,7 +137,7 @@ public class MobileComplaintDataTask {
     /**
      * 获取待办信息（通过待办id或指定时间获取）
      * */
-    @Scheduled(cron = "5/10 * * * * ?")
+    // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoData() {
         if (isGettingFordoData) {
             return;
@@ -288,7 +287,7 @@ public class MobileComplaintDataTask {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/20 * * * * ?")
+    // @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

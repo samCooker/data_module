@@ -88,17 +88,27 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String selectVoiceEvent(Long eventId);
-    //
-    // /**
-    // * 获取公文数据，将其转成json字符串格式
-    // *
-    // * @param lastOutputTime
-    // * @return
-    // *
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String getVoiceEventHandleInfo(String instNoId, String lastOutputTime);
+
+    /**
+     * 获取舆情事件审批数据，将其转成json字符串格式
+     *
+     * @param handleManId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getVoiceEventHandleInfo(Long handleManId);
+
+    /**
+     * 获取舆情审批意见数据，将其转成json字符串格式
+     *
+     * @param handleApproveId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getVoiceEventHandleOpinion(Long handleApproveId);
+
     //
     // /**
     // * 获取指定的文件
@@ -111,13 +121,4 @@ public interface IVoiceWebService {
     // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     // @WebMethod
     // byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
-    //
-    // /**
-    // * @param jsonStr
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // String setVoiceEventHandleInfo(String jsonStr);
-    //
 }

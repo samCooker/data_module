@@ -55,6 +55,8 @@ public class MobileVoiceDataTaskService {
     private static boolean       isGetVoiceEventPendingRunning = false;
     /** 舆情事件数据提交阻塞标识 */
     private static boolean       isGetVoiceEventSubmitRunning  = false;
+    /** 舆情信息数据提交阻塞标识 */
+    private static boolean       isGetVoiceInfoSubmitRunning   = false;
     /** 变更数据获取阻塞标识 */
     private static boolean       isGetSysDataChangeRunning     = false;
 
@@ -133,8 +135,48 @@ public class MobileVoiceDataTaskService {
     }
 
     /**
+     * 提交舆情信息修改数据
+     */
+    @Scheduled(cron = "22/30 * * * * ?")
+    public void commitVoiceInfoDataTask() {
+        if (isGetVoiceInfoSubmitRunning) {
+            return;
+        }
+        isGetVoiceInfoSubmitRunning = true;
+        DataUpdate dataUpdate = null;
+        try {
+            // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.舆情信息提交);
+            // 每次仅处理列表的第一条记录
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            dataUpdate = (DataUpdate) datas.get(0);
+            if (dataUpdate == null) {
+                return;
+            }
+            // 获取要提交的json字符串
+            String dataBack = this.voiceWebService.saveVoiceInfoEvent(dataUpdate.getContent());
+            if (!ITransferOAService.TRANS_RESULT.equals(dataBack.toLowerCase())) {
+                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+                dataUpdate.setErrorInfo(dataBack);
+            }
+        } catch (Exception ex) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            if (ExecuteFlag.执行错误.equals(dataUpdate.getExecuteFlag())) {
+                this.dataUpdateService.getRepository().save(dataUpdate);
+            }
+            isGetVoiceEventSubmitRunning = false;
+        }
+    }
+
+    /**
      * 提交舆情事件的数据
      */
+    @Scheduled(cron = "25/30 * * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
             return;
