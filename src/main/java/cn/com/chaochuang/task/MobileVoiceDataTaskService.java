@@ -63,7 +63,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情的待办记录
      */
-    @Scheduled(cron = "10/30 * * * * ?")
+    @Scheduled(cron = "11/30 * * * * ?")
     public void getVoiceInfoFordo() {
         if (isGetVoiceInfoPendingRunning) {
             return;
@@ -98,9 +98,9 @@ public class MobileVoiceDataTaskService {
     }
 
     /**
-     * 获取事件
+     * 获取待办事件
      */
-    @Scheduled(cron = "20/30 * * * * ?")
+    @Scheduled(cron = "17/30 * * * * ?")
     public void getVoiceEventFordo() {
         if (isGetVoiceEventPendingRunning) {
             return;

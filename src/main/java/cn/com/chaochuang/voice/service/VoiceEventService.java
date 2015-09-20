@@ -57,8 +57,16 @@ public interface VoiceEventService extends CrudRestService<VoiceEvent, Long> {
 
     /**
      * 舆情事件审批意见变更
-     * 
+     *
      * @param dataChange
      */
     void saveVoiceEventHandleOpinion(SysDataChange dataChange);
+
+    /**
+     * 更新舆情事件的原系统舆情事件编号
+     * 
+     * @param rmEventId
+     * @param eventId
+     */
+    void updateVoiceEventRmEventId(Long rmEventId, Long eventId);
 }

@@ -32,6 +32,8 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
     private Long                              createrId;
     /** 创建人姓名 */
     private String                            createrName;
+    /** 由移动系统添加的事件 */
+    private String                            webserviceId;
 
     /** 舆情事件办理编号 */
     private Long                              rmEventHandleId;
@@ -225,6 +227,21 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
      */
     public void setVoiceInfos(List<VoiceInfoPendingInfo> voiceInfos) {
         this.voiceInfos = voiceInfos;
+    }
+
+    /**
+     * @return the webserviceId
+     */
+    public String getWebserviceId() {
+        return webserviceId;
+    }
+
+    /**
+     * @param webserviceId
+     *            the webserviceId to set
+     */
+    public void setWebserviceId(String webserviceId) {
+        this.webserviceId = webserviceId;
     }
 
     /**

@@ -238,6 +238,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
             }
             // 新增映射记录，先校验事件是否存在，仅在事件存在情况下才检查舆情基础信息是否存在，存在直接添加映射记录，否则远程获取舆情基础信息后才添加映射记录
             if (this.repository.findByRmEventId(eventId) != null) {
+                // 若存在相同记录则不做处理
+                if (this.voiceInfoEventRepository.findByRmVoiceEventIdAndRmVoiceInfoId(eventId, infoId) != null) {
+                    return;
+                }
                 if (this.voiceInfoRepository.findByRmInfoId(infoId) != null) {
                     // 直接添加映射记录
                     this.voiceInfoEventRepository.save(new VoiceInfoEvent(eventId, infoId));
@@ -339,6 +343,13 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                             .findByRmHandleApproveId(handleApproveId);
             if (OperationType.新增.getKey().equals(dataChange.getOperationType())
                             || OperationType.修改.getKey().equals(dataChange.getOperationType())) {
+                // 本地审批环节不为空时不能执行新增操作
+                if (OperationType.新增.getKey().equals(dataChange.getOperationType()) && approve != null) {
+                    return;
+                } else if (OperationType.修改.getKey().equals(dataChange.getOperationType()) && approve == null) {
+                    // 本地审批环节为空时不能执行修改操作
+                    return;
+                }
                 // 若本地数据库中不存在则新建对象
                 if (approve == null) {
                     approve = new VoiceEventHandleApprove();
@@ -347,6 +358,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                 JsonMapper mapper = JsonMapper.getInstance();
                 if (!Tools.isEmptyString(addApprove)) {
                     VoiceEventPendingInfo eventInfo = mapper.readValue(addApprove, VoiceEventPendingInfo.class);
+                    // 事件办理流程记录不能为空
+                    if (this.eventHandleRepository.findByRmEventHandleId(eventInfo.getRmEventHandleId()) == null) {
+                        return;
+                    }
                     if (Tools.isNotEmptyList(eventInfo.getVoiceEventHandleApproves())) {
                         // 保存审批环节
                         NullBeanUtils.copyProperties(approve, eventInfo.getVoiceEventHandleApproves().get(0));
@@ -414,6 +429,19 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#updateVoiceEventRmEventId(java.lang.Long, java.lang.Long)
+     */
+    @Override
+    public void updateVoiceEventRmEventId(Long rmEventId, Long eventId) {
+        VoiceEvent event = this.repository.findOne(eventId);
+        if (event == null) {
+            return;
+        }
+        event.setRmEventId(rmEventId);
+        this.repository.save(event);
     }
 
 }
