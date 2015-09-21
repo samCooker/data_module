@@ -169,7 +169,7 @@ public class MobileVoiceDataTaskService {
             if (ExecuteFlag.执行错误.equals(dataUpdate.getExecuteFlag())) {
                 this.dataUpdateService.getRepository().save(dataUpdate);
             }
-            isGetVoiceEventSubmitRunning = false;
+            isGetVoiceInfoSubmitRunning = false;
         }
     }
 
