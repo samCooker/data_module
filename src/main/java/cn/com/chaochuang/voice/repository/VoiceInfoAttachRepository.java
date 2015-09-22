@@ -10,6 +10,7 @@ package cn.com.chaochuang.voice.repository;
 
 import java.util.List;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
 
@@ -29,9 +30,17 @@ public interface VoiceInfoAttachRepository extends SimpleDomainRepository<VoiceI
 
     /**
      * 根据原系统附件编号获取附件
-     * 
+     *
      * @param rmAttachId
      * @return
      */
     VoiceInfoAttach findByRmAttachId(Long rmAttachId);
+
+    /**
+     * 查询未存到本地的附件数据
+     *
+     * @param localDate
+     * @return
+     */
+    List<VoiceInfoAttach> findByLocalData(LocalData localDate);
 }

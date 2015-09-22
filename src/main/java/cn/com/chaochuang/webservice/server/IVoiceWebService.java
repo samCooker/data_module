@@ -109,16 +109,26 @@ public interface IVoiceWebService {
     @WebMethod
     String getVoiceEventHandleOpinion(Long handleApproveId);
 
-    //
-    // /**
-    // * 获取指定的文件
-    // *
-    // * @param fileName
-    // * @param offset
-    // * @param reads
-    // * @return
-    // */
-    // @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
-    // @WebMethod
-    // byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+    /**
+     * 获取指定的文件
+     *
+     * @param fileName
+     * @param offset
+     * @param reads
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+
+    /**
+     * 获取舆情信息提醒记录
+     *
+     * @param lastOutputTime
+     * @param pendingInfoId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String selectVoiceAlarmRecord(String lastOutputTime, String pendingInfoId);
 }
