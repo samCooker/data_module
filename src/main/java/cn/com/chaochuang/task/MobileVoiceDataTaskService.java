@@ -195,6 +195,9 @@ public class MobileVoiceDataTaskService {
             if (!ITransferOAService.TRANS_RESULT.equals(dataBack.toLowerCase())) {
                 dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
                 dataUpdate.setErrorInfo(dataBack);
+            } else {
+                // 成功则删除
+                dataUpdateService.delete(dataUpdate);
             }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
@@ -234,6 +237,9 @@ public class MobileVoiceDataTaskService {
             if (!ITransferOAService.TRANS_RESULT.equals(dataBack.toLowerCase())) {
                 dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
                 dataUpdate.setErrorInfo(dataBack);
+            } else {
+                // 成功则删除
+                dataUpdateService.delete(dataUpdate);
             }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);

@@ -31,6 +31,8 @@ public class CaseComplaintNodeInfoServiceImpl extends SimpleLongIdCrudRestServic
                 CaseComplaintNodeInfoService {
     @Autowired
     private CaseComplaintNodeInfoRepository repository;
+    @Autowired
+    private CaseTransactPersonalService     caseTransactPersonalService;
 
     @Override
     public SimpleDomainRepository<CaseComplaintNodeInfo, Long> getRepository() {
@@ -51,6 +53,8 @@ public class CaseComplaintNodeInfoServiceImpl extends SimpleLongIdCrudRestServic
                 nodeInfo.setRmNodeInfoId(flowHisNode.getHisnoId());
                 nodeInfo.setCaseComplaintId(baseInfo.getComplaintId());
                 repository.save(nodeInfo);
+                // 根据节点保存经办记录
+                caseTransactPersonalService.saveTransactRecordByFlowNode(nodeInfo);
             }
         }
     }

@@ -44,11 +44,13 @@ import com.fasterxml.jackson.databind.JavaType;
 @Transactional
 public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoCase> implements FdFordoCaseService {
     @Autowired
-    private FdFordoCaseRepository repository;
+    private FdFordoCaseRepository       repository;
     @Autowired
-    private SysUserService        sysUserService;
+    private SysUserService              sysUserService;
     @Autowired
-    private DataUpdateService     dataUpdateService;
+    private DataUpdateService           dataUpdateService;
+    @Autowired
+    private CaseTransactPersonalService caseTransactPersonalService;
 
     @Override
     public SimpleDomainRepository<FdFordoCase, Long> getRepository() {
@@ -126,7 +128,7 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
     public void deleteFordoByRmPendingId(String pendingId) {
         List<FdFordoCase> fordoList = repository.findByRmPendingId(pendingId);
         // 删除待办
-        if (fordoList != null) {
+        if (Tools.isNotEmptyList(fordoList)) {
             repository.delete(fordoList);
         }
     }

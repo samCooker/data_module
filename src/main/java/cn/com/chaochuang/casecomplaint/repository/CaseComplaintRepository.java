@@ -25,4 +25,10 @@ public interface CaseComplaintRepository extends SimpleDomainRepository<CaseComp
      */
     CaseComplaint findByRmComplaintId(Long complaintId);
 
+    /**
+     * @param flowInstId
+     * @return
+     */
+    CaseComplaint findByFlowInstId(Long flowInstId);
+
 }
