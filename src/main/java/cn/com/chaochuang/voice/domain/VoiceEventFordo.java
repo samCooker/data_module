@@ -13,9 +13,12 @@ import java.util.Date;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.docwork.reference.FordoStatus;
+import cn.com.chaochuang.docwork.reference.FordoStatusConverter;
 
 /**
  * @author LLM
@@ -25,25 +28,28 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_fordo_id")) })
 public class VoiceEventFordo extends LongIdEntity {
     /** 原系统事件流水号 */
-    private Long   rmEventId;
+    private Long        rmEventId;
     /** 原系统审批环节编号（对应handle_man_id） */
-    private Long   rmHandleApproveId;
+    private Long        rmHandleApproveId;
     /** 舆情等级 */
-    private String grade;
+    private String      grade;
     /** 舆情事件标题 */
-    private String title;
+    private String      title;
     /** 状态 */
-    private String status;
+    private String      status;
     /** 交办人姓名 */
-    private String assigneeName;
+    private String      assigneeName;
     /** 交办时间 */
-    private Date   assigneeTime;
+    private Date        assigneeTime;
     /** 办理人姓名 */
-    private String name;
+    private String      name;
     /** 办理人编号 */
-    private Long   userId;
+    private Long        userId;
     /** 办理人部门编号 */
-    private Long   depId;
+    private Long        depId;
+    /** 待办状态 */
+    @Convert(converter = FordoStatusConverter.class)
+    private FordoStatus fordoStatus;
 
     /**
      * @return the rmEventId
@@ -193,6 +199,21 @@ public class VoiceEventFordo extends LongIdEntity {
      */
     public void setAssigneeTime(Date assigneeTime) {
         this.assigneeTime = assigneeTime;
+    }
+
+    /**
+     * @return the fordoStatus
+     */
+    public FordoStatus getFordoStatus() {
+        return fordoStatus;
+    }
+
+    /**
+     * @param fordoStatus
+     *            the fordoStatus to set
+     */
+    public void setFordoStatus(FordoStatus fordoStatus) {
+        this.fordoStatus = fordoStatus;
     }
 
 }

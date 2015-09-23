@@ -19,6 +19,7 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.docwork.reference.FordoStatus;
 import cn.com.chaochuang.voice.domain.VoiceEvent;
 import cn.com.chaochuang.voice.domain.VoiceEventFordo;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleApprove;
@@ -59,6 +60,7 @@ public class VoiceEventFordoServiceImpl extends SimpleLongIdCrudRestService<Voic
         }
         NullBeanUtils.copyProperties(fordo, event);
         NullBeanUtils.copyProperties(fordo, approve);
+        fordo.setFordoStatus(FordoStatus.未读);
         this.repository.save(fordo);
     }
 
