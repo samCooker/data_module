@@ -72,6 +72,8 @@ public class VoiceInfo extends LongIdEntity {
     /** 本地数据标识 0：非本地数据（默认）1：有本地数据 */
     @Convert(converter = LocalDataConverter.class)
     private LocalData localData;
+    /** 所属单位编号 */
+    private Long      unitOrgId;
 
     /**
      * @return the rmInfoId
@@ -401,6 +403,21 @@ public class VoiceInfo extends LongIdEntity {
      */
     public void setRuleId(Long ruleId) {
         this.ruleId = ruleId;
+    }
+
+    /**
+     * @return the unitOrgId
+     */
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    /**
+     * @param unitOrgId
+     *            the unitOrgId to set
+     */
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
     }
 
 }

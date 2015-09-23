@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.AttachUtils;
 import cn.com.chaochuang.common.util.JsonMapper;
@@ -121,9 +122,10 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
             BeanUtils.copyProperties(pending, voiceInfo);
             // 设置为非本地数据，表示相关的附件信息没有下载到移动服务器
             voiceInfo.setLocalData(LocalData.非本地数据);
+            SysUser user = this.userService.findByRmUserInfoId(voiceInfo.getVoiceInfoDiscoverUser());
             // 设置发布人的ID，原舆情系统用的是userInfoId，需要转成userId，在移动系统中都使用userId
-            voiceInfo.setVoiceInfoDiscoverUser(this.userService.selectUserIdByInfoId(voiceInfo
-                            .getVoiceInfoDiscoverUser()));
+            voiceInfo.setVoiceInfoDiscoverUser(user.getRmUserId());
+            voiceInfo.setUnitOrgId(user.getDepartment().getAncestorDep());
             // 写入附件记录
             if (Tools.isNotEmptyList(pending.getAffixItems())) {
                 VoiceInfoAttach attach;
