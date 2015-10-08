@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum LocalData implements IDictionary {
-    非本地数据("0"), 有本地数据("1");
+    非本地数据("0"), 有本地数据("1"), 获取数据错误("2");
 
     private String key;
     private String value;

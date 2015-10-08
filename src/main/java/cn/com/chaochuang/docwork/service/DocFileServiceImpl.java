@@ -179,7 +179,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             this.dataUpdateService.getRepository().save(dataUpdate);
         }
         // 删除待办
-        FdFordo fordo = fdFordoService.findByRmPendingItemId(nodeInfo.getFordoId() + "");
+        FdFordo fordo = fdFordoService.findOne(nodeInfo.getFordoId());
         if (fordo != null) {
             fdFordoService.delete(fordo);
         }

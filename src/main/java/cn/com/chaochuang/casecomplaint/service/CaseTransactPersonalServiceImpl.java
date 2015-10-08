@@ -52,14 +52,18 @@ public class CaseTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
         // 投诉举报
         CaseComplaint complaint = caseComplaintRepository.findByRmComplaintId(nodeInfo.getCaseComplaintId());
         if (complaint != null && nodeInfo.getCurMan() != null) {// 坐席curMan==null
-            CaseTransactPersonal transactRecord = new CaseTransactPersonal();
-            transactRecord.setRmComplaintId(nodeInfo.getUnitId());
-            transactRecord.setTitle(complaint.getComplaintTitle());
-            transactRecord.setTransactTime(nodeInfo.getDoneTime());
-            transactRecord.setTransactId(nodeInfo.getCurMan());
-            transactRecord.setTransactDeptId(nodeInfo.getCurDepId());
-            transactRecord.setUnitOrgId(nodeInfo.getUnitId());
-            caseTransactPersonalRepository.save(transactRecord);
+            CaseTransactPersonal preRecord = repository.findByTransactIdAndRmComplaintId(nodeInfo.getCurMan(),
+                            nodeInfo.getCaseComplaintId());
+            if (preRecord == null) {
+                CaseTransactPersonal transactRecord = new CaseTransactPersonal();
+                transactRecord.setRmComplaintId(nodeInfo.getUnitId());
+                transactRecord.setTitle(complaint.getComplaintTitle());
+                transactRecord.setTransactTime(nodeInfo.getDoneTime());
+                transactRecord.setTransactId(nodeInfo.getCurMan());
+                transactRecord.setTransactDeptId(nodeInfo.getCurDepId());
+                transactRecord.setUnitOrgId(nodeInfo.getUnitId());
+                caseTransactPersonalRepository.save(transactRecord);
+            }
         }
     }
 

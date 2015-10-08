@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
+import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.repository.DocFileAttachRepository;
 import cn.com.chaochuang.task.bean.DocFileAttachInfo;
@@ -48,18 +50,28 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
             return;
         }
         List<DocFileAttach> attachmentsList = new ArrayList<DocFileAttach>();
+        List<DocFileAttach> preAttachList = repository.findByDocId(fileId);
         for (DocFileAttachInfo attachmentInfo : datas) {
             DocFileAttach attachment = repository.findByRmAttachId(attachmentInfo.getRmAttachId());
             if (attachment == null) {
                 // 为空说明本地数据库无此附件信息，应添加
                 attachment = new DocFileAttach();
+                NullBeanUtils.copyProperties(attachment, attachmentInfo);
+                attachment.setDocId(fileId);
+                attachment.setLocalData(LocalData.非本地数据);
+                attachmentsList.add(attachment);
+            } else {
+                if (Tools.isNotEmptyList(preAttachList)) {
+                    preAttachList.remove(attachment);
+                }
             }
-            NullBeanUtils.copyProperties(attachment, attachmentInfo);
-            attachment.setDocId(fileId);
-            attachment.setLocalData(LocalData.非本地数据);
-            attachmentsList.add(attachment);
         }
+        // 保存新附件
         repository.save(attachmentsList);
+        // 删除不存在的附件信息
+        if (Tools.isNotEmptyList(preAttachList)) {
+            repository.delete(preAttachList);
+        }
     }
 
     /**
@@ -75,11 +87,16 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
      *      java.lang.String)
      */
     @Override
-    public void saveDocFileAttachForLocal(Long attachId, String newFilePath) {
-        DocFileAttach attach = this.repository.findOne(attachId);
-        attach.setLocalData(LocalData.有本地数据);
-        attach.setSavePath(newFilePath);
-        this.repository.save(attach);
+    public void saveAttachForLocal(DocFileAttach attach, LocalData localData, String localFileName) {
+        if (attach != null) {
+            if (StringUtils.isNotBlank(localFileName)) {
+                attach.setLocalData(LocalData.有本地数据);
+                attach.setSavePath(localFileName);
+            } else {
+                attach.setLocalData(localData);
+            }
+            this.repository.save(attach);
+        }
     }
 
 }

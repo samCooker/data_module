@@ -59,8 +59,11 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
                 opinion = new FlowNodeOpinions();
                 NullBeanUtils.copyProperties(opinion, nodeOp);
                 opinion.setDocId(fileId);
-                opinionsList.add(opinion);
+            } else {
+                // 更新意见
+                opinion.setOpinions(nodeOp.getOpinions());
             }
+            opinionsList.add(opinion);
         }
         repository.save(opinionsList);
     }

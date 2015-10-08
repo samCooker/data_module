@@ -33,4 +33,12 @@ public interface DocFileAttachRepository extends SimpleDomainRepository<DocFileA
      *
      * */
     DocFileAttach findByRmAttachId(String rmAttachId);
+
+    /**
+     * 查询公文的所有附件
+     * 
+     * @param fileId
+     * @return
+     */
+    List<DocFileAttach> findByDocId(Long fileId);
 }

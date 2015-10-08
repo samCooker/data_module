@@ -10,6 +10,7 @@ package cn.com.chaochuang.docwork.service;
 
 import java.util.List;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.task.bean.DocFileAttachInfo;
@@ -31,10 +32,13 @@ public interface DocFileAttachService extends CrudRestService<DocFileAttach, Lon
     List<DocFileAttach> selectUnLocalAttach();
 
     /**
-     * 修改指定附件的路径和本地标识
+     * 保存附件信息
      * 
-     * @param attachId
-     * @param newFilePath
+     * @param attach
+     * @param localData
+     *            是否本地数据
+     * @param localFileName
+     *            本地数据路径，若不为空则localData=本地数据
      */
-    void saveDocFileAttachForLocal(Long attachId, String newFilePath);
+    void saveAttachForLocal(DocFileAttach attach, LocalData localData, String localFileName);
 }

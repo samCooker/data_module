@@ -333,6 +333,7 @@ public class MobileAipCaseDataTaskService {
         }
         isDownLoadAttachRunning = true;
         BufferedOutputStream bufferedOutputStream = null;
+        AipCaseAttach attach = null;
         try {
             String localFilePath = this.rootPath + this.aipcaseAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取行政办案的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
@@ -340,7 +341,7 @@ public class MobileAipCaseDataTaskService {
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }
-            AipCaseAttach attach = datas.get(0);
+            attach = datas.get(0);
             File file = new File(localFilePath);
             // 目录不存在则建立新目录
             if (!file.exists()) {
@@ -361,9 +362,10 @@ public class MobileAipCaseDataTaskService {
                 buffer = this.transferAipCaseService.uploadStreamAttachFile(remoteFileName, offset, uploadBlockSize);
             }
             // 将附件localData标志置为本地数据("1")
-            this.aipCaseAttachService.saveDocFileAttachForLocal(attach, localFileName);
+            aipCaseAttachService.saveAttachForLocal(attach, LocalData.有本地数据, localFileName);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            aipCaseAttachService.saveAttachForLocal(attach, LocalData.获取数据错误, null);
+            ex.printStackTrace();
         } finally {
             if (bufferedOutputStream != null) {
                 try {

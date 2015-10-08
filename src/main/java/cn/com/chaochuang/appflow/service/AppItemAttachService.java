@@ -10,6 +10,7 @@ package cn.com.chaochuang.appflow.service;
 
 import java.util.List;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -43,10 +44,13 @@ public interface AppItemAttachService extends CrudRestService<AppItemAttach, Lon
     List<AppItemAttach> selectUnLocalAttach();
 
     /**
-     * 修改指定附件的路径和本地标识
+     * 保存附件信息
      * 
-     * @param id
+     * @param attach
+     * @param localData
+     *            是否本地数据
      * @param localFileName
+     *            本地数据路径，若不为空则localData=本地数据
      */
-    void saveDocFileAttachForLocal(AppItemAttach attach, String localFileName);
+    void saveAttachForLocal(AppItemAttach attach, LocalData localData, String localFileName);
 }

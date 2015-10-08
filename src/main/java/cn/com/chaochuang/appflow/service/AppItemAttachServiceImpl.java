@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,10 +69,14 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
      *      java.lang.String)
      */
     @Override
-    public void saveDocFileAttachForLocal(AppItemAttach attach, String localFileName) {
+    public void saveAttachForLocal(AppItemAttach attach, LocalData localData, String localFileName) {
         if (attach != null) {
-            attach.setLocalData(LocalData.有本地数据);
-            attach.setSavePath(localFileName);
+            if (StringUtils.isNotBlank(localFileName)) {
+                attach.setLocalData(LocalData.有本地数据);
+                attach.setSavePath(localFileName);
+            } else {
+                attach.setLocalData(localData);
+            }
             this.repository.save(attach);
         }
     }

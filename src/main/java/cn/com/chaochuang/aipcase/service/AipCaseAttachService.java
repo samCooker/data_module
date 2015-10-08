@@ -12,6 +12,7 @@ import java.util.List;
 
 import cn.com.chaochuang.aipcase.bean.AipCaseAttachInfo;
 import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
 /**
@@ -36,9 +37,14 @@ public interface AipCaseAttachService extends CrudRestService<AipCaseAttach, Lon
     List<AipCaseAttach> selectUnLocalAttach();
 
     /**
+     * 保存附件信息
+     * 
      * @param attach
+     * @param localData
+     *            是否本地数据
      * @param localFileName
+     *            本地数据路径，若不为空则localData=本地数据
      */
-    void saveDocFileAttachForLocal(AipCaseAttach attach, String localFileName);
+    void saveAttachForLocal(AipCaseAttach attach, LocalData localData, String localFileName);
 
 }

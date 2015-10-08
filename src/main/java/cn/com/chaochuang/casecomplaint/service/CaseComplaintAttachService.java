@@ -38,11 +38,14 @@ public interface CaseComplaintAttachService extends CrudRestService<CaseComplain
     List<CaseComplaintAttach> findAttachByLocalData(LocalData localData, Pageable page);
 
     /**
-     * 保存附件的路径信息并将localData置为1
+     * 保存附件信息
      * 
      * @param attach
+     * @param localData
+     *            是否本地数据
      * @param localFileName
+     *            本地数据路径，若不为空则localData=本地数据
      */
-    void saveAttachForLocal(CaseComplaintAttach attach, String localFileName);
+    void saveAttachForLocal(CaseComplaintAttach attach, LocalData localData, String localFileName);
 
 }

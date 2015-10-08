@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,10 +81,14 @@ public class AipCaseAttachServiceImpl extends SimpleLongIdCrudRestService<AipCas
     }
 
     @Override
-    public void saveDocFileAttachForLocal(AipCaseAttach attach, String localFileName) {
+    public void saveAttachForLocal(AipCaseAttach attach, LocalData localData, String localFileName) {
         if (attach != null) {
-            attach.setSavePath(localFileName);
-            attach.setLocalData(LocalData.有本地数据);
+            if (StringUtils.isNotBlank(localFileName)) {
+                attach.setSavePath(localFileName);
+                attach.setLocalData(LocalData.有本地数据);
+            } else {
+                attach.setLocalData(localData);
+            }
             repository.save(attach);
         }
     }

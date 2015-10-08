@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
 import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
@@ -268,6 +269,7 @@ public class MobileAppDataTaskService {
         BufferedInputStream bis = null;
         HttpGet downloadGet = null;
         InputStream is = null;
+        AppItemAttach attach = null;
         try {
             String localFilePath = this.rootPath + this.docFileAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取行政审批的附件 查询DocFileAttach中localData为非本地数据("0")的数据，一次处理一个文件
@@ -275,7 +277,7 @@ public class MobileAppDataTaskService {
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }
-            AppItemAttach attach = (AppItemAttach) datas.get(0);
+            attach = datas.get(0);
             File file = new File(localFilePath);
             // 目录不存在则建立新目录
             if (!file.exists()) {
@@ -304,11 +306,15 @@ public class MobileAppDataTaskService {
                 }
                 bufferedOutputStream.flush();
                 // 将附件localData标志置为本地数据("1")
-                this.appItemAttachService.saveDocFileAttachForLocal(attach, localFileName);
+                appItemAttachService.saveAttachForLocal(attach, LocalData.有本地数据, localFileName);
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 loginSuperviseSys();
+            } else {
+                // 获取附件错误，将附件状态保存为获取错误
+                appItemAttachService.saveAttachForLocal(attach, LocalData.获取数据错误, null);
             }
         } catch (Exception ex) {
+            appItemAttachService.saveAttachForLocal(attach, LocalData.获取数据错误, null);
             throw new RuntimeException(ex);
         } finally {
             if (is != null) {

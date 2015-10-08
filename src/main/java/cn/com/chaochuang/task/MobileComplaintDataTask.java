@@ -297,6 +297,7 @@ public class MobileComplaintDataTask {
         BufferedInputStream bis = null;
         HttpGet downloadGet = null;
         InputStream is = null;
+        CaseComplaintAttach attach = null;
         try {
             String localFilePath = this.rootPath + this.complaintAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取投诉举报的附件 查询localData为非本地数据("0")的数据，一次处理一个文件
@@ -305,7 +306,7 @@ public class MobileComplaintDataTask {
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }
-            CaseComplaintAttach attach = datas.get(0);
+            attach = datas.get(0);
             File file = new File(localFilePath);
             // 目录不存在则建立新目录
             if (!file.exists()) {
@@ -333,12 +334,13 @@ public class MobileComplaintDataTask {
                 }
                 bufferedOutputStream.flush();
                 // 将附件localData标志置为本地数据("1")
-                this.caseComplaintAttachService.saveAttachForLocal(attach, localFileName);
+                caseComplaintAttachService.saveAttachForLocal(attach, LocalData.有本地数据, localFileName);
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 loginComplaintSys();// 需要登录
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            caseComplaintAttachService.saveAttachForLocal(attach, LocalData.获取数据错误, null);
+            ex.printStackTrace();
         } finally {
             if (is != null) {
                 try {

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -90,10 +91,14 @@ public class CaseComplaintAttachServiceImpl extends SimpleLongIdCrudRestService<
     }
 
     @Override
-    public void saveAttachForLocal(CaseComplaintAttach attach, String localFileName) {
+    public void saveAttachForLocal(CaseComplaintAttach attach, LocalData localData, String localFileName) {
         if (attach != null) {
-            attach.setLocalData(LocalData.有本地数据);
-            attach.setSavePath(localFileName);// 修改保存路径
+            if (StringUtils.isNotBlank(localFileName)) {
+                attach.setSavePath(localFileName);// 修改保存路径
+                attach.setLocalData(LocalData.有本地数据);
+            } else {
+                attach.setLocalData(localData);
+            }
             repository.save(attach);
         }
     }

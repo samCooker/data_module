@@ -8,7 +8,6 @@
 
 package cn.com.chaochuang.casecomplaint.repository;
 
-
 import cn.com.chaochuang.casecomplaint.domain.CaseTransactPersonal;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 
@@ -17,5 +16,12 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  *
  */
 public interface CaseTransactPersonalRepository extends SimpleDomainRepository<CaseTransactPersonal, Long> {
+
+    /**
+     * @param curMan
+     * @param caseComplaintId
+     * @return
+     */
+    CaseTransactPersonal findByTransactIdAndRmComplaintId(Long curMan, Long caseComplaintId);
 
 }
