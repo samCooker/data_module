@@ -34,6 +34,10 @@ public class AuditAppoint extends LongIdEntity {
     private String agree;
     /** 是否变更标识 */
     private String change;
+    /** 审查员等级 */
+    private String degree;
+    /** 审查员专业 */
+    private String auditSubject;
     /** 不同意原因 */
     private String notAgreeReason;
     /** 变更原因 */
@@ -227,6 +231,36 @@ public class AuditAppoint extends LongIdEntity {
      */
     public void setAppointTime(Date appointTime) {
         this.appointTime = appointTime;
+    }
+
+    /**
+     * @return the degree
+     */
+    public String getDegree() {
+        return degree;
+    }
+
+    /**
+     * @param degree
+     *            the degree to set
+     */
+    public void setDegree(String degree) {
+        this.degree = degree;
+    }
+
+    /**
+     * @return the auditSubject
+     */
+    public String getAuditSubject() {
+        return auditSubject;
+    }
+
+    /**
+     * @param auditSubject
+     *            the auditSubject to set
+     */
+    public void setAuditSubject(String auditSubject) {
+        this.auditSubject = auditSubject;
     }
 
 }
