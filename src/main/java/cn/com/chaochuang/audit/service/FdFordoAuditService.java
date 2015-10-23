@@ -11,6 +11,7 @@ package cn.com.chaochuang.audit.service;
 import java.util.List;
 
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
+import cn.com.chaochuang.audit.domain.AuditTask;
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 
@@ -33,4 +34,12 @@ public interface FdFordoAuditService extends CrudRestService<FdFordoAudit, Long>
      * @param fordoSource
      */
     void insertFdFordos(List<AuditPendingHandleInfo> pendingItems);
+
+    /**
+     * 根据原系统任务编号获取任务记录
+     * 
+     * @param rmTaskId
+     * @return
+     */
+    AuditTask selectTaskByRmTaskId(Long rmTaskId);
 }

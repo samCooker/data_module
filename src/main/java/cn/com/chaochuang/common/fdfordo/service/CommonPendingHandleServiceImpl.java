@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.common.fdfordo.service;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +20,10 @@ import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.FdFordoAipcaseRepository;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
+import cn.com.chaochuang.audit.domain.FdFordoAudit;
+import cn.com.chaochuang.audit.repository.FdFordoAuditRepository;
 import cn.com.chaochuang.casecomplaint.service.FdFordoCaseService;
+import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -40,6 +45,8 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     private FdFordoAipcaseRepository aipcaseRepository;
     @Autowired
     private FdFordoCaseService       fdFordoCaseService;
+    @Autowired
+    private FdFordoAuditRepository   auditFordoRepository;
 
     /**
      * (non-Javadoc)
@@ -67,6 +74,12 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             FdFordoApp superviseFordo = supviseRepository.findByRmPendingId(items[1]);
             if (superviseFordo != null) {
                 supviseRepository.delete(superviseFordo);
+            } else {
+                List<FdFordoAudit> auditFordos = this.auditFordoRepository.findByRmPendingId(items[1]);
+                // 审批系统待办记录不存在则查询审评查验系统
+                if (Tools.isNotEmptyList(auditFordos)) {
+                    this.auditFordoRepository.delete(auditFordos);
+                }
             }
             break;
         case 办案待办:// 办案系统

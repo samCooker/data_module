@@ -27,6 +27,7 @@ import cn.com.chaochuang.audit.domain.AuditAppoint;
 import cn.com.chaochuang.audit.domain.AuditFlowNodeInfo;
 import cn.com.chaochuang.audit.domain.AuditFlowNodeOpinions;
 import cn.com.chaochuang.audit.domain.AuditPrjContent;
+import cn.com.chaochuang.audit.domain.AuditTask;
 import cn.com.chaochuang.audit.domain.AuditWatcher;
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.audit.repository.AuditAppointRepository;
@@ -116,15 +117,12 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
         if (pendingItems == null) {
             return;
         }
+        Long tmpId;
         FdFordoAudit fdFordo;
         Date currentDate = new Date();
         for (AuditPendingHandleInfo item : pendingItems) {
             // 判断当前记录是否已经存在,不存在的情况下才写入fdfordo表
             if (Tools.isNotEmptyList(this.repository.findByRmPendingId(item.getRmPendingId()))) {
-                continue;
-            }
-            // 没有待办类别或待办类别长度小于3的记录不写入数据库
-            if (Tools.isEmptyString(item.getFordoType()) || item.getFordoType().length() < 3) {
                 continue;
             }
             fdFordo = new FdFordoAudit();
@@ -148,55 +146,117 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
             fdFordo.setLocalData(LocalData.非本地数据);
             // 插入审查任务对象
             if (item.getTaskInfo() != null) {
-                if (!Tools.isNotEmptyList(this.taskRepository
-                                .findByRmAuditTaskId(item.getTaskInfo().getRmAuditTaskId()))) {
+                AuditTask task = this.selectTaskByRmTaskId(item.getTaskInfo().getRmAuditTaskId());
+                if (task != null) {
+                    tmpId = task.getId();
+                    // 由于task与item.getTaskInfo()对象相同，在NullBeanUtils.copyProperties后需要重新设置审批任务编号
+                    NullBeanUtils.copyProperties(task, item.getTaskInfo());
+                    task.setId(tmpId);
+                    this.taskRepository.save(task);
+                } else {
                     this.taskRepository.save(item.getTaskInfo());
                 }
             }
             // 插入选派记录
             if (Tools.isNotEmptyList(item.getAppointInfos())) {
-                for (AuditAppoint appoint : item.getAppointInfos()) {
-                    if (!Tools.isNotEmptyList(this.appointRepository.findByRmAppointId(appoint.getRmAppointId()))) {
+                List<AuditAppoint> appoints;
+                AuditAppoint appoint;
+                for (AuditAppoint appointInfo : item.getAppointInfos()) {
+                    appoints = this.appointRepository.findByRmAppointId(appointInfo.getRmAppointId());
+                    // 若选派记录为空则直接保存，否则将原记录赋值再保存
+                    if (!Tools.isNotEmptyList(appoints)) {
+                        this.appointRepository.save(appointInfo);
+                    } else {
+                        appoint = appoints.get(0);
+                        tmpId = appoint.getId();
+                        NullBeanUtils.copyProperties(appoint, appointInfo);
+                        appoint.setId(tmpId);
                         this.appointRepository.save(appoint);
                     }
                 }
             }
             // 插入观察员记录
             if (Tools.isNotEmptyList(item.getWatcherInfos())) {
-                for (AuditWatcher watcher : item.getWatcherInfos()) {
-                    if (!Tools.isNotEmptyList(this.watcherRepository.findByRmWatcherId(watcher.getRmWatcherId()))) {
+                List<AuditWatcher> watchers;
+                AuditWatcher watcher;
+                for (AuditWatcher watcherInfo : item.getWatcherInfos()) {
+                    watchers = this.watcherRepository.findByRmWatcherId(watcherInfo.getRmWatcherId());
+                    if (!Tools.isNotEmptyList(watchers)) {
+                        this.watcherRepository.save(watcherInfo);
+                    } else {
+                        watcher = watchers.get(0);
+                        tmpId = watcher.getId();
+                        NullBeanUtils.copyProperties(watcher, watcherInfo);
+                        watcher.setId(tmpId);
                         this.watcherRepository.save(watcher);
                     }
                 }
             }
             // 插入审查项目记录
             if (Tools.isNotEmptyList(item.getPrjContentInfos())) {
-                for (AuditPrjContent prjContent : item.getPrjContentInfos()) {
-                    if (!Tools.isNotEmptyList(this.prjContentRepository.findByRmPrjContentId(prjContent
-                                    .getRmPrjContentId()))) {
+                List<AuditPrjContent> prjContents;
+                AuditPrjContent prjContent;
+                for (AuditPrjContent prjContentInfo : item.getPrjContentInfos()) {
+                    prjContents = this.prjContentRepository.findByRmPrjContentId(prjContentInfo.getRmPrjContentId());
+                    if (!Tools.isNotEmptyList(prjContents)) {
+                        this.prjContentRepository.save(prjContentInfo);
+                    } else {
+                        prjContent = prjContents.get(0);
+                        tmpId = prjContent.getId();
+                        NullBeanUtils.copyProperties(prjContent, prjContentInfo);
+                        prjContent.setId(tmpId);
                         this.prjContentRepository.save(prjContent);
                     }
                 }
             }
             // 插入审批环节记录
             if (Tools.isNotEmptyList(item.getNodeInfos())) {
+                List<AuditFlowNodeInfo> nodes;
+                AuditFlowNodeInfo node;
                 for (AuditFlowNodeInfo nodeInfo : item.getNodeInfos()) {
-                    if (!Tools.isNotEmptyList(this.nodeInfoRepository.findByRmNodeInfoId(nodeInfo.getRmNodeInfoId()))) {
+                    nodes = this.nodeInfoRepository.findByRmNodeInfoId(nodeInfo.getRmNodeInfoId());
+                    if (!Tools.isNotEmptyList(nodes)) {
                         this.nodeInfoRepository.save(nodeInfo);
+                    } else {
+                        node = nodes.get(0);
+                        tmpId = node.getId();
+                        NullBeanUtils.copyProperties(node, nodeInfo);
+                        node.setId(tmpId);
+                        this.nodeInfoRepository.save(node);
                     }
                 }
             }
             // 插入审批意见记录
             if (Tools.isNotEmptyList(item.getNodeOpinionsInfos())) {
-                for (AuditFlowNodeOpinions opinion : item.getNodeOpinionsInfos()) {
-                    if (!Tools.isNotEmptyList(this.nodeOpinionsRepository.findByRmNodeOpinionsId(opinion
-                                    .getRmNodeOpinionsId()))) {
+                List<AuditFlowNodeOpinions> opinions;
+                AuditFlowNodeOpinions opinion;
+                for (AuditFlowNodeOpinions opinionInfo : item.getNodeOpinionsInfos()) {
+                    opinions = this.nodeOpinionsRepository.findByRmNodeOpinionsId(opinionInfo.getRmNodeOpinionsId());
+                    if (!Tools.isNotEmptyList(opinions)) {
+                        this.nodeOpinionsRepository.save(opinionInfo);
+                    } else {
+                        opinion = opinions.get(0);
+                        tmpId = opinion.getId();
+                        NullBeanUtils.copyProperties(opinion, opinionInfo);
+                        opinion.setId(tmpId);
                         this.nodeOpinionsRepository.save(opinion);
                     }
                 }
             }
             this.repository.save(fdFordo);
         }
+    }
+
+    /**
+     * @see cn.com.chaochuang.audit.service.FdFordoAuditService#selectTaskByRmTaskId(java.lang.Long)
+     */
+    @Override
+    public AuditTask selectTaskByRmTaskId(Long rmTaskId) {
+        List<AuditTask> tasks = this.taskRepository.findByRmAuditTaskId(rmTaskId);
+        if (Tools.isNotEmptyList(tasks)) {
+            return tasks.get(0);
+        }
+        return null;
     }
 
 }
