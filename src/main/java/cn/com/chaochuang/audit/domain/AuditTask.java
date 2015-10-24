@@ -84,6 +84,8 @@ public class AuditTask extends LongIdEntity {
     private String taskDegreeStatus;
     /** 受理编号 */
     private Long   busNum;
+    /** 方案信息 */
+    private String programContent;
 
     /**
      * @return the rmAuditTaskId
@@ -533,6 +535,21 @@ public class AuditTask extends LongIdEntity {
      */
     public void setBusNum(Long busNum) {
         this.busNum = busNum;
+    }
+
+    /**
+     * @return the programContent
+     */
+    public String getProgramContent() {
+        return programContent;
+    }
+
+    /**
+     * @param programContent
+     *            the programContent to set
+     */
+    public void setProgramContent(String programContent) {
+        this.programContent = programContent;
     }
 
 }
