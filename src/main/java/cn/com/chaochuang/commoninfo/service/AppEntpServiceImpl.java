@@ -43,6 +43,8 @@ import cn.com.chaochuang.task.MobileAppDataTaskService;
 public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> implements AppEntpService {
     @Autowired
     private AppEntpRepository repository;
+    @Value("${supervise.baseUrl}")
+    private String            baseUrl;
     @Value("${supervise.entpChangeInfoUrl}")
     private String            entpChangeInfoUrl;
 
@@ -79,8 +81,8 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
         // 参数设置
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("entpId", items[1]));
-        String updataInfo = MobileAppDataTaskService.getHttpClientHelper().doPost(new HttpPost(entpChangeInfoUrl),
-                        params, HttpClientHelper.ENCODE_GBK);
+        String updataInfo = MobileAppDataTaskService.getHttpClientHelper().doPost(
+                        new HttpPost(baseUrl + entpChangeInfoUrl), params, HttpClientHelper.ENCODE_GBK);
         if (StringUtils.isBlank(updataInfo) || HttpClientHelper.RE_LOGIN.equals(updataInfo)) {
             return;// 获取失败或者需要用户登录才能获取信息（此处不进行登录，登录的设置在MobileAppDataTaskService.java中）
         }
