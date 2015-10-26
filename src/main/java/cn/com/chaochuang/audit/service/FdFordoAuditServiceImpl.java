@@ -44,7 +44,10 @@ import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 /**
  * @author LLM
@@ -71,6 +74,8 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
     private AuditFlowNodeInfoRepository     nodeInfoRepository;
     @Autowired
     private AuditFlowNodeOpinionsRepository nodeOpinionsRepository;
+    @Autowired
+    private DataUpdateService               dataUpdateService;
 
     @Value("${getdata.timeinterval}")
     private String                          timeInterval;
@@ -257,6 +262,26 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
             return tasks.get(0);
         }
         return null;
+    }
+
+    /**
+     * @see cn.com.chaochuang.audit.service.FdFordoAuditService#deleteDataUpdateAndFordo(cn.com.chaochuang.datacenter.domain.DataUpdate,
+     *      cn.com.chaochuang.task.bean.WebServiceNodeInfo, java.lang.String)
+     */
+    @Override
+    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo) {
+        if (DataUpdate.SUBMIT_SUCCESS.equals(backInfo)) {
+            // 删除DataUpdate对象
+            dataUpdateService.delete(dataUpdate);
+        } else {
+            // 保存错误信息
+            dataUpdateService.saveErrorInfo(dataUpdate, backInfo);
+        }
+        List<FdFordoAudit> fordoList = repository.findByRmPendingId(nodeInfo.getPendingHandleId() + "");
+        if (Tools.isNotEmptyList(fordoList)) {
+            repository.delete(fordoList);
+        }
+
     }
 
 }

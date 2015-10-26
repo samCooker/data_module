@@ -14,6 +14,8 @@ import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
 import cn.com.chaochuang.audit.domain.AuditTask;
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 /**
  * @author LLM
@@ -42,4 +44,11 @@ public interface FdFordoAuditService extends CrudRestService<FdFordoAudit, Long>
      * @return
      */
     AuditTask selectTaskByRmTaskId(Long rmTaskId);
+
+    /**
+     * @param dataUpdate
+     * @param nodeInfo
+     * @param backInfo
+     */
+    void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo);
 }

@@ -314,7 +314,9 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                     this.eventHandleRepository.delete(eventHandles.get(0));
                 }
                 this.voiceInfoEventRepository.delete(this.voiceInfoEventRepository.findByRmVoiceEventId(eventId));
-                this.repository.delete(event);
+                if (event != null) {
+                    this.repository.delete(event);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

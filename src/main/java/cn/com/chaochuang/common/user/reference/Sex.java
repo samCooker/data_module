@@ -6,7 +6,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
 public enum Sex implements IDictionary {
 
     // 未知("0", "未知的性别"), 男("1", "男性"), 女("2", "女性"), 未说明("9", "未说明的性别");
-    男("1", "男性"), 女("2", "女性");
+    未知("0", "未知"), 男("1", "男性"), 女("2", "女性");
 
     private String key;
     private String value;

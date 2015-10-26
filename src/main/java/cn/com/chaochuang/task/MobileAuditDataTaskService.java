@@ -25,6 +25,11 @@ import cn.com.chaochuang.audit.service.FdFordoAuditService;
 import cn.com.chaochuang.common.util.HttpClientHelper;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.reference.WorkType;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -44,28 +49,28 @@ public class MobileAuditDataTaskService {
     private String                  loginUrl;
     @Value("${audit.getFordoDataUrl}")
     private String                  getFordoDataUrl;
-    @Value("${supervise.getSuperviseDataUrl}")
-    private String                  getSuperviseDataUrl;
-    @Value("${supervise.submitUrl}")
+    @Value("${audit.submitUrl}")
     private String                  submitUrl;
-    @Value("${supervise.downloadUrl}")
-    private String                  downloadUrl;
 
     @Autowired
     private FdFordoAuditService     fdFordoAuditService;
+    @Autowired
+    private DataUpdateService       dataUpdateService;
+
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
     private String                  rootPath;
-
     /** 公文附件存放相对路径 */
     @Value("${supervisefile.attach.path}")
     private String                  docFileAttachPath;
     /** 获取公文阻塞标识 */
-    private static boolean          isFordoRunning   = false;
+    private static boolean          isFordoRunning      = false;
+    /** 数据提交标识 */
+    private static boolean          isSubmitDataRunning = false;
     /** 是否正在登录 */
-    private static boolean          isLoging         = false;
+    private static boolean          isLoging            = false;
     /** 创建httpClient对象 */
-    private static HttpClientHelper httpClientHelper = HttpClientHelper.newHttpClientHelper();
+    private static HttpClientHelper httpClientHelper    = HttpClientHelper.newHttpClientHelper();
 
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
@@ -111,6 +116,55 @@ public class MobileAuditDataTaskService {
             ex.printStackTrace();
         } finally {
             isFordoRunning = false;
+        }
+    }
+
+    /**
+     * 提交审批项数据
+     */
+    @Scheduled(cron = "10/15 * * * * ?")
+    public void commintSuperviseDataTask() {
+        if (isSubmitDataRunning) {
+            return;
+        }
+        isSubmitDataRunning = true;
+        DataUpdate dataUpdate = null;
+        try {
+            // 扫描DataUpdate数据列表，条件：workType=07;operationType=update
+            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.审评查验提交);
+            // 每次仅处理列表的第一条记录
+            if (!Tools.isNotEmptyList(datas)) {
+                return;
+            }
+            dataUpdate = (DataUpdate) datas.get(0);
+            // 获取要提交的json字符串
+
+            JsonMapper mapper = JsonMapper.getInstance();
+            WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
+            // 参数设置
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
+            params.add(new BasicNameValuePair("assignee", nodeInfo.getAssignee()));
+            params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
+            params.add(new BasicNameValuePair("timeLimitFlag", nodeInfo.getTimeLimitFlag()));
+            params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
+            params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
+            String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
+                            HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isNotBlank(json)) {
+                if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                    loginSuperviseSys();
+                } else {
+                    fdFordoAuditService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+                }
+            }
+        } catch (Exception ex) {
+            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+            dataUpdate.setErrorInfo(ex.getClass().getName());
+            this.dataUpdateService.getRepository().save(dataUpdate);
+            ex.printStackTrace();
+        } finally {
+            isSubmitDataRunning = false;
         }
     }
 
