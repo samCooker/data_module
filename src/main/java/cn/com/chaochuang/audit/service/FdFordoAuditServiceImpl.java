@@ -132,6 +132,9 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
             }
             fdFordo = new FdFordoAudit();
             SysUser user = userRepository.findByRmUserInfoId(item.getRecipientId());
+            if (user == null) {
+                continue;
+            }
             item.setFordoType(item.getFordoType().substring(0, 3));
             NullBeanUtils.copyProperties(fdFordo, item);
             // 插入审查任务对象
