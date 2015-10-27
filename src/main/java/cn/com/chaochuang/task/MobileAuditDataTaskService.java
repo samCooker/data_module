@@ -29,7 +29,7 @@ import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
-import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
+import cn.com.chaochuang.task.bean.AuditSubmitData;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -49,7 +49,7 @@ public class MobileAuditDataTaskService {
     private String                  loginUrl;
     @Value("${audit.getFordoDataUrl}")
     private String                  getFordoDataUrl;
-    @Value("${audit.submitUrl}")
+    @Value("${supervise.submitUrl}")
     private String                  submitUrl;
 
     @Autowired
@@ -140,15 +140,25 @@ public class MobileAuditDataTaskService {
             // 获取要提交的json字符串
 
             JsonMapper mapper = JsonMapper.getInstance();
-            WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
+            AuditSubmitData nodeInfo = mapper.readValue(dataUpdate.getContent(), AuditSubmitData.class);
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
             params.add(new BasicNameValuePair("assignee", nodeInfo.getAssignee()));
             params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
-            params.add(new BasicNameValuePair("timeLimitFlag", nodeInfo.getTimeLimitFlag()));
             params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
             params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
+            if (nodeInfo.getRmPrjContentIds() != null) {
+                // 整改内容
+                for (int i = 0; i < nodeInfo.getRmPrjContentIds().length; i++) {
+                    params.add(new BasicNameValuePair("improveFlag_" + (i + 1), nodeInfo.getImproveFlags()[i]));
+                    params.add(new BasicNameValuePair("improveFlag", nodeInfo.getImproveFlags()[i]));
+                    params.add(new BasicNameValuePair("improveResult", nodeInfo.getImproveResults()[i]));
+                    params.add(new BasicNameValuePair("prjContentId", nodeInfo.getRmPrjContentIds()[i]));
+                    params.add(new BasicNameValuePair("auditResult", nodeInfo.getAuditResults()[i]));
+                    params.add(new BasicNameValuePair("auditRecord", nodeInfo.getAuditRecords()[i]));
+                }
+            }
             String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {

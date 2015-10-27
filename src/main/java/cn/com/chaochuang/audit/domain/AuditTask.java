@@ -49,9 +49,9 @@ public class AuditTask extends LongIdEntity {
     /** 任务检查类型 */
     private String taskCheckType;
     /** 是否需要抽样 */
-    private String sampleFlag;
+    // private String sampleFlag;
     /** 抽样备注 */
-    private String sampleRemark;
+    // private String sampleRemark;
     /** 观察员任务状态 */
     private String watchStatus;
     /** 现场检查任务状态 */
@@ -265,36 +265,6 @@ public class AuditTask extends LongIdEntity {
      */
     public void setTaskCheckType(String taskCheckType) {
         this.taskCheckType = taskCheckType;
-    }
-
-    /**
-     * @return the sampleFlag
-     */
-    public String getSampleFlag() {
-        return sampleFlag;
-    }
-
-    /**
-     * @param sampleFlag
-     *            the sampleFlag to set
-     */
-    public void setSampleFlag(String sampleFlag) {
-        this.sampleFlag = sampleFlag;
-    }
-
-    /**
-     * @return the sampleRemark
-     */
-    public String getSampleRemark() {
-        return sampleRemark;
-    }
-
-    /**
-     * @param sampleRemark
-     *            the sampleRemark to set
-     */
-    public void setSampleRemark(String sampleRemark) {
-        this.sampleRemark = sampleRemark;
     }
 
     /**

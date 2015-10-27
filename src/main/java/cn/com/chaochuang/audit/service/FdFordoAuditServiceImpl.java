@@ -47,7 +47,7 @@ import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.reference.FordoStatus;
-import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
+import cn.com.chaochuang.task.bean.AuditSubmitData;
 
 /**
  * @author LLM
@@ -134,21 +134,6 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
             SysUser user = userRepository.findByRmUserInfoId(item.getRecipientId());
             item.setFordoType(item.getFordoType().substring(0, 3));
             NullBeanUtils.copyProperties(fdFordo, item);
-            // 将rmUserInfoId转成rmUserId
-            fdFordo.setRecipientId(user.getRmUserId());
-            if (item.getReadTime() == null) {
-                fdFordo.setStatus(FordoStatus.未读);
-                // 未读数据添加消息推送
-                // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
-                if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
-                    JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
-                }
-            } else {
-                fdFordo.setStatus(FordoStatus.已读);
-            }
-            fdFordo.setReadTime(item.getReadTime());
-            fdFordo.setInputDate(currentDate);
-            fdFordo.setLocalData(LocalData.非本地数据);
             // 插入审查任务对象
             if (item.getTaskInfo() != null) {
                 AuditTask task = this.selectTaskByRmTaskId(item.getTaskInfo().getRmAuditTaskId());
@@ -248,6 +233,21 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
                     }
                 }
             }
+            // 将rmUserInfoId转成rmUserId
+            fdFordo.setRecipientId(user.getRmUserId());
+            if (item.getReadTime() == null) {
+                fdFordo.setStatus(FordoStatus.未读);
+                // 未读数据添加消息推送
+                // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
+                if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
+                    JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
+                }
+            } else {
+                fdFordo.setStatus(FordoStatus.已读);
+            }
+            fdFordo.setReadTime(item.getReadTime());
+            fdFordo.setInputDate(currentDate);
+            fdFordo.setLocalData(LocalData.非本地数据);
             this.repository.save(fdFordo);
         }
     }
@@ -269,7 +269,7 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
      *      cn.com.chaochuang.task.bean.WebServiceNodeInfo, java.lang.String)
      */
     @Override
-    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo) {
+    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, AuditSubmitData nodeInfo, String backInfo) {
         if (DataUpdate.SUBMIT_SUCCESS.equals(backInfo)) {
             // 删除DataUpdate对象
             dataUpdateService.delete(dataUpdate);
