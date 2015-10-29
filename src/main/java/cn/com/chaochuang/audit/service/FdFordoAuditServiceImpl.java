@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
+import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
 import cn.com.chaochuang.audit.domain.AuditAppoint;
 import cn.com.chaochuang.audit.domain.AuditFlowNodeInfo;
@@ -76,6 +77,8 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
     private AuditFlowNodeOpinionsRepository nodeOpinionsRepository;
     @Autowired
     private DataUpdateService               dataUpdateService;
+    @Autowired
+    private AppItemAttachService            attachService;
 
     @Value("${getdata.timeinterval}")
     private String                          timeInterval;
@@ -235,6 +238,11 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
                         this.nodeOpinionsRepository.save(opinion);
                     }
                 }
+            }
+            // 保存AppItemAttach
+            if (item.getAppItemAttachInfos() != null && item.getAppItemAttachInfos().size() > 0) {
+                this.attachService.saveAppItemAttach(item.getAppItemAttachInfos(), item.getAppItemAttachInfos().get(0)
+                                .getItemApplyId());
             }
             // 将rmUserInfoId转成rmUserId
             fdFordo.setRecipientId(user.getRmUserId());

@@ -10,6 +10,7 @@ package cn.com.chaochuang.audit.bean;
 
 import java.util.List;
 
+import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.audit.domain.AuditAppoint;
 import cn.com.chaochuang.audit.domain.AuditFlowNodeInfo;
 import cn.com.chaochuang.audit.domain.AuditFlowNodeOpinions;
@@ -49,6 +50,8 @@ public class AuditPendingHandleInfo extends CommonPendingHandleInfo {
     private List<AuditFlowNodeInfo>     nodeInfos;
     /** 审批意见记录列表 */
     private List<AuditFlowNodeOpinions> nodeOpinionsInfos;
+    /** 审批附件列表 */
+    private List<AppItemAttach>         appItemAttachInfos;
 
     /**
      * @return the nodeStatus
@@ -243,6 +246,21 @@ public class AuditPendingHandleInfo extends CommonPendingHandleInfo {
      */
     public void setNodeOpinionsInfos(List<AuditFlowNodeOpinions> nodeOpinionsInfos) {
         this.nodeOpinionsInfos = nodeOpinionsInfos;
+    }
+
+    /**
+     * @return the appItemAttachInfos
+     */
+    public List<AppItemAttach> getAppItemAttachInfos() {
+        return appItemAttachInfos;
+    }
+
+    /**
+     * @param appItemAttachInfos
+     *            the appItemAttachInfos to set
+     */
+    public void setAppItemAttachInfos(List<AppItemAttach> appItemAttachInfos) {
+        this.appItemAttachInfos = appItemAttachInfos;
     }
 
 }
