@@ -30,6 +30,8 @@ public class AuditFlowNodeInfo extends LongIdEntity {
     private Long   rmNodeInfoId;
     /** 流程实例编号 */
     private Long   flowInstId;
+    /** 审批项编号 */
+    private Long   itemApplyId;
     /** 前继环节流水号 */
     private Long   preNodeId;
     /** 前继环节代号 */
@@ -350,6 +352,21 @@ public class AuditFlowNodeInfo extends LongIdEntity {
      */
     public void setHandleUnitId(Long handleUnitId) {
         this.handleUnitId = handleUnitId;
+    }
+
+    /**
+     * @return the itemApplyId
+     */
+    public Long getItemApplyId() {
+        return itemApplyId;
+    }
+
+    /**
+     * @param itemApplyId
+     *            the itemApplyId to set
+     */
+    public void setItemApplyId(Long itemApplyId) {
+        this.itemApplyId = itemApplyId;
     }
 
 }
