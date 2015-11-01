@@ -19,6 +19,8 @@ public class OAPendingHandleInfo extends CommonPendingHandleInfo {
     private String rmPendingItemId;
     /** 密级 */
     private String secretLevel;
+    /** 原系统公文编号 */
+    private String rmInstanceId;
 
     /**
      * @return the rmPendingItemId
@@ -48,6 +50,21 @@ public class OAPendingHandleInfo extends CommonPendingHandleInfo {
      */
     public void setSecretLevel(String secretLevel) {
         this.secretLevel = secretLevel;
+    }
+
+    /**
+     * @return the rmInstanceId
+     */
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
     }
 
 }
