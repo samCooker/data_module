@@ -80,17 +80,21 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
                 SysUser user = userService.findByRmUserId(nodeInfo.getTransactId());
                 if (user != null) {
                     SysDepartment department = user.getDepartment();
-                    List<FlowTransactPersonal> personalRecordList = repository.findByDocFileAndUnitOrgIdAndShareFlag(
-                                    file, department.getAncestorDep(), ShareFlag.本单位共享.getKey());
+                    List<FlowTransactPersonal> personalRecordList = null;
                     FlowTransactPersonal personalRecord = null;
-                    if (Tools.isNotEmptyList(personalRecordList)) {
-                        personalRecord = personalRecordList.get(0);
-                    }
-                    if (personalRecord == null) {
-                        personalRecordList = repository.findByDocFileAndRedactDeptIdAndShareFlag(file,
-                                        department.getRmDepId(), ShareFlag.本部门共享.getKey());
+                    if (department != null) {
+                        personalRecordList = repository.findByDocFileAndUnitOrgIdAndShareFlag(file,
+                                        department.getAncestorDep(), ShareFlag.本单位共享.getKey());
+
                         if (Tools.isNotEmptyList(personalRecordList)) {
                             personalRecord = personalRecordList.get(0);
+                        }
+                        if (personalRecord == null) {
+                            personalRecordList = repository.findByDocFileAndRedactDeptIdAndShareFlag(file,
+                                            department.getRmDepId(), ShareFlag.本部门共享.getKey());
+                            if (Tools.isNotEmptyList(personalRecordList)) {
+                                personalRecord = personalRecordList.get(0);
+                            }
                         }
                     }
                     if (personalRecord == null) {

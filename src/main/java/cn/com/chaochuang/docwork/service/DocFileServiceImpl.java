@@ -110,7 +110,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     public FlowNodeOpinionsInfo getDocFileMaxInputDate() {
         FlowNodeOpinionsInfo result = new FlowNodeOpinionsInfo();
         // 查询没有办结的公文的最大流程节点号
-        String sql = "SELECT max(RM_INSTNO_ID) FROM FLOW_NODE_INFO left join DOC_FILE using(doc_id)  where DOC_STATUS=0";
+        String sql = "SELECT max(RM_INSTANCE_ID) FROM DOC_FILE";
         Query query = this.entityManager.createNativeQuery(sql);
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {
