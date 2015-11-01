@@ -10,6 +10,9 @@ package cn.com.chaochuang.docwork.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 
@@ -35,5 +38,19 @@ public interface FdFordoRepository extends SimpleDomainRepository<FdFordo, Long>
      * @return
      */
     FdFordo findByRmPendingItemId(String rmPendingItemId);
+
+    /**
+     * @param localDate
+     * @param page
+     * @return
+     */
+    List<FdFordo> findByLocalDataOrderBySendTimeAsc(LocalData localDate, Pageable page);
+
+    /**
+     * @param rmInstanceId
+     * @param localData
+     * @return
+     */
+    List<FdFordo> findByRmInstanceIdAndLocalData(String rmInstanceId, LocalData localData);
 
 }

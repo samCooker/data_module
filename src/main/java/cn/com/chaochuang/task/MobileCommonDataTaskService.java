@@ -72,7 +72,7 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "5/5 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;

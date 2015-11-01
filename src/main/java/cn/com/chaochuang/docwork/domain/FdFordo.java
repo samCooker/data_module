@@ -18,6 +18,8 @@ import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
+import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.reference.FordoSourceConverter;
@@ -76,6 +78,24 @@ public class FdFordo extends LongIdEntity {
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              inputDate;
+    /** 本地数据标识 0：非本地数据（默认）1：有本地数据 */
+    @Convert(converter = LocalDataConverter.class)
+    private LocalData         localData;
+
+    /**
+     * @return the localData
+     */
+    public LocalData getLocalData() {
+        return localData;
+    }
+
+    /**
+     * @param localData
+     *            the localData to set
+     */
+    public void setLocalData(LocalData localData) {
+        this.localData = localData;
+    }
 
     /**
      * @return the title

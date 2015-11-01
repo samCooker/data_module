@@ -20,6 +20,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -35,13 +37,13 @@ import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
+import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.DocFileAttachService;
 import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
-import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.OaSubmitInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
@@ -112,7 +114,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "8/15 * * * * ?")
+    @Scheduled(cron = "8/15 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -162,28 +164,40 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    // @Scheduled(cron = "5/10 * * * * ?")
+    @Scheduled(cron = "5/5 * * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
         }
         isGetDocFileRunning = true;
         try {
-            FlowNodeOpinionsInfo info = this.fileService.getDocFileMaxInputDate();
-            if (info.getRmInstnoId() != null || !Tools.isEmptyString(info.getGetDataTime())) {
-                String json = this.transferOAService.getDocTransactInfo(info.getGetDataNoId(), info.getGetDataTime());
-                if (Tools.isEmptyString(json)) {
-                    isGetDocFileRunning = false;
-                    return;
+            // 获取未下载审批数据的待办事宜，即localData=0的数据
+            List<FdFordo> fordoData = this.fdFordoService.selectUnLocalData(new PageRequest(0, 2));
+            StringBuilder instIds = new StringBuilder();
+            for (FdFordo fordo : fordoData) {
+                instIds.append(fordo.getRmInstanceId() + ",");
+            }
+            if (instIds.length() > 0) {
+                instIds.deleteCharAt(instIds.length() - 1);
+            } else {
+                return;
+            }
+            String json = this.transferOAService.getDocTransactInfo(instIds.toString());
+            if (Tools.isEmptyString(json)) {
+                isGetDocFileRunning = false;
+                return;
+            }
+            try {
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
+                List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
+                fileService.saveDocFilesDatas(datas, fordoData);
+            } catch (Exception ex) {
+                for (FdFordo fordo : fordoData) {
+                    fordo.setLocalData(LocalData.获取数据错误);
+                    fdFordoService.getRepository().save(fordo);
                 }
-                try {
-                    JsonMapper mapper = JsonMapper.getInstance();
-                    JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
-                    List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
-                    fileService.saveDocFilesDatas(datas);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+                ex.printStackTrace();
             }
         } finally {
             isGetDocFileRunning = false;

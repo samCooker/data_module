@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.JsonMapper;
@@ -33,6 +34,7 @@ import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.DocStatus;
 import cn.com.chaochuang.docwork.repository.DocFileRepository;
+import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.OaSubmitInfo;
@@ -67,6 +69,8 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     private DataUpdateService           dataUpdateService;
     @Autowired
     private FdFordoService              fdFordoService;
+    @Autowired
+    private FdFordoRepository           fdFordoRepository;
 
     @Value("${getdata.timeinterval}")
     private String                      timeInterval;
@@ -80,7 +84,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
      *
      */
     @Override
-    public void saveDocFilesDatas(List<DocFileInfo> datas) {
+    public void saveDocFilesDatas(List<DocFileInfo> datas, List<FdFordo> fordoData) {
         if (datas == null) {
             return;
         }
@@ -102,6 +106,16 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             // 保存公文个人办理记录
             flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
                             fileInfo.getRedactDeptId());
+        }
+        for (FdFordo fordo : fordoData) {
+            List<FdFordo> fordoList = fdFordoRepository.findByRmInstanceIdAndLocalData(fordo.getRmInstanceId(),
+                            LocalData.非本地数据);
+            if (Tools.isNotEmptyList(fordoList)) {
+                for (FdFordo dfordo : fordoList) {
+                    dfordo.setLocalData(LocalData.有本地数据);
+                    fdFordoRepository.saveAndFlush(dfordo);
+                }
+            }
         }
 
     }

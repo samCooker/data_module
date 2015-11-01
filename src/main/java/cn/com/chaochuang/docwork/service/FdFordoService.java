@@ -10,6 +10,8 @@ package cn.com.chaochuang.docwork.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
@@ -45,5 +47,11 @@ public interface FdFordoService extends CrudRestService<FdFordo, Long> {
      * @return
      */
     FdFordo findByRmPendingItemId(String fordoId);
+
+    /**
+     * @param pageRequest
+     * @return
+     */
+    List<FdFordo> selectUnLocalData(Pageable page);
 
 }

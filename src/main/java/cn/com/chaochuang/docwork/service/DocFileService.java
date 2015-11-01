@@ -13,6 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.docwork.domain.DocFile;
+import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
 import cn.com.chaochuang.task.bean.OaSubmitInfo;
@@ -23,8 +24,13 @@ import cn.com.chaochuang.task.bean.OaSubmitInfo;
  */
 public interface DocFileService extends CrudRestService<DocFile, Long> {
 
-    /** 保存远程获取的公文数据，包括附件信息和流程信息 */
-    void saveDocFilesDatas(List<DocFileInfo> datas);
+    /**
+     * 保存远程获取的公文数据，包括附件信息和流程信息
+     * 
+     * @param datas
+     * @param fordoData
+     */
+    void saveDocFilesDatas(List<DocFileInfo> datas, List<FdFordo> fordoData);
 
     /** 获取公文数据最大的导入时间 */
     FlowNodeOpinionsInfo getDocFileMaxInputDate();

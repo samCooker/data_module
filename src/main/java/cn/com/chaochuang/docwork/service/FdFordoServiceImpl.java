@@ -20,8 +20,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
@@ -113,6 +115,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             } else {
                 fdFordo.setStatus(FordoStatus.已读);
             }
+            fdFordo.setLocalData(LocalData.非本地数据);
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
             this.repository.save(fdFordo);
@@ -125,6 +128,16 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
     @Override
     public FdFordo findByRmPendingItemId(String fordoId) {
         return repository.findByRmPendingItemId(fordoId);
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.docwork.service.FdFordoService#selectUnLocalData(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public List<FdFordo> selectUnLocalData(Pageable page) {
+        return this.repository.findByLocalDataOrderBySendTimeAsc(LocalData.非本地数据, page);
     }
 
 }
