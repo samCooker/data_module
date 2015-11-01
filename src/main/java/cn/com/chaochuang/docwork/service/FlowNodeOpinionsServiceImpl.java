@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.FlowNodeOpinions;
 import cn.com.chaochuang.docwork.repository.FlowNodeOpinionsRepository;
@@ -34,6 +36,8 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
 
     @Autowired
     private FlowNodeOpinionsRepository repository;
+    @Autowired
+    private SysUserRepository          userRepository;
 
     @Override
     public SimpleDomainRepository<FlowNodeOpinions, Long> getRepository() {
@@ -58,6 +62,10 @@ public class FlowNodeOpinionsServiceImpl extends SimpleLongIdCrudRestService<Flo
             if (opinion == null) {
                 opinion = new FlowNodeOpinions();
                 NullBeanUtils.copyProperties(opinion, nodeOp);
+                SysUser user = userRepository.findByRmUserId(nodeOp.getTransactId());
+                if (user != null) {
+                    opinion.setTransactName(user.getUserName());
+                }
                 opinion.setDocId(fileId);
             } else {
                 // 更新意见

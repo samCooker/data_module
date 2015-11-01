@@ -21,6 +21,7 @@ import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
+import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FlowTransactPersonal;
 import cn.com.chaochuang.docwork.reference.ShareFlag;
@@ -58,14 +59,20 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
         if (flowNodeInfoList != null) {
             if (ShareFlag.本单位共享.getKey().equals(file.getShareFlag())) {
                 // 单位共享，创建人所在单位的所以人员都可以查询到。同一个单位创建的同一个公文，其经办列表只保存一份
-                FlowTransactPersonal personalRecord = repository.findByDocFileAndUnitOrgIdAndShareFlag(file,
+                List<FlowTransactPersonal> personalRecordList = repository.findByDocFileAndUnitOrgIdAndShareFlag(file,
                                 file.getUnitOrgId(), ShareFlag.本单位共享.getKey());
-                savePersonalRecord(personalRecord, file, flowNodeInfoList.get(0), null);
+                if (Tools.isNotEmptyList(personalRecordList)) {
+                    FlowTransactPersonal personalRecord = personalRecordList.get(0);
+                    savePersonalRecord(personalRecord, file, flowNodeInfoList.get(0), null);
+                }
             } else if (ShareFlag.本部门共享.getKey().equals(file.getShareFlag())) {
                 // 部门共享，创建人所在部门的所以人员都可以查询到。同一个部门创建的同一个公文，其经办列表只保存一份
-                FlowTransactPersonal personalRecord = repository.findByDocFileAndRedactDeptIdAndShareFlag(file,
-                                file.getCreatorDeptId(), ShareFlag.本部门共享.getKey());
-                savePersonalRecord(personalRecord, file, flowNodeInfoList.get(0), redactDeptId);
+                List<FlowTransactPersonal> personalRecordList = repository.findByDocFileAndRedactDeptIdAndShareFlag(
+                                file, file.getCreatorDeptId(), ShareFlag.本部门共享.getKey());
+                if (Tools.isNotEmptyList(personalRecordList)) {
+                    FlowTransactPersonal personalRecord = personalRecordList.get(0);
+                    savePersonalRecord(personalRecord, file, flowNodeInfoList.get(0), redactDeptId);
+                }
             }
             // 先保存单位共享和部门共享，再进行添加个人个人办理记录（不足：每次都重复循环流程节点）
             for (FlowNodeBeanInfo nodeInfo : flowNodeInfoList) {
@@ -73,11 +80,18 @@ public class FlowTransactPersonalServiceImpl extends SimpleLongIdCrudRestService
                 SysUser user = userService.findByRmUserId(nodeInfo.getTransactId());
                 if (user != null) {
                     SysDepartment department = user.getDepartment();
-                    FlowTransactPersonal personalRecord = repository.findByDocFileAndUnitOrgIdAndShareFlag(file,
-                                    department.getAncestorDep(), ShareFlag.本单位共享.getKey());
+                    List<FlowTransactPersonal> personalRecordList = repository.findByDocFileAndUnitOrgIdAndShareFlag(
+                                    file, department.getAncestorDep(), ShareFlag.本单位共享.getKey());
+                    FlowTransactPersonal personalRecord = null;
+                    if (Tools.isNotEmptyList(personalRecordList)) {
+                        personalRecord = personalRecordList.get(0);
+                    }
                     if (personalRecord == null) {
-                        personalRecord = repository.findByDocFileAndRedactDeptIdAndShareFlag(file,
+                        personalRecordList = repository.findByDocFileAndRedactDeptIdAndShareFlag(file,
                                         department.getRmDepId(), ShareFlag.本部门共享.getKey());
+                        if (Tools.isNotEmptyList(personalRecordList)) {
+                            personalRecord = personalRecordList.get(0);
+                        }
                     }
                     if (personalRecord == null) {
                         personalRecord = repository.findByDocFileAndTransactIdAndShareFlag(file, user.getRmUserId(),

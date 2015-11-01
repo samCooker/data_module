@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.docwork.domain.FlowNodeInfo;
 import cn.com.chaochuang.docwork.repository.FlowNodeInfoRepository;
@@ -33,6 +35,8 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
 
     @Autowired
     private FlowNodeInfoRepository repository;
+    @Autowired
+    private SysUserRepository      userRepository;
 
     @Override
     public SimpleDomainRepository<FlowNodeInfo, Long> getRepository() {
@@ -53,6 +57,10 @@ public class FlowNodeInfoServiceImpl extends SimpleLongIdCrudRestService<FlowNod
             FlowNodeInfo node = new FlowNodeInfo();
             node.setRmPreInstnoId(nodeInfo.getRmLastInstnoId());
             NullBeanUtils.copyProperties(node, nodeInfo);
+            SysUser user = userRepository.findByRmUserId(nodeInfo.getTransactId());
+            if (user != null) {
+                node.setTransactName(user.getUserName());
+            }
             node.setDocId(fileId);
             nodesList.add(node);
         }

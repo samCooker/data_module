@@ -85,7 +85,6 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             return;
         }
         for (DocFileInfo fileInfo : datas) {
-
             DocFile file = repository.findByRmInstanceId(fileInfo.getRmInstanceId());
             if (file == null) {
                 // 该公文记录不已存在，则添加
@@ -123,7 +122,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 }
             }
         }
-        if (result.getRmInstnoId() == null) {
+        if (result.getGetDataNoId() == null) {
             Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
             result.setGetDataTime(Tools.DATE_TIME_FORMAT.format(sendTime));
             result.setGetDataNoId("");
