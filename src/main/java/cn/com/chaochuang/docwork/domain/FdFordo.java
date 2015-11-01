@@ -71,6 +71,8 @@ public class FdFordo extends LongIdEntity {
     private String            rmPendingId;
     /** 远程系统待办明细编号(若远程系统只有一个待办编号就写入rmPendingItemId) */
     private String            rmPendingItemId;
+    /** 原系统公文编号 */
+    private String            rmInstanceId;
     /** 数据导入时间 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              inputDate;
@@ -313,6 +315,21 @@ public class FdFordo extends LongIdEntity {
      */
     public void setRmPendingItemId(String rmPendingItemId) {
         this.rmPendingItemId = rmPendingItemId;
+    }
+
+    /**
+     * @return the rmInstanceId
+     */
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
     }
 
 }
