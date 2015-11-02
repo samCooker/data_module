@@ -196,7 +196,7 @@ public class SynchDataServiceImpl implements SynchDataService {
                         this.setPrepareStatementData(pinsertstat, entpInsertSQL, dataMap, true);
                     } else {
                         // update操作
-                        this.setPrepareStatementData(pupdatestat, entpUpdateSQL, dataMap, false);
+                        // this.setPrepareStatementData(pupdatestat, entpUpdateSQL, dataMap, false);
                     }
                 }
                 pinsertstat.executeBatch();
