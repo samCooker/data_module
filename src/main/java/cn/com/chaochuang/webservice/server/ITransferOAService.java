@@ -136,4 +136,14 @@ public interface ITransferOAService {
     @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
     @WebMethod
     String getOAHistoryNodes(Long instId);
+
+    /**
+     * 获取缺漏的正文附件方法
+     * 
+     * @param instIds
+     * @return
+     */
+    // @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    // @WebMethod
+    // String getSharewordAttach(String instIds);
 }

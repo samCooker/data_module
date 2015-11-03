@@ -24,6 +24,8 @@ public class DocFileAttachInfo {
     private String isImage;
     /** 原远程附件id */
     private String rmAttachId;
+    /** 单独获取附件时传递的参数 */
+    private String rmInstanceId;
 
     /**
      * @return the saveName
@@ -128,6 +130,21 @@ public class DocFileAttachInfo {
      */
     public void setRmAttachId(String rmAttachId) {
         this.rmAttachId = rmAttachId;
+    }
+
+    /**
+     * @return the rmInstanceId
+     */
+    public String getRmInstanceId() {
+        return rmInstanceId;
+    }
+
+    /**
+     * @param rmInstanceId
+     *            the rmInstanceId to set
+     */
+    public void setRmInstanceId(String rmInstanceId) {
+        this.rmInstanceId = rmInstanceId;
     }
 
 }

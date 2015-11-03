@@ -90,6 +90,9 @@ public class MobileOADataTaskService {
     private SysUserService       userService;
 
     @Autowired
+    private DocFileAttachService attachmentsService;
+
+    @Autowired
     private DepLinkmanService    depLinkmanService;
 
     /** 附件存放根路径 */
@@ -110,6 +113,9 @@ public class MobileOADataTaskService {
     private static boolean       isGetPubInfoDataRunning = false;
     /** 获取待办阻塞标识 */
     private static boolean       isFordoRunning          = false;
+    /** 获取正文附件标识 */
+//    private static boolean       isGetSharewordRunning   = false;
+//    private int                  pageSize                = 1;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
@@ -199,6 +205,8 @@ public class MobileOADataTaskService {
                 }
                 ex.printStackTrace();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             isGetDocFileRunning = false;
         }
@@ -208,7 +216,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    // @Scheduled(cron = "3/10 * * * * ?")
+    @Scheduled(cron = "3/10 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -244,7 +252,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -300,7 +308,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "40/40 * * * * ?")
+    @Scheduled(cron = "40/40 * * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -333,4 +341,21 @@ public class MobileOADataTaskService {
             isGetPubInfoDataRunning = false;
         }
     }
+
+    /**
+     * 获取缺漏的正文附件方法
+     */
+    // @Scheduled(cron = "2/2 * * * * ?")
+    /*
+     * public void getSharewordAttach() { if (isGetSharewordRunning) { return; } isGetSharewordRunning = true; try {
+     * Page<DocFile> docFilesPage = fileService.findAllByPage(pageSize, 100); String instIds =
+     * Tools.changeArrayToString(docFilesPage.getContent(), "rmInstanceId", ",", false); String json =
+     * this.transferOAService.getSharewordAttach(instIds); if (Tools.isEmptyString(json)) { isGetDocFileRunning = false;
+     * return; } JsonMapper mapper = JsonMapper.getInstance(); JavaType javaType =
+     * mapper.constructParametricType(ArrayList.class, DocFileAttachInfo.class); List<DocFileAttachInfo> datas =
+     * (List<DocFileAttachInfo>) mapper.readValue(json, javaType); // 保存附件信息
+     * attachmentsService.saveRemoteDocFileAttach(datas); pageSize++; } catch (Exception e) { e.printStackTrace(); }
+     * finally { isGetSharewordRunning = false; } }
+     */
+
 }

@@ -41,4 +41,11 @@ public interface DocFileAttachService extends CrudRestService<DocFileAttach, Lon
      *            本地数据路径，若不为空则localData=本地数据
      */
     void saveAttachForLocal(DocFileAttach attach, LocalData localData, String localFileName);
+
+    /**
+     * 保存从远程取出的附件信息
+     * 
+     * @param datas
+     */
+    void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas);
 }

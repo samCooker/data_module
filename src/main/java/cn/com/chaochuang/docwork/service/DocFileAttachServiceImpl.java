@@ -22,8 +22,10 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.repository.DocFileAttachRepository;
+import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.task.bean.DocFileAttachInfo;
 
 /**
@@ -37,6 +39,8 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
 
     @Autowired
     private DocFileAttachRepository repository;
+    @Autowired
+    private DocFileRepository       docFileRepository;
 
     @Override
     public SimpleDomainRepository<DocFileAttach, Long> getRepository() {
@@ -99,4 +103,27 @@ public class DocFileAttachServiceImpl extends SimpleLongIdCrudRestService<DocFil
         }
     }
 
+    /**
+     * @see cn.com.chaochuang.docwork.service.DocFileAttachService#saveRemoteDocFileAttach(java.util.List)
+     */
+    @Override
+    public void saveRemoteDocFileAttach(List<DocFileAttachInfo> datas) {
+        if (datas == null) {
+            return;
+        }
+        for (DocFileAttachInfo attachmentInfo : datas) {
+            DocFileAttach attachment = repository.findByRmAttachId(attachmentInfo.getRmAttachId());
+            if (attachment == null) {
+                // 为空说明本地数据库无此附件信息，应添加
+                DocFile docFile = docFileRepository.findByRmInstanceId(attachmentInfo.getRmInstanceId());
+                if (docFile != null) {
+                    attachment = new DocFileAttach();
+                    attachment.setDocId(docFile.getId());
+                    NullBeanUtils.copyProperties(attachment, attachmentInfo);
+                    attachment.setLocalData(LocalData.非本地数据);
+                    repository.save(attachment);
+                }
+            }
+        }
+    }
 }
