@@ -113,9 +113,10 @@ public class MobileOADataTaskService {
     private static boolean       isGetPubInfoDataRunning = false;
     /** 获取待办阻塞标识 */
     private static boolean       isFordoRunning          = false;
+
     /** 获取正文附件标识 */
-//    private static boolean       isGetSharewordRunning   = false;
-//    private int                  pageSize                = 1;
+    // private static boolean isGetSharewordRunning = false;
+    // private int pageSize = 1;
 
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
@@ -252,7 +253,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "3/7 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
