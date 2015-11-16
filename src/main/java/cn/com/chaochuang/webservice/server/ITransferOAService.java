@@ -138,8 +138,18 @@ public interface ITransferOAService {
     String getOAHistoryNodes(Long instId);
 
     /**
+     * 根据通讯录编号获取通讯录记录
+     *
+     * @param addressInfoId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://transfer.server.webservice.spower.com")
+    @WebMethod
+    String getOaAddressInfo(Long addressInfoId);
+
+    /**
      * 获取缺漏的正文附件方法
-     * 
+     *
      * @param instIds
      * @return
      */

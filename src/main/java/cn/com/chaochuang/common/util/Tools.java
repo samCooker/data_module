@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -598,4 +599,24 @@ public abstract class Tools {
         } else
             return String.format("%d B", size);
     }
+
+    /**
+     * 分解字符串例如：oa_address_info_id=1152
+     *
+     * @param source
+     * @return
+     */
+    public static Map<String, String> splitData(String source) {
+        Map<String, String> result = new HashMap();
+        if (Tools.isEmptyString(source)) {
+            return result;
+        }
+        String[] items = source.split(",");
+        for (String item : items) {
+            String[] keys = item.split("=");
+            result.put(keys[0], keys[1]);
+        }
+        return result;
+    }
+
 }
