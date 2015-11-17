@@ -121,7 +121,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "8/15 * * * * ?")
+    @Scheduled(cron = "5 0/3 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -171,7 +171,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "8 0/3 * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -217,7 +217,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "3/10 * * * * ?")
+    @Scheduled(cron = "2 0/1 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -309,7 +309,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "40/40 * * * * ?")
+    @Scheduled(cron = "40 0/20 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;

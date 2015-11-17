@@ -30,7 +30,6 @@ import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
 import cn.com.chaochuang.synchdata.reference.SynchDataStatus;
 import cn.com.chaochuang.synchdata.repository.SysSynchdataTaskRepository;
-import cn.com.chaochuang.voice.repository.VoiceEventRepository;
 
 /**
  * @author LLM
@@ -42,15 +41,11 @@ public class SynchDataServiceImpl implements SynchDataService {
     @Autowired
     private SynchDataSource            appSynchDataSourceService;
     @Autowired
-    private SynchDataSource            voiceSynchDataSourceService;
-    @Autowired
     private SynchDataSource            localDataSourceService;
     @Autowired
     private SysSynchdataTaskRepository taskRepository;
     @Autowired
     private AppEntpRepository          entpRepository;
-    @Autowired
-    private VoiceEventRepository       voiceEventRepository;
     @Value("${app.entp.countsql}")
     private String                     entpCountSQL;
     @Value("${app.entp.datasql}")
@@ -63,12 +58,10 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     entpInsertSQL;
     @Value("${app.entp.updatesql}")
     private String                     entpUpdateSQL;
-    @Value("${voice.event.countsql}")
-    private String                     eventCountSQL;
-    @Value("${voice.event.datasql}")
-    private String                     eventDataSQL;
-    @Value("${voice.event.insertsql}")
-    private String                     eventInsertSQL;
+    @Value("${app.entp.licencesql}")
+    private String                     entpLicenceSQL;
+    @Value("${app.entp.licenceinsertsql}")
+    private String                     entpLicenceInsertSQL;
     @Value("${sequencesql}")
     private String                     sequenceSQL;
     @Value("${synchtasksql}")
@@ -92,10 +85,14 @@ public class SynchDataServiceImpl implements SynchDataService {
         PreparedStatement pupdatestat = null;
         PreparedStatement pseqstat = null;
         PreparedStatement ptaskstat = null;
+        PreparedStatement plicencestat = null;
+        PreparedStatement plicenceinsertstat = null;
+
         ResultSet result = null;
         ResultSet busResult = null;
         ResultSet addrResult = null;
         ResultSet seqResult = null;
+        ResultSet licenceResult = null;
         // 获取相对人库的企业数据
         try {
             entpConn = this.appSynchDataSourceService.getConnection();
@@ -124,9 +121,11 @@ public class SynchDataServiceImpl implements SynchDataService {
             pentpstat = entpConn.prepareStatement(this.entpDataSQL);
             pbusstat = entpConn.prepareStatement(this.entpBusSQL);
             paddrstat = entpConn.prepareStatement(this.entpAddrSQL);
+            plicencestat = entpConn.prepareStatement(this.entpLicenceSQL);
             // 插入和更新SQL
             pinsertstat = localConn.prepareStatement(this.entpInsertSQL);
             pupdatestat = localConn.prepareStatement(this.entpUpdateSQL);
+            plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
             pseqstat = localConn.prepareStatement(this.sequenceSQL);
             ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
 
@@ -138,8 +137,9 @@ public class SynchDataServiceImpl implements SynchDataService {
             task.setBeginTime(new Date());
             this.updateTaskInfo(task, ptaskstat);
             StringBuilder busName = new StringBuilder();
-            Map<String, Object> dataMap = new HashMap();
-            int idx = 0;
+            Map<String, Object> dataMap = new HashMap(), licenceMap = new HashMap();
+            ;
+            int idx = 0, licenceIdx = 0;
             // entp_id, entp_name, entp_province, contact, contact_duty, cell_phone, contact_address,
             // contact_postal_code, tel, register_address, register_fund, business_license, business_license_date,
             // handle_unit_name, city_name, fax, email
@@ -198,12 +198,36 @@ public class SynchDataServiceImpl implements SynchDataService {
                         // update操作
                         // this.setPrepareStatementData(pupdatestat, entpUpdateSQL, dataMap, false);
                     }
+                    plicencestat.setObject(1, curId);
+                    licenceResult = plicencestat.executeQuery();
+                    while (licenceResult.next()) {
+                        seqResult = pseqstat.executeQuery();
+                        seqResult.next();
+                        licenceMap.put("licence_id", seqResult.getLong(1));
+                        System.out.println("new licence_id=" + licenceMap.get("licence_id"));
+                        licenceMap.put("rm_licence_id", licenceResult.getObject("rm_licence_id"));
+                        licenceMap.put("rm_entp_id", licenceResult.getObject("rm_entp_id"));
+                        licenceMap.put("entp_type_name", licenceResult.getObject("entp_type_name"));
+                        licenceMap.put("licence_no", licenceResult.getObject("licence_no"));
+                        licenceMap.put("from_date", licenceResult.getObject("from_date"));
+                        licenceMap.put("to_date", licenceResult.getObject("to_date"));
+                        licenceMap.put("licence_time", licenceResult.getObject("licence_time"));
+                        this.setPrepareStatementData(plicenceinsertstat, this.entpLicenceInsertSQL, licenceMap, true);
+                        licenceMap = new HashMap();
+                        licenceIdx++;
+                    }
+                    if (licenceIdx > 0) {
+                        licenceIdx = 0;
+                    }
                 }
                 pinsertstat.executeBatch();
                 pupdatestat.executeBatch();
 
                 pinsertstat.clearBatch();
                 pupdatestat.clearBatch();
+
+                plicenceinsertstat.executeBatch();
+                plicenceinsertstat.clearBatch();
 
                 task.setFinishSynch(Long.valueOf(idx));
                 this.updateTaskInfo(task, ptaskstat);
@@ -235,6 +259,9 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (addrResult != null) {
                     addrResult.close();
                 }
+                if (licenceResult != null) {
+                    licenceResult.close();
+                }
                 if (stat != null) {
                     stat.close();
                 }
@@ -259,6 +286,12 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (ptaskstat != null) {
                     ptaskstat.close();
                 }
+                if (plicencestat != null) {
+                    plicencestat.close();
+                }
+                if (plicenceinsertstat != null) {
+                    plicenceinsertstat.close();
+                }
                 if (localConn != null) {
                     localConn.close();
                 }
@@ -269,136 +302,6 @@ public class SynchDataServiceImpl implements SynchDataService {
                 throw new RuntimeException(ex.getMessage());
             }
         }
-    }
-
-    /**
-     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchVoiceEventData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
-     */
-    @Override
-    public void synchVoiceEventData(SysSynchdataTask task) {
-        Connection eventConn = null;
-        Connection localConn = null;
-        Statement stat = null;
-        PreparedStatement peventstat = null;
-        PreparedStatement pinsertstat = null;
-        PreparedStatement pseqstat = null;
-        PreparedStatement ptaskstat = null;
-        ResultSet result = null;
-        ResultSet seqResult = null;
-        // 获取相对人库的企业数据
-        try {
-            eventConn = this.voiceSynchDataSourceService.getConnection();
-            localConn = this.localDataSourceService.getConnection();
-            if (eventConn == null) {
-                task.setMemo("无法连接目的服务器同步失败！");
-                task.setStatus(SynchDataStatus.同步完成);
-                this.taskRepository.save(task);
-                return;
-            }
-            stat = eventConn.createStatement();
-            // 获取本次同步任务需要同步的数据量
-            result = stat.executeQuery(this.eventCountSQL);
-            result.next();
-            // 需要同步的记录数
-            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
-                            .getLong(3);
-            if (count <= 0) {
-                task.setMemo("本次需同步数据记录数为0！");
-                task.setStatus(SynchDataStatus.同步完成);
-                this.taskRepository.save(task);
-                return;
-            }
-            localConn.setAutoCommit(true);
-            // 获取SQL数据
-            peventstat = eventConn.prepareStatement(this.eventDataSQL);
-            // 插入和更新SQL
-            pinsertstat = localConn.prepareStatement(this.eventInsertSQL);
-            pseqstat = localConn.prepareStatement(this.sequenceSQL);
-            ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
-
-            peventstat.setMaxRows(this.dataBlock);
-            peventstat.setFetchSize(this.dataBlock);
-            // 重置任务的信息
-            task.setNeedSynch(Long.valueOf(count));
-            task.setStatus(SynchDataStatus.同步中);
-            task.setBeginTime(new Date());
-            this.updateTaskInfo(task, ptaskstat);
-            Map<String, Object> dataMap = new HashMap();
-            int idx = 0;
-            // event_id, grade, title, create_time, creater_id, status, creater_name
-            // 另外处理字段：
-            // rm_event_id, local_new_data
-            while (curId < maxId) {
-                peventstat.setObject(1, minId);
-                peventstat.setObject(2, minId + (this.dataBlock - 1));
-                result = peventstat.executeQuery();
-                while (result.next()) {
-                    idx++;
-
-                    curId = result.getLong("event_id");
-                    dataMap.put("rm_event_id", curId);
-                    dataMap.put("grade", result.getObject("grade_id"));
-                    dataMap.put("title", result.getObject("title"));
-                    dataMap.put("create_time", result.getObject("create_time"));
-                    dataMap.put("create_id", result.getObject("create_id"));
-                    dataMap.put("status", result.getObject("status"));
-                    dataMap.put("creater_name", result.getObject("creater_name"));
-                    // 查询当前编号的企业数据是否已经存在
-                    if (this.entpRepository.findByRmEntpId(curId) == null) {
-                        seqResult = pseqstat.executeQuery();
-                        seqResult.next();
-                        dataMap.put("event_id", seqResult.getLong(1));
-                        // insert操作
-                        this.setPrepareStatementData(pinsertstat, entpInsertSQL, dataMap, true);
-                    }
-                }
-                pinsertstat.executeBatch();
-                pinsertstat.clearBatch();
-
-                task.setFinishSynch(Long.valueOf(idx));
-                this.updateTaskInfo(task, ptaskstat);
-                minId += this.dataBlock;
-            }
-            // localConn.commit();
-            task.setStatus(SynchDataStatus.同步完成);
-            task.setFinishTime(new Date());
-            task.setMemo("完成数据同步！");
-            this.updateTaskInfo(task, ptaskstat);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            task.setStatus(SynchDataStatus.同步完成);
-            task.setFinishTime(new Date());
-            task.setMemo("数据同步失败：" + ex.getMessage());
-            // 备注内容最大是500汉字
-            if (task.getMemo().length() > 500) {
-                task.setMemo(task.getMemo().substring(0, 500));
-            }
-            this.updateTaskInfo(task, ptaskstat);
-        } finally {
-            try {
-                if (result != null) {
-                    result.close();
-                }
-                if (stat != null) {
-                    stat.close();
-                }
-                if (pinsertstat != null) {
-                    pinsertstat.close();
-                }
-                if (pseqstat != null) {
-                    pseqstat.close();
-                }
-                if (ptaskstat != null) {
-                    ptaskstat.close();
-                }
-                if (localConn != null) {
-                    localConn.close();
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex.getMessage());
-            }
-        }
-
     }
 
     /**
@@ -457,6 +360,10 @@ public class SynchDataServiceImpl implements SynchDataService {
             for (Iterator it = dataMap.entrySet().iterator(); it.hasNext();) {
                 Entry entry = (Entry) it.next();
                 if (fields.containsKey(entry.getKey())) {
+                    if (entry.getKey().toString().equals("licence_id")) {
+                        System.out.println("idx=" + fields.get(entry.getKey()) + "  value="
+                                        + this.changeDataType(entry.getValue()));
+                    }
                     stat.setObject(fields.get(entry.getKey()), this.changeDataType(entry.getValue()));
                     fields.remove(entry.getKey());
                 }
@@ -509,5 +416,13 @@ public class SynchDataServiceImpl implements SynchDataService {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
+    }
+
+    /**
+     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchLicenceData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
+     */
+    @Override
+    public void synchLicenceData(SysSynchdataTask task) {
+        // TODO Auto-generated method stub
     }
 }

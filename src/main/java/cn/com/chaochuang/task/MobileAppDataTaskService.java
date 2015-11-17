@@ -105,7 +105,7 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "5 0/5 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -166,7 +166,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "8/8 * * * * ?")
+    @Scheduled(cron = "8 0/6 * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -208,7 +208,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    @Scheduled(cron = "10/15 * * * * ?")
+    @Scheduled(cron = "10 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;

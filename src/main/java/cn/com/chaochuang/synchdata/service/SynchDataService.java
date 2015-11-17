@@ -23,9 +23,9 @@ public interface SynchDataService {
     void synchAppEntpData(SysSynchdataTask task);
 
     /**
-     * 同步舆情事件信息
-     * 
+     * 同步许可证信息
+     *
      * @param task
      */
-    void synchVoiceEventData(SysSynchdataTask task);
+    void synchLicenceData(SysSynchdataTask task);
 }
