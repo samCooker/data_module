@@ -17,4 +17,11 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  */
 public interface AppLicenceRepository extends SimpleDomainRepository<AppLicence, Long> {
 
+    /**
+     * 根据原系统许可证信息查找许可证记录
+     * 
+     * @param rmLicenceId
+     * @return
+     */
+    AppLicence findByRmLicenceId(Long rmLicenceId);
 }

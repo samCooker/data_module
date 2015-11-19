@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
+import cn.com.chaochuang.appflow.service.AppLicenceService;
 import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
 import cn.com.chaochuang.common.user.service.SysUserService;
@@ -28,6 +29,7 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.service.DocFileService;
+import cn.com.chaochuang.examine.service.ExamineEntpObjectService;
 import cn.com.chaochuang.voice.service.VoiceEventService;
 import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
@@ -64,6 +66,11 @@ public class MobileCommonDataTaskService {
     private VoiceInfoService           voiceInfoService;
     @Autowired
     private VoiceEventService          voiceEventService;
+    @Autowired
+    private AppLicenceService          licenceService;
+    @Autowired
+    private ExamineEntpObjectService   examineService;
+
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning  = false;
     /** 获取处理系统数据更改阻塞标识 */
@@ -152,6 +159,12 @@ public class MobileCommonDataTaskService {
                         this.voiceEventService.saveVoiceEventHandleApprove(item);
                     } else if (DataChangeTable.舆情事件办理意见.getKey().equals(item.getChangeTableName())) {
                         this.voiceEventService.saveVoiceEventHandleOpinion(item);
+                    } else if (DataChangeTable.许可证信息.getKey().equals(item.getChangeTableName())) {
+                        // 许可证信息更新
+                        this.licenceService.saveAppLicence(item);
+                    } else if (DataChangeTable.日常检查.getKey().equals(item.getChangeTableName())) {
+                        // 日常检查信息更新
+                        this.examineService.saveExamineEntpObject(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());

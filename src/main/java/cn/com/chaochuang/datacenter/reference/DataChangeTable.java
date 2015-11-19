@@ -20,7 +20,8 @@ public enum DataChangeTable implements IDictionary {
                     "oa_wf_flo_hisno"), 组织结构("sys_department"), 人员("sys_user"), 通讯录("oa_address_info"), 新闻公告(
                     "oa_pub_board"), 企业信息("gxfda_app_app_entp"), 行政处罚信息("aip_punish_entp"), 投诉举报待办(
                     "case_complaint_pending_handle"), 舆情信息("voice_info"), 舆情事件("voice_event"), 舆情事件内容(
-                    "voice_event_content"), 舆情事件办理("voice_event_handle_man"), 舆情事件办理意见("voice_event_handle_approve");
+                    "voice_event_content"), 舆情事件办理("voice_event_handle_man"), 舆情事件办理意见("voice_event_handle_approve"), 许可证信息(
+                    "app_item_licence"), 日常检查("examine_entp_object");
 
     private String key;
     private String value;

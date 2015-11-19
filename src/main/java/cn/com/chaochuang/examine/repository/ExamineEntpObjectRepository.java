@@ -16,5 +16,11 @@ import cn.com.chaochuang.examine.domain.ExamineEntpObject;
  *
  */
 public interface ExamineEntpObjectRepository extends SimpleDomainRepository<ExamineEntpObject, Long> {
-
+    /**
+     * 根据原系统日常检查记录编号查询日常检查记录
+     * 
+     * @param rmEntpObjectId
+     * @return
+     */
+    ExamineEntpObject findByRmEntpObjectId(Long rmEntpObjectId);
 }
