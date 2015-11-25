@@ -23,16 +23,12 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
 import cn.com.chaochuang.aipcase.domain.AipCaseApply;
-import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.AipCaseApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
-import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 
 /**
  * @author LJX
@@ -111,26 +107,4 @@ public class AipCaseApplyServiceImpl extends SimpleLongIdCrudRestService<AipCase
         }
     }
 
-    /**
-     * (non-Javadoc)
-     * 
-     * @see cn.com.chaochuang.aipcase.service.AipCaseApplyService#deleteDataUpdateAndFordo(cn.com.chaochuang.datacenter.domain.DataUpdate,
-     *      java.lang.String, cn.com.chaochuang.task.bean.AipCaseSubmitInfo)
-     */
-    @Override
-    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, String backInfo, AipCaseSubmitInfo nodeInfo) {
-        if ("true".equals(backInfo)) {
-            // 删除DataUpdate对象
-            this.dataUpdateService.delete(dataUpdate);
-        } else {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(backInfo);
-            this.dataUpdateService.getRepository().save(dataUpdate);
-        }
-        // 删除待办
-        FdFordoAipcase fordo = fdFordoAipcaseService.findByRmPendingId(nodeInfo.getFordoId() + "");
-        if (fordo != null) {
-            fdFordoAipcaseService.delete(fordo);
-        }
-    }
 }

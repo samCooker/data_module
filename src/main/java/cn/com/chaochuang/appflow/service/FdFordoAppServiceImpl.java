@@ -110,7 +110,9 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
             item.setFordoType(item.getFordoType().substring(0, 3));
             NullBeanUtils.copyProperties(fdFordo, item);
             // 将rmUserInfoId转成rmUserId
-            fdFordo.setRecipientId(user.getRmUserId());
+            if (user != null) {
+                fdFordo.setRecipientId(user.getRmUserId());
+            }
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
                 // 未读数据添加消息推送

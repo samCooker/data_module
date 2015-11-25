@@ -16,7 +16,6 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,8 +80,9 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
         // 参数设置
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("entpId", items[1]));
-        String updataInfo = MobileAppDataTaskService.getHttpClientHelper().doPost(
-                        new HttpPost(baseUrl + entpChangeInfoUrl), params, HttpClientHelper.ENCODE_GBK);
+        // 获取与行政审批相同的httpClient
+        String updataInfo = HttpClientHelper.doPost(MobileAppDataTaskService.getHttpClient(), baseUrl
+                        + entpChangeInfoUrl, params, HttpClientHelper.ENCODE_GBK);
         if (StringUtils.isBlank(updataInfo) || HttpClientHelper.RE_LOGIN.equals(updataInfo)) {
             return;// 获取失败或者需要用户登录才能获取信息（此处不进行登录，登录的设置在MobileAppDataTaskService.java中）
         }

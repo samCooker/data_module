@@ -45,7 +45,6 @@ import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
-import cn.com.chaochuang.task.bean.OaSubmitInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
@@ -121,7 +120,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "5 0/3 * * * ?")
+    @Scheduled(cron = "10/10 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -171,7 +170,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取
      */
-    @Scheduled(cron = "8 0/3 * * * ?")
+    // @Scheduled(cron = "8 0/3 * * * ?")
     public void getDocFileDataTask() {
         if (isGetDocFileRunning) {
             return;
@@ -217,7 +216,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "2 0/1 * * * ?")
+    @Scheduled(cron = "20/20 * * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -237,9 +236,14 @@ public class MobileOADataTaskService {
             }
             // 获取要提交的json字符串，调用ITransferOAService的setDocTransactInfo方法修改OA端数据
             String backInfo = transferOAService.setDocTransactInfo(dataUpdate.getContent());
-            JsonMapper mapper = JsonMapper.getInstance();
-            OaSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), OaSubmitInfo.class);
-            fileService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, backInfo);
+            if ("true".equals(backInfo)) {
+                // 删除DataUpdate对象
+                this.dataUpdateService.delete(dataUpdate);
+            } else {
+                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+                dataUpdate.setErrorInfo(backInfo);
+                this.dataUpdateService.getRepository().save(dataUpdate);
+            }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());
@@ -253,7 +257,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "3/7 * * * * ?")
+    // @Scheduled(cron = "3/7 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -309,7 +313,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "40 0/20 * * * ?")
+    // @Scheduled(cron = "40 0/20 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -346,17 +350,35 @@ public class MobileOADataTaskService {
     /**
      * 获取缺漏的正文附件方法
      */
-    // @Scheduled(cron = "2/2 * * * * ?")
-    /*
-     * public void getSharewordAttach() { if (isGetSharewordRunning) { return; } isGetSharewordRunning = true; try {
-     * Page<DocFile> docFilesPage = fileService.findAllByPage(pageSize, 100); String instIds =
-     * Tools.changeArrayToString(docFilesPage.getContent(), "rmInstanceId", ",", false); String json =
-     * this.transferOAService.getSharewordAttach(instIds); if (Tools.isEmptyString(json)) { isGetDocFileRunning = false;
-     * return; } JsonMapper mapper = JsonMapper.getInstance(); JavaType javaType =
-     * mapper.constructParametricType(ArrayList.class, DocFileAttachInfo.class); List<DocFileAttachInfo> datas =
-     * (List<DocFileAttachInfo>) mapper.readValue(json, javaType); // 保存附件信息
-     * attachmentsService.saveRemoteDocFileAttach(datas); pageSize++; } catch (Exception e) { e.printStackTrace(); }
-     * finally { isGetSharewordRunning = false; } }
-     */
+    // @Scheduled(cron = "10/10 * * * * ?")
+    // public void getSharewordAttach() {
+    // if (isGetSharewordRunning) {
+    // return;
+    // }
+    // isGetSharewordRunning = true;
+    // try {
+    // List<Object> instIdsList = docFileAttachRepository.findUnfeatchAttachInstId();
+    // StringBuilder instIds = new StringBuilder();
+    // if (Tools.isNotEmptyList(instIdsList)) {
+    // for (Object obj : instIdsList) {
+    // instIds.append(obj.toString() + ",");
+    // }
+    // instIds.deleteCharAt(instIds.length() - 1);
+    // String json = this.transferOAService.getSharewordAttach(instIds.toString());
+    // if (Tools.isEmptyString(json)) {
+    // isGetDocFileRunning = false;
+    // return;
+    // }
+    // JsonMapper mapper = JsonMapper.getInstance();
+    // JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileAttachInfo.class);
+    // List<DocFileAttachInfo> datas = (List<DocFileAttachInfo>) mapper.readValue(json, javaType); // 保存附件信息
+    // attachmentsService.saveRemoteDocFileAttach(datas);
+    // }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // } finally {
+    // isGetSharewordRunning = false;
+    // }
+    // }
 
 }

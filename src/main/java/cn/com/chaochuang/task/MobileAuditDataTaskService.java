@@ -11,9 +11,11 @@ package cn.com.chaochuang.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +27,6 @@ import cn.com.chaochuang.common.util.HttpClientHelper;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.AuditSubmitData;
@@ -39,37 +40,36 @@ import com.fasterxml.jackson.databind.JavaType;
 @Component
 public class MobileAuditDataTaskService {
     @Value("${supervise.userName}")
-    private String                  userName;
+    private String                   userName;
     @Value("${supervise.pwd}")
-    private String                  pwd;
+    private String                   pwd;
     @Value("${supervise.baseUrl}")
-    private String                  baseUrl;
+    private String                   baseUrl;
     @Value("${supervise.loginUrl}")
-    private String                  loginUrl;
+    private String                   loginUrl;
     @Value("${audit.getFordoDataUrl}")
-    private String                  getFordoDataUrl;
+    private String                   getFordoDataUrl;
     @Value("${supervise.submitUrl}")
-    private String                  submitUrl;
+    private String                   submitUrl;
 
     @Autowired
-    private FdFordoAuditService     fdFordoAuditService;
+    private FdFordoAuditService      fdFordoAuditService;
     @Autowired
-    private DataUpdateService       dataUpdateService;
+    private DataUpdateService        dataUpdateService;
+
+    @Resource
+    private MobileAppDataTaskService mobileAppDataTaskService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
-    private String                  rootPath;
+    private String                   rootPath;
     /** 公文附件存放相对路径 */
     @Value("${supervisefile.attach.path}")
-    private String                  docFileAttachPath;
+    private String                   docFileAttachPath;
     /** 获取公文阻塞标识 */
-    private static boolean          isFordoRunning      = false;
+    private static boolean           isFordoRunning      = false;
     /** 数据提交标识 */
-    private static boolean          isSubmitDataRunning = false;
-    /** 是否正在登录 */
-    private static boolean          isLoging            = false;
-    /** 创建httpClient对象 */
-    private static HttpClientHelper httpClientHelper    = HttpClientHelper.newHttpClientHelper();
+    private static boolean           isSubmitDataRunning = false;
 
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
@@ -80,12 +80,6 @@ public class MobileAuditDataTaskService {
             return;
         }
         isFordoRunning = true;
-        if (!isLoging) {
-            if (!loginSuperviseSys()) {
-                isFordoRunning = false;
-                return;
-            }
-        }
         try {
             // 获取当前待办表中公文待办中最大的id，若无法获取时间值则获取距离当前时间一个月的时间值
             AuditPendingHandleInfo info = this.fdFordoAuditService.selectMaxInputDate();
@@ -99,10 +93,12 @@ public class MobileAuditDataTaskService {
                 params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId()));
             }
             // 发送请求
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + getFordoDataUrl), params,
+            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
-                if (!HttpClientHelper.RE_LOGIN.equals(json) && !"FALSE".equals(json)) {
+                if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                    mobileAppDataTaskService.loginSuperviseSys();
+                } else if (!HttpClientHelper.RE_LOGIN.equals(json) && !"FALSE".equals(json)) {
                     // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                     JsonMapper mapper = JsonMapper.getInstance();
                     JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
@@ -158,19 +154,24 @@ public class MobileAuditDataTaskService {
                     params.add(new BasicNameValuePair("auditRecord", nodeInfo.getAuditRecords()[i]));
                 }
             }
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
+            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    loginSuperviseSys();
+                    mobileAppDataTaskService.loginSuperviseSys();
                 } else {
-                    fdFordoAuditService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+                    if (DataUpdate.SUBMIT_SUCCESS.equals(json)) {
+                        // 删除DataUpdate对象
+                        dataUpdateService.delete(dataUpdate);
+                    } else {
+                        // 保存错误信息
+                        dataUpdateService.saveErrorInfo(dataUpdate, json);
+                    }
                 }
             }
         } catch (Exception ex) {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(ex.getClass().getName());
-            this.dataUpdateService.getRepository().save(dataUpdate);
+            // 保存错误信息
+            dataUpdateService.saveErrorInfo(dataUpdate, ex.getClass().getName());
             ex.printStackTrace();
         } finally {
             isSubmitDataRunning = false;
@@ -178,18 +179,11 @@ public class MobileAuditDataTaskService {
     }
 
     /**
-     * 登录系统
+     * 获取与行政审批相同的httpClient
+     * 
+     * @return
      */
-    private boolean loginSuperviseSys() {
-        if (isLoging) {
-            return true;
-        }
-        isLoging = true;
-        try {
-            isLoging = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return isLoging;
+    private CloseableHttpClient getHttpClient() {
+        return MobileAppDataTaskService.getHttpClient();
     }
 }

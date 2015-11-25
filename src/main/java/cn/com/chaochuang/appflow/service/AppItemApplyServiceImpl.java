@@ -19,15 +19,12 @@ import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppFlowNodeInfo;
 import cn.com.chaochuang.appflow.domain.AppFlowNodeOpinions;
 import cn.com.chaochuang.appflow.domain.AppItemApply;
-import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.repository.AppItemApplyRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
-import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 /**
  * @author LLM
@@ -103,20 +100,4 @@ public class AppItemApplyServiceImpl extends SimpleLongIdCrudRestService<AppItem
         }
     }
 
-    @Override
-    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo) {
-        if (DataUpdate.SUBMIT_SUCCESS.equals(backInfo)) {
-            // 删除DataUpdate对象
-            dataUpdateService.delete(dataUpdate);
-        } else {
-            // 保存错误信息
-            dataUpdateService.saveErrorInfo(dataUpdate, backInfo);
-        }
-        // 删除待办
-        FdFordoApp fordo = fdFordoAppService.findByRmPendingId(nodeInfo.getPendingHandleId() + "");
-        if (fordo != null) {
-            fdFordoAppService.delete(fordo);
-        }
-
-    }
 }

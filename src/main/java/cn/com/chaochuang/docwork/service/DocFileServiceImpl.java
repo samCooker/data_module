@@ -27,8 +27,6 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -37,7 +35,6 @@ import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
-import cn.com.chaochuang.task.bean.OaSubmitInfo;
 
 /**
  * @author Shicx
@@ -96,7 +93,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             }
             NullBeanUtils.copyProperties(file, fileInfo);
             file.setDocStatus(DocStatus.在办);
-            file = repository.save(file);
+            file = repository.saveAndFlush(file);
             // 保存附件信息
             attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
             // 保存流程信息
@@ -117,7 +114,36 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 }
             }
         }
+    }
 
+    /**
+     * @see cn.com.chaochuang.docwork.service.DocFileService#saveDocFilesDatas(cn.com.chaochuang.task.bean.DocFileInfo,
+     *      cn.com.chaochuang.docwork.domain.FdFordo)
+     */
+    @Override
+    public void saveDocFilesDatas(DocFileInfo fileInfo, FdFordo fordo) {
+        if (fileInfo == null || fordo == null) {
+            return;
+        }
+        DocFile file = repository.findByRmInstanceId(fileInfo.getRmInstanceId());
+        if (file == null) {
+            // 该公文记录不已存在，则添加
+            file = new DocFile();
+        }
+        NullBeanUtils.copyProperties(file, fileInfo);
+        file.setDocStatus(DocStatus.在办);
+        file = repository.save(file);
+        // 保存附件信息
+        attachmentsService.saveRemoteDocFileAttach(fileInfo.getRemoteDocfileAttach(), file.getId());
+        // 保存流程信息
+        flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
+        // 保存意见信息
+        flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
+        // 保存公文个人办理记录
+        flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
+                        fileInfo.getRedactDeptId());
+        fordo.setLocalData(LocalData.有本地数据);
+        fdFordoRepository.save(fordo);
     }
 
     @Override
@@ -176,27 +202,12 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     }
 
     /**
-     * (non-Javadoc)
-     * 
-     * @see cn.com.chaochuang.docwork.service.DocFileService#deleteDataUpdateAndFordo(cn.com.chaochuang.datacenter.domain.DataUpdate,
-     *      cn.com.chaochuang.task.bean.OaSubmitInfo, java.lang.String)
+     * @see cn.com.chaochuang.docwork.service.DocFileService#findByRmInstanceId(java.lang.String)
      */
     @Override
-    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, OaSubmitInfo nodeInfo, String backInfo) {
-        if ("true".equals(backInfo)) {
-            // 删除DataUpdate对象
-            this.dataUpdateService.delete(dataUpdate);
-        } else {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(backInfo);
-            this.dataUpdateService.getRepository().save(dataUpdate);
-        }
-        // 删除待办
-        FdFordo fordo = fdFordoService.findOne(nodeInfo.getFordoId());
-        if (fordo != null) {
-            fdFordoService.delete(fordo);
-        }
+    public DocFile findByRmInstanceId(String rmInstanceId) {
 
+        return repository.findByRmInstanceId(rmInstanceId);
     }
 
 }

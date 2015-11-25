@@ -23,12 +23,11 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -43,7 +42,6 @@ import cn.com.chaochuang.common.util.HttpClientHelper;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
@@ -58,54 +56,53 @@ import com.fasterxml.jackson.databind.JavaType;
 public class MobileAppDataTaskService {
 
     @Value("${supervise.userName}")
-    private String                  userName;
+    private String                     userName;
     @Value("${supervise.pwd}")
-    private String                  pwd;
+    private String                     pwd;
     @Value("${supervise.baseUrl}")
-    private String                  baseUrl;
+    private String                     baseUrl;
     @Value("${supervise.loginUrl}")
-    private String                  loginUrl;
+    private String                     loginUrl;
     @Value("${supervise.getFordoDataUrl}")
-    private String                  getFordoDataUrl;
+    private String                     getFordoDataUrl;
     @Value("${supervise.getSuperviseDataUrl}")
-    private String                  getSuperviseDataUrl;
+    private String                     getSuperviseDataUrl;
     @Value("${supervise.submitUrl}")
-    private String                  submitUrl;
+    private String                     submitUrl;
     @Value("${supervise.downloadUrl}")
-    private String                  downloadUrl;
-
-    @Autowired
-    private FdFordoAppService       fdFordoAppService;
-    @Autowired
-    private AppItemApplyService     appItemApplyService;
-    @Autowired
-    private DataUpdateService       dataUpdateService;
-    @Autowired
-    private AppItemAttachService    appItemAttachService;
+    private String                     downloadUrl;
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
-    private String                  rootPath;
-
+    private String                     rootPath;
     /** 公文附件存放相对路径 */
     @Value("${supervisefile.attach.path}")
-    private String                  docFileAttachPath;
-    /** 获取公文阻塞标识 */
-    private static boolean          isFordoRunning          = false;
-    /** 获取行政审批数据标识 */
-    private static boolean          isAppItemDataRunning    = false;
-    /** 提交行政审批数据标识 */
-    private static boolean          isSubmitDataRunning     = false;
-    /** 下载公文附件阻塞标识 */
-    private static boolean          isDownLoadAttachRunning = false;
-    /** 是否正在登录 */
-    private static boolean          isLoging                = false;
+    private String                     docFileAttachPath;
+
+    @Autowired
+    private FdFordoAppService          fdFordoAppService;
+    @Autowired
+    private AppItemApplyService        appItemApplyService;
+    @Autowired
+    private DataUpdateService          dataUpdateService;
+    @Autowired
+    private AppItemAttachService       appItemAttachService;
     /** 创建httpClient对象 */
-    private static HttpClientHelper httpClientHelper        = HttpClientHelper.newHttpClientHelper();
+    private static CloseableHttpClient httpClient              = HttpClientHelper.initHttpClient();
+    /** 获取公文阻塞标识 */
+    private static boolean             isFordoRunning          = false;
+    /** 获取行政审批数据标识 */
+    private static boolean             isAppItemDataRunning    = false;
+    /** 提交行政审批数据标识 */
+    private static boolean             isSubmitDataRunning     = false;
+    /** 下载公文附件阻塞标识 */
+    private static boolean             isDownLoadAttachRunning = false;
+    /** 是否正在登录 */
+    private static boolean             isLoging                = false;
 
     /**
      * 向行政审批系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "5 0/5 * * * ?")
+    // @Scheduled(cron = "5 0/5 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -123,7 +120,7 @@ public class MobileAppDataTaskService {
                 params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
             }
             // 发送请求
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + getFordoDataUrl), params,
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
@@ -147,26 +144,25 @@ public class MobileAppDataTaskService {
     /**
      * 登录系统
      */
-    private void loginSuperviseSys() {
+    public void loginSuperviseSys() {
         if (isLoging) {
             return;
         }
-        isLoging = true;
         try {
-            boolean isLogin = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
-            System.out.println(isLogin);
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("account", userName));
+            params.add(new BasicNameValuePair("password", pwd));
+            isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
+            System.out.println(isLoging);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            isLoging = false;
         }
-
     }
 
     /**
      * 获取行政审批数据
      */
-    @Scheduled(cron = "8 0/6 * * * ?")
+    // @Scheduled(cron = "8 0/6 * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -184,7 +180,7 @@ public class MobileAppDataTaskService {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("pendingIds", pendingIds));
             // 发送请求
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + getSuperviseDataUrl), params,
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + getSuperviseDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
@@ -208,7 +204,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    @Scheduled(cron = "10 0/2 * * * ?")
+    // @Scheduled(cron = "10 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -238,19 +234,23 @@ public class MobileAppDataTaskService {
             params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
             params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
             params.add(new BasicNameValuePair("noPendingHandle", nodeInfo.isNoPendingHandle() + ""));
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
-                            HttpClientHelper.ENCODE_GBK);
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     loginSuperviseSys();
                 } else {
-                    appItemApplyService.deleteDataUpdateAndFordo(dataUpdate, nodeInfo, json);
+                    if (DataUpdate.SUBMIT_SUCCESS.equals(json)) {
+                        // 删除DataUpdate对象
+                        dataUpdateService.delete(dataUpdate);
+                    } else {
+                        // 保存错误信息
+                        dataUpdateService.saveErrorInfo(dataUpdate, json);
+                    }
                 }
             }
         } catch (Exception ex) {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(ex.getClass().getName());
-            this.dataUpdateService.getRepository().save(dataUpdate);
+            // 保存错误信息
+            dataUpdateService.saveErrorInfo(dataUpdate, ex.getClass().getName());
             ex.printStackTrace();
         } finally {
             isSubmitDataRunning = false;
@@ -260,7 +260,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/20 * * * * ?")
+    // @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -290,7 +290,7 @@ public class MobileAppDataTaskService {
             params.add(new BasicNameValuePair("area", "appitem"));
             params.add(new BasicNameValuePair("fileId", attach.getRmAttachId() + ""));
             downloadGet = new HttpGet(baseUrl + downloadUrl);
-            CloseableHttpResponse response = httpClientHelper.doGetAndReturnResponse(downloadGet, params);
+            CloseableHttpResponse response = HttpClientHelper.doGetAndReturnResponse(httpClient, downloadGet, params);
             if (response == null) {
                 return;
             }
@@ -347,10 +347,12 @@ public class MobileAppDataTaskService {
     }
 
     /**
-     * @return the httpClientHelper
+     * 获取httpClient实体
+     * 
+     * @return the httpClient
      */
-    public static HttpClientHelper getHttpClientHelper() {
-        return httpClientHelper;
+    public static CloseableHttpClient getHttpClient() {
+        return httpClient;
     }
 
 }

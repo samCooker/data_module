@@ -11,12 +11,10 @@ package cn.com.chaochuang.docwork.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
-import cn.com.chaochuang.task.bean.OaSubmitInfo;
 
 /**
  * @author Shicx
@@ -32,6 +30,14 @@ public interface DocFileService extends CrudRestService<DocFile, Long> {
      */
     void saveDocFilesDatas(List<DocFileInfo> datas, List<FdFordo> fordoData);
 
+    /**
+     * 保存远程获取的公文数据，包括附件信息和流程信息
+     * 
+     * @param data
+     * @param fordo
+     */
+    void saveDocFilesDatas(DocFileInfo data, FdFordo fordo);
+
     /** 获取公文数据最大的导入时间 */
     FlowNodeOpinionsInfo getDocFileMaxInputDate();
 
@@ -39,10 +45,9 @@ public interface DocFileService extends CrudRestService<DocFile, Long> {
     void finishDocFile(String hisNoJsonStr);
 
     /**
-     * @param dataUpdate
-     * @param nodeInfo
-     * @param backInfo
+     * @param rmInstanceId
+     * @return
      */
-    void deleteDataUpdateAndFordo(DataUpdate dataUpdate, OaSubmitInfo nodeInfo, String backInfo);
+    DocFile findByRmInstanceId(String rmInstanceId);
 
 }

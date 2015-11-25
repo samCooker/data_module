@@ -25,7 +25,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -102,7 +102,8 @@ public class MobileComplaintDataTask {
     private CaseComplaintAttachService caseComplaintAttachService;
 
     /** 创建httpClient对象 */
-    private static HttpClientHelper    httpClientHelper          = HttpClientHelper.newHttpClientHelper();
+    private CloseableHttpClient        httpClient                = HttpClientHelper.initHttpClient();
+
     /** 是否正在登录 */
     private static boolean             isLoging                  = false;
     /** 正在获取待办标识 */
@@ -123,14 +124,14 @@ public class MobileComplaintDataTask {
         if (isLoging) {
             return;
         }
-        isLoging = true;
         try {
-            boolean isLogin = httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
-            System.out.println(isLogin);
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("account", userName));
+            params.add(new BasicNameValuePair("password", pwd));
+            isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
+            System.out.println(isLoging);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            isLoging = false;
         }
     }
 
@@ -158,7 +159,7 @@ public class MobileComplaintDataTask {
                 params.add(new BasicNameValuePair("fordoStatus", fordoStatus));
             }
             // 发送请求
-            String returnInfo = httpClientHelper.doPost(new HttpPost(baseUrl + getFordoDataUrl), params,
+            String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (HttpClientHelper.RE_LOGIN.equals(returnInfo)) {
                 // 需要登录
@@ -192,7 +193,7 @@ public class MobileComplaintDataTask {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("pendingIds", mapper.writeValueAsString(pendingIds)));
                 // 发送请求
-                String returnInfo = httpClientHelper.doPost(new HttpPost(baseUrl + getComplaintDataUrl), params,
+                String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getComplaintDataUrl, params,
                                 HttpClientHelper.ENCODE_GBK);
                 if (HttpClientHelper.RE_LOGIN.equals(returnInfo)) {
                     // 需要登录
@@ -236,7 +237,7 @@ public class MobileComplaintDataTask {
                 params.add(new BasicNameValuePair("next", submitContent.getNext()));
                 params.add(new BasicNameValuePair("taskId", submitContent.getTaskId()));
                 // 提交数据
-                String json = httpClientHelper.doPost(new HttpPost(baseUrl + submitUrl), params,
+                String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params,
                                 HttpClientHelper.ENCODE_GBK);
                 if (StringUtils.isNotBlank(json)) {
                     if (HttpClientHelper.RE_LOGIN.equals(json)) {
@@ -265,7 +266,7 @@ public class MobileComplaintDataTask {
         }
         isGetSysDataChangeRunning = true;
         try {
-            String json = httpClientHelper.doGet(new HttpGet(baseUrl + getChangeDataUrl), null);
+            String json = HttpClientHelper.doGet(httpClient, baseUrl + getChangeDataUrl, null);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     loginComplaintSys();// 需要登录
@@ -317,7 +318,7 @@ public class MobileComplaintDataTask {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("fileId", attach.getRmAttachId() + ""));
             downloadGet = new HttpGet(baseUrl + downloadUrl);
-            CloseableHttpResponse response = httpClientHelper.doGetAndReturnResponse(downloadGet, params);
+            CloseableHttpResponse response = HttpClientHelper.doGetAndReturnResponse(httpClient, downloadGet, params);
             if (response == null) {
                 return;
             }
@@ -368,13 +369,6 @@ public class MobileComplaintDataTask {
             }
             isDownLoadAttachRunning = false;
         }
-    }
-
-    /**
-     * @return the httpClientHelper
-     */
-    public static HttpClientHelper getHttpClientHelper() {
-        return httpClientHelper;
     }
 
 }

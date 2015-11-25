@@ -10,6 +10,8 @@ package cn.com.chaochuang.docwork.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
@@ -41,4 +43,10 @@ public interface DocFileAttachRepository extends SimpleDomainRepository<DocFileA
      * @return
      */
     List<DocFileAttach> findByDocId(Long fileId);
+
+    /**
+     * @return
+     */
+    @Query(value = "select inst_id from gx_fda_oa.wf_data_shareword where inst_id in (select rm_instance_id from doc_file where doc_id not in(select doc_id from doc_file_attach))", nativeQuery = true)
+    List<Object> findUnfeatchAttachInstId();
 }

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +20,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -28,7 +28,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -40,36 +39,39 @@ public class HttpClientHelper {
     /**
      * 重新登录系统标识
      */
-    public static final String  RE_LOGIN    = "relogin";
+    public static final String RE_LOGIN        = "relogin";
     /**
      * 提交表单编码-gbk
      * */
-    public static final String  ENCODE_GBK  = "GBK";
+    public static final String ENCODE_GBK      = "GBK";
     /**
      * 提交表单编码-utf-8
      * */
-    public static final String  ENCODE_UTF8 = "UTF-8";
+    public static final String ENCODE_UTF8     = "UTF-8";
+    /**
+     * 连接超时(ms)
+     * */
+    public static final int    CONN_TIME_OUT   = 20000;
+    /**
+     * 读取超时(ms)
+     * */
+    public static final int    SOCKET_TIME_OUT = 30000;
 
-    private CloseableHttpClient httpClient;
-
-    public static HttpClientHelper newHttpClientHelper() {
-        return new HttpClientHelper();
-    }
-
-    public HttpClientHelper() {
-        super();
-        initHttpClient();
-    }
-
-    public void initHttpClient() {
+    /**
+     * 创建一个httpClient对象，并进行相关配置
+     * 
+     * @return
+     */
+    public static CloseableHttpClient initHttpClient() {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        // 将最大连接数增加到50
-        cm.setMaxTotal(50);
-        // 将每个路由基础的连接增加到10
-        cm.setDefaultMaxPerRoute(20);
-        // 将目标主机的最大连接数增加到25
-
-        this.httpClient = HttpClients.custom().setConnectionManager(cm).build();
+        // 默认连接池最大连接数(MaxTotal)20 ，每个路由基础的连接数(DefaultMaxPerRoute)2
+        // 将连接池最大连接数
+        // cm.setMaxTotal(20);
+        // 每个路由基础的连接数
+        // cm.setDefaultMaxPerRoute(2);
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(new Integer(SOCKET_TIME_OUT))
+                        .setConnectTimeout(new Integer(CONN_TIME_OUT)).build();// 设置请求和传输超时时间
+        return HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig).build();
     }
 
     /**
@@ -80,19 +82,12 @@ public class HttpClientHelper {
      * @return
      * @throws Exception
      */
-    public boolean loginSuperviseSys(String userName, String pwd, HttpPost post) throws Exception {
+    public static boolean loginSys(CloseableHttpClient httpClient, String postUrl, List<NameValuePair> params,
+                    String charset) throws Exception {
+        HttpPost post = null;
         try {
-            if (post == null) {
-                return false;
-            }
-            if (StringUtils.isBlank(userName) || StringUtils.isBlank(pwd)) {
-                return false;
-            }
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("account", userName));
-            params.add(new BasicNameValuePair("password", pwd));
-            // 设置参数
-            post.setEntity(new UrlEncodedFormEntity(params));
+            post = new HttpPost(postUrl);
+            post.setEntity(new UrlEncodedFormEntity(params, StringUtils.isNotBlank(charset) ? charset : ENCODE_GBK));
             HttpResponse httpresponse = httpClient.execute(post);
             // 获得跳转的网址
             Header locationHeader = httpresponse.getFirstHeader("Location");
@@ -120,8 +115,11 @@ public class HttpClientHelper {
      * @param params
      * @return
      */
-    public String doPost(HttpPost post, List<NameValuePair> params, String charset) {
+    public static String doPost(CloseableHttpClient httpClient, String postUrl, List<NameValuePair> params,
+                    String charset) {
+        HttpPost post = null;
         try {
+            post = new HttpPost(postUrl);
             // 设置参数及表单编码，charset为空则使用gbk
             post.setEntity(new UrlEncodedFormEntity(params, StringUtils.isNotBlank(charset) ? charset : ENCODE_GBK));
             CloseableHttpResponse response = httpClient.execute(post);
@@ -133,15 +131,17 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity());
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 return RE_LOGIN;
-            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                throw new RuntimeException("服务器返回404错误");
+            } else {
+                throw new RuntimeException("服务器返回" + statusCode + "错误");
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            post.releaseConnection();
+            if (post != null) {
+                post.releaseConnection();
+            }
         }
         return null;
     }
@@ -149,29 +149,32 @@ public class HttpClientHelper {
     /**
      * Get请求
      * 
-     * @param httpget
+     * @param httpGet
      * @param params
      * @return
      */
-    public String doGet(HttpGet httpget, List<NameValuePair> params) {
+    public static String doGet(CloseableHttpClient httpClient, String getUrl, List<NameValuePair> params) {
+        HttpGet httpGet = null;
         try {
+            httpGet = new HttpGet(getUrl);
             // 设置参数
             if (params != null) {
                 String str = EntityUtils.toString(new UrlEncodedFormEntity(params));
-                httpget.setURI(new URI(httpget.getURI().toString() + "?" + str));
+                httpGet.setURI(new URI(httpGet.getURI().toString() + "?" + str));
             }
             // 发送请求
-            CloseableHttpResponse response = httpClient.execute(httpget);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
             if (response == null) {
                 return null;
             }
             int statusCode = response.getStatusLine().getStatusCode();
             if (HttpStatus.SC_OK == statusCode) {
+                // 返回响应的字符串实体
                 return EntityUtils.toString(response.getEntity());
             } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
                 return RE_LOGIN;
-            } else if (statusCode == HttpStatus.SC_NOT_FOUND) {
-                throw new RuntimeException("服务器返回404错误");
+            } else {
+                throw new RuntimeException("服务器返回" + statusCode);
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -179,6 +182,8 @@ public class HttpClientHelper {
             e.printStackTrace();
         } catch (URISyntaxException e) {
             e.printStackTrace();
+        } finally {
+            httpGet.releaseConnection();
         }
         return null;
     }
@@ -190,13 +195,14 @@ public class HttpClientHelper {
      * @param params
      * @return
      */
-    public CloseableHttpResponse doGetAndReturnResponse(HttpGet httpget, List<NameValuePair> params) {
+    public static CloseableHttpResponse doGetAndReturnResponse(CloseableHttpClient httpClient, HttpGet httpGet,
+                    List<NameValuePair> params) {
         try {
             // 设置参数
             String str = EntityUtils.toString(new UrlEncodedFormEntity(params));
-            httpget.setURI(new URI(httpget.getURI().toString() + "?" + str));
+            httpGet.setURI(new URI(httpGet.getURI().toString() + "?" + str));
             // 发送请求
-            return httpClient.execute(httpget);
+            return httpClient.execute(httpGet);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {

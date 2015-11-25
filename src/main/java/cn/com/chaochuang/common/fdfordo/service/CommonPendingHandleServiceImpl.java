@@ -8,6 +8,7 @@
 
 package cn.com.chaochuang.common.fdfordo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -23,11 +24,18 @@ import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.audit.repository.FdFordoAuditRepository;
 import cn.com.chaochuang.casecomplaint.service.FdFordoCaseService;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
+import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.repository.FdFordoRepository;
+import cn.com.chaochuang.docwork.service.DocFileService;
+import cn.com.chaochuang.task.bean.DocFileInfo;
+import cn.com.chaochuang.webservice.server.ITransferOAService;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author Shicx
@@ -47,6 +55,10 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     private FdFordoCaseService       fdFordoCaseService;
     @Autowired
     private FdFordoAuditRepository   auditFordoRepository;
+    @Autowired
+    private ITransferOAService       transferOAService;
+    @Autowired
+    private DocFileService           docFileService;
 
     /**
      * (non-Javadoc)
@@ -64,12 +76,6 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             return;
         }
         switch (changeName) {
-        case 公文待办:// 公文系统
-            FdFordo oaFordo = this.oaRepository.findByRmPendingItemId(items[1]);
-            if (oaFordo != null) {
-                oaRepository.delete(oaFordo);
-            }
-            break;
         case 审批待办:// 审批系统
             FdFordoApp superviseFordo = supviseRepository.findByRmPendingId(items[1]);
             if (superviseFordo != null) {
@@ -95,6 +101,39 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             throw new RuntimeException("找不到对应的待办类型");
         }
 
+    }
+
+    /**
+     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateOADataIfExist(cn.com.chaochuang.datacenter.domain.SysDataChange,
+     *      cn.com.chaochuang.datacenter.reference.DataChangeTable)
+     */
+    @Override
+    public void updateOADataIfExist(SysDataChange dataChange, DataChangeTable changeName) {
+        if (changeName == null || dataChange == null || StringUtils.isEmpty(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的ID
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+        FdFordo oaFordo = this.oaRepository.findByRmPendingItemId(items[1]);
+        if (oaFordo != null) {
+            DocFile docFile = docFileService.findByRmInstanceId(oaFordo.getRmInstanceId());
+            // 更新文件信息
+            if (docFile != null) {
+                String json = transferOAService.getDocTransactInfo(oaFordo.getRmInstanceId());
+                if (!Tools.isEmptyString(json)) {
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
+                    List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
+                    if (Tools.isNotEmptyList(datas)) {
+                        docFileService.saveDocFilesDatas(datas.get(0), oaFordo);
+                    }
+                }
+            }
+            oaRepository.delete(oaFordo);
+        }
     }
 
 }

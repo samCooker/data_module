@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,19 +40,19 @@ import cn.com.chaochuang.datacenter.reference.OperationType;
 @Transactional
 public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicence> implements AppLicenceService {
     @Value("${supervise.userName}")
-    private String                  userName;
+    private String                     userName;
     @Value("${supervise.pwd}")
-    private String                  pwd;
+    private String                     pwd;
     @Value("${supervise.baseUrl}")
-    private String                  baseUrl;
+    private String                     baseUrl;
     @Value("${supervise.loginUrl}")
-    private String                  loginUrl;
+    private String                     loginUrl;
     @Value("${licence.licenceDataUrl}")
-    private String                  licenceDataUrl;
+    private String                     licenceDataUrl;
     /** 创建httpClient对象 */
-    private static HttpClientHelper httpClientHelper = HttpClientHelper.newHttpClientHelper();
+    private static CloseableHttpClient httpClient = HttpClientHelper.initHttpClient();
     @Autowired
-    private AppLicenceRepository    repository;
+    private AppLicenceRepository       repository;
 
     @Override
     public SimpleDomainRepository<AppLicence, Long> getRepository() {
@@ -79,7 +79,7 @@ public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicenc
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("licenceId", licenceId.toString()));
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + this.licenceDataUrl), params,
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + this.licenceDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
@@ -118,7 +118,10 @@ public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicenc
      */
     private void loginSuperviseSys() {
         try {
-            httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("account", userName));
+            params.add(new BasicNameValuePair("password", pwd));
+            HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
         } catch (Exception e) {
             e.printStackTrace();
         }

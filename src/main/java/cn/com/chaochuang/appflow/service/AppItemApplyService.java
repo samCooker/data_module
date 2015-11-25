@@ -13,8 +13,6 @@ import java.util.List;
 import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppItemApply;
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 
 /**
  * @author LLM
@@ -29,10 +27,4 @@ public interface AppItemApplyService extends CrudRestService<AppItemApply, Long>
      */
     public void saveAppItemApplyDatas(List<AppFlowShowData> appDatas);
 
-    /**
-     * @param dataUpdate
-     * @param nodeInfo
-     * @param backInfo
-     */
-    public void deleteDataUpdateAndFordo(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo, String backInfo);
 }

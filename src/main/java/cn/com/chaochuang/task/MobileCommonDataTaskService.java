@@ -117,7 +117,7 @@ public class MobileCommonDataTaskService {
                 try {
                     if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
                         // 同步公文系统的待办
-                        this.commonFordoService.analysisDataChange(item, DataChangeTable.公文待办);
+                        this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
                     } else if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
                         // 同步审批系统的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.审批待办);

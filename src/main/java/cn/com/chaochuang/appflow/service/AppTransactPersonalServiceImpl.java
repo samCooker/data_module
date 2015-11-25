@@ -24,15 +24,14 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.service.SysUserService;
 
-import com.sun.star.uno.RuntimeException;
-
 /**
  * @author Shicx
  *
  */
 @Service
 @Transactional
-public class AppTransactPersonalServiceImpl extends SimpleLongIdCrudRestService<AppTransactPersonal> implements AppTransactPersonalService {
+public class AppTransactPersonalServiceImpl extends SimpleLongIdCrudRestService<AppTransactPersonal> implements
+                AppTransactPersonalService {
 
     @Autowired
     private AppTransactPersonalRepository repository;
@@ -51,18 +50,21 @@ public class AppTransactPersonalServiceImpl extends SimpleLongIdCrudRestService<
         }
         for (AppFlowNodeInfo nodeInfo : nodeInfoList) {
             if (nodeInfo.getTransactId() != null) {// 不是发送给企业
-                AppTransactPersonal preTransaction = repository.findByRmItemApplyIdAndTransactId(nodeInfo.getItemApplyId(), nodeInfo.getTransactId());
+                AppTransactPersonal preTransaction = repository.findByRmItemApplyIdAndTransactId(
+                                nodeInfo.getItemApplyId(), nodeInfo.getTransactId());
                 if (preTransaction == null) {
                     // 新建经办记录
                     AppTransactPersonal newTransaction = new AppTransactPersonal();
                     SysUser user = userService.findByRmUserInfoId(nodeInfo.getTransactId());
                     if (user == null) {
-                        throw new RuntimeException("找不到RmUserInfo=" + nodeInfo.getTransactId() + "的用户。");
+                        continue;
+                        // throw new RuntimeException("找不到RmUserInfo=" + nodeInfo.getTransactId() + "的用户。");
                     }
                     newTransaction.setTitle(apply.getPrjName() + "   " + apply.getApplyInfo());
                     newTransaction.setRmItemApplyId(nodeInfo.getItemApplyId());
                     newTransaction.setTransactTime(nodeInfo.getArriveTime());
-                    newTransaction.setUnitOrgId(user.getDepartment() != null ? user.getDepartment().getAncestorDep() : null);
+                    newTransaction.setUnitOrgId(user.getDepartment() != null ? user.getDepartment().getAncestorDep()
+                                    : null);
                     newTransaction.setTransactId(nodeInfo.getTransactId());
                     newTransaction.setTransactDeptId(nodeInfo.getTransactDeptId());
                     repository.save(newTransaction);

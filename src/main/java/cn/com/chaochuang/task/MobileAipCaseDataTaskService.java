@@ -287,7 +287,14 @@ public class MobileAipCaseDataTaskService {
             JsonMapper mapper = JsonMapper.getInstance();
             AipCaseSubmitInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), AipCaseSubmitInfo.class);
             String backInfo = transferAipCaseService.submitOrRejectAipCaseApply(nodeInfo);
-            aipCaseApplyService.deleteDataUpdateAndFordo(dataUpdate, backInfo, nodeInfo);
+            if ("true".equals(backInfo)) {
+                // 删除DataUpdate对象
+                this.dataUpdateService.delete(dataUpdate);
+            } else {
+                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+                dataUpdate.setErrorInfo(backInfo);
+                this.dataUpdateService.getRepository().save(dataUpdate);
+            }
         } catch (Exception ex) {
             dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
             dataUpdate.setErrorInfo(ex.getClass().getName());

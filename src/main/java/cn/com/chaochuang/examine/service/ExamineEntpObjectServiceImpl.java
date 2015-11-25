@@ -15,7 +15,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +51,7 @@ public class ExamineEntpObjectServiceImpl extends SimpleLongIdCrudRestService<Ex
     @Value("${examine.examineDataUrl}")
     private String                      examineDataUrl;
     /** 创建httpClient对象 */
-    private static HttpClientHelper     httpClientHelper = HttpClientHelper.newHttpClientHelper();
+    private static CloseableHttpClient  httpClient = HttpClientHelper.initHttpClient();
 
     @Autowired
     private ExamineEntpObjectRepository repository;
@@ -81,7 +81,7 @@ public class ExamineEntpObjectServiceImpl extends SimpleLongIdCrudRestService<Ex
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("entpObjectId", entpObjectId.toString()));
-            String json = httpClientHelper.doPost(new HttpPost(baseUrl + this.examineDataUrl), params,
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + this.examineDataUrl, params,
                             HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
@@ -120,7 +120,10 @@ public class ExamineEntpObjectServiceImpl extends SimpleLongIdCrudRestService<Ex
      */
     private void loginSuperviseSys() {
         try {
-            httpClientHelper.loginSuperviseSys(userName, pwd, new HttpPost(baseUrl + loginUrl));
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("account", userName));
+            params.add(new BasicNameValuePair("password", pwd));
+            HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
         } catch (Exception e) {
             e.printStackTrace();
         }
