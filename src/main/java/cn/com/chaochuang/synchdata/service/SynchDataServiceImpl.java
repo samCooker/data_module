@@ -15,9 +15,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
@@ -25,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.appflow.repository.AppLicenceRepository;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
@@ -46,6 +45,8 @@ public class SynchDataServiceImpl implements SynchDataService {
     private SysSynchdataTaskRepository taskRepository;
     @Autowired
     private AppEntpRepository          entpRepository;
+    @Autowired
+    private AppLicenceRepository       licenceRepository;
     @Value("${app.entp.countsql}")
     private String                     entpCountSQL;
     @Value("${app.entp.datasql}")
@@ -68,7 +69,7 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     taskUpdateSQL;
     /** 每次处理数据块记录数 */
     @Value("${datablock}")
-    private Integer                    dataBlock = 2000;
+    private Integer                    dataBlock = 500;
 
     /**
      * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchAppEntpData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
@@ -93,6 +94,9 @@ public class SynchDataServiceImpl implements SynchDataService {
         ResultSet addrResult = null;
         ResultSet seqResult = null;
         ResultSet licenceResult = null;
+
+        Map<String, Integer> entpInsertSQLItem = this.buildInsertFieldMap(this.entpInsertSQL);
+        Map<String, Integer> entpLicenceInsertSQLItem = this.buildInsertFieldMap(this.entpLicenceInsertSQL);
         // 获取相对人库的企业数据
         try {
             entpConn = this.appSynchDataSourceService.getConnection();
@@ -137,9 +141,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             task.setBeginTime(new Date());
             this.updateTaskInfo(task, ptaskstat);
             StringBuilder busName = new StringBuilder();
-            Map<String, Object> dataMap = new HashMap(), licenceMap = new HashMap();
-            ;
-            int idx = 0, licenceIdx = 0;
+            int idx = 0, countIdx = 0;
             // entp_id, entp_name, entp_province, contact, contact_duty, cell_phone, contact_address,
             // contact_postal_code, tel, register_address, register_fund, business_license, business_license_date,
             // handle_unit_name, city_name, fax, email
@@ -148,92 +150,129 @@ public class SynchDataServiceImpl implements SynchDataService {
             while (curId < maxId) {
                 pentpstat.setObject(1, minId);
                 pentpstat.setObject(2, minId + (this.dataBlock - 1));
+                System.out.println("get entp data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 result = pentpstat.executeQuery();
+                System.out.println("get entp data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 while (result.next()) {
                     idx++;
 
                     curId = result.getLong("entp_id");
-                    dataMap.put("rm_entp_id", curId);
-                    dataMap.put("entp_name", result.getObject("entp_name"));
-                    dataMap.put("entp_province", result.getObject("entp_province"));
-                    dataMap.put("contact", result.getObject("contact"));
-                    dataMap.put("contact_duty", result.getObject("contact_duty"));
-                    dataMap.put("cell_phone", result.getObject("cell_phone"));
-                    dataMap.put("contact_address", result.getObject("contact_address"));
-                    dataMap.put("contact_postal_code", result.getObject("contact_postal_code"));
-                    dataMap.put("tel", result.getObject("tel"));
-                    dataMap.put("register_address", result.getObject("register_address"));
-                    dataMap.put("register_fund", result.getObject("register_fund"));
-                    dataMap.put("business_license", result.getObject("business_license"));
-                    dataMap.put("business_license_date", result.getObject("business_license_date"));
-                    dataMap.put("handle_unit_name", result.getObject("handle_unit_name"));
-                    dataMap.put("city_name", result.getObject("city_name"));
-                    pbusstat.setObject(1, curId);
-                    busResult = pbusstat.executeQuery();
-                    busName = new StringBuilder("");
-                    while (busResult.next()) {
-                        if (!Tools.isEmptyString(busResult.getString("bus_name"))) {
-                            busName.append(busResult.getString("entp_type_name")).append("：")
-                                            .append(busResult.getString("bus_name")).append("<br>");
-                        }
-                    }
-                    dataMap.put("bus_name", busName.toString());
-                    paddrstat.setObject(1, curId);
-                    addrResult = paddrstat.executeQuery();
-                    while (addrResult.next()) {
-                        dataMap.put("longitude", addrResult.getObject("longitude"));
-                        dataMap.put("latitude", addrResult.getObject("latitude"));
-                        break;
-                    }
-                    dataMap.put("input_date", new Date());
                     // 查询当前编号的企业数据是否已经存在
                     if (this.entpRepository.findByRmEntpId(curId) == null) {
+                        countIdx++;
+                        // entp_id,rm_entp_id, entp_name, entp_province, contact, contact_duty, cell_phone,
+                        // contact_address, contact_postal_code, tel, register_address, register_fund, business_license,
+                        // business_license_date, city_name, handle_unit_name, longitude, latitude, fax, email,
+                        // bus_name,input_date
+                        pinsertstat.setObject(entpInsertSQLItem.get("rm_entp_id"), curId);
+                        pinsertstat.setObject(entpInsertSQLItem.get("entp_name"), result.getObject("entp_name"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("entp_province"), result.getObject("entp_province"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact"), result.getObject("contact"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact_duty"), result.getObject("contact_duty"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("cell_phone"), result.getObject("cell_phone"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact_address"),
+                                        result.getObject("contact_address"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact_postal_code"),
+                                        result.getObject("contact_postal_code"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("tel"), result.getObject("tel"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("register_address"),
+                                        result.getObject("register_address"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("register_fund"), result.getObject("register_fund"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("business_license"),
+                                        result.getObject("business_license"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("business_license_date"),
+                                        result.getObject("business_license_date"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("handle_unit_name"),
+                                        result.getObject("handle_unit_name"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("city_name"), result.getObject("city_name"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("longitude"), null);
+                        pinsertstat.setObject(entpInsertSQLItem.get("latitude"), null);
+                        pbusstat.setObject(1, curId);
+                        busResult = pbusstat.executeQuery();
+                        busName = new StringBuilder("");
+                        while (busResult.next()) {
+                            if (!Tools.isEmptyString(busResult.getString("bus_name"))) {
+                                busName.append(busResult.getString("entp_type_name")).append("：")
+                                                .append(busResult.getString("bus_name")).append("<br>");
+                            }
+                        }
+                        pinsertstat.setObject(entpInsertSQLItem.get("bus_name"), busName.toString());
+                        paddrstat.setObject(1, curId);
+                        addrResult = paddrstat.executeQuery();
+                        while (addrResult.next()) {
+                            pinsertstat.setObject(entpInsertSQLItem.get("longitude"), addrResult.getObject("longitude"));
+                            pinsertstat.setObject(entpInsertSQLItem.get("latitude"), addrResult.getObject("latitude"));
+                            break;
+                        }
+                        pinsertstat.setObject(entpInsertSQLItem.get("fax"), result.getObject("fax"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("email"), result.getObject("email"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("input_date"), new Timestamp(new Date().getTime()));
                         seqResult = pseqstat.executeQuery();
                         seqResult.next();
-                        System.out.println("new entp_id=" + seqResult.getLong(1));
-                        dataMap.put("entp_id", seqResult.getLong(1));
-                        // insert操作
-                        this.setPrepareStatementData(pinsertstat, entpInsertSQL, dataMap, true);
-                    } else {
-                        // update操作
-                        // this.setPrepareStatementData(pupdatestat, entpUpdateSQL, dataMap, false);
-                    }
-                    plicencestat.setObject(1, curId);
-                    licenceResult = plicencestat.executeQuery();
-                    while (licenceResult.next()) {
-                        seqResult = pseqstat.executeQuery();
-                        seqResult.next();
-                        licenceMap.put("licence_id", seqResult.getLong(1));
-                        System.out.println("new licence_id=" + licenceMap.get("licence_id"));
-                        licenceMap.put("rm_licence_id", licenceResult.getObject("rm_licence_id"));
-                        licenceMap.put("rm_entp_id", licenceResult.getObject("rm_entp_id"));
-                        licenceMap.put("entp_type_name", licenceResult.getObject("entp_type_name"));
-                        licenceMap.put("licence_no", licenceResult.getObject("licence_no"));
-                        licenceMap.put("from_date", licenceResult.getObject("from_date"));
-                        licenceMap.put("to_date", licenceResult.getObject("to_date"));
-                        licenceMap.put("licence_time", licenceResult.getObject("licence_time"));
-                        this.setPrepareStatementData(plicenceinsertstat, this.entpLicenceInsertSQL, licenceMap, true);
-                        licenceMap = new HashMap();
-                        licenceIdx++;
-                    }
-                    if (licenceIdx > 0) {
-                        licenceIdx = 0;
+                        pinsertstat.setObject(entpInsertSQLItem.get("entp_id"), seqResult.getLong(1));
+                        pinsertstat.addBatch();
+
+                        plicencestat.setObject(1, curId);
+                        licenceResult = plicencestat.executeQuery();
+                        while (licenceResult.next()) {
+                            seqResult = pseqstat.executeQuery();
+                            seqResult.next();
+                            if (this.licenceRepository.findByRmLicenceId(Long.valueOf(licenceResult.getObject(
+                                            "rm_licence_id").toString())) != null) {
+                                continue;
+                            }
+                            try {
+                                System.out.println("rm_licence_id=" + licenceResult.getObject("rm_licence_id"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"),
+                                                seqResult.getLong(1));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
+                                                licenceResult.getObject("rm_licence_id"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"),
+                                                licenceResult.getObject("rm_entp_id"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"),
+                                                licenceResult.getObject("entp_type_name"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
+                                                licenceResult.getObject("licence_no"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
+                                                this.changeDataType(licenceResult.getObject("from_date")));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
+                                                this.changeDataType(licenceResult.getObject("to_date")));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
+                                                this.changeDataType(licenceResult.getObject("licence_time")));
+                                plicenceinsertstat.addBatch();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                continue;
+                            }
+                        }
                     }
                 }
+                System.out.println("insert entp data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 pinsertstat.executeBatch();
+                System.out.println("insert entp data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 pupdatestat.executeBatch();
+                System.out.println("update entp data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
 
                 pinsertstat.clearBatch();
                 pupdatestat.clearBatch();
 
+                pinsertstat.close();
+                pupdatestat.close();
+
+                System.out.println("insert licence data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 plicenceinsertstat.executeBatch();
+                System.out.println("insert licence data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 plicenceinsertstat.clearBatch();
+                plicenceinsertstat.close();
+                pinsertstat = localConn.prepareStatement(this.entpInsertSQL);
+                pupdatestat = localConn.prepareStatement(this.entpUpdateSQL);
+                plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
 
                 task.setFinishSynch(Long.valueOf(idx));
                 this.updateTaskInfo(task, ptaskstat);
                 minId += this.dataBlock;
             }
-            // localConn.commit();
+            localConn.commit();
             task.setStatus(SynchDataStatus.同步完成);
             task.setFinishTime(new Date());
             task.setMemo("完成数据同步！");
@@ -339,44 +378,6 @@ public class SynchDataServiceImpl implements SynchDataService {
             result.put(tmpField.toLowerCase().trim(), i + 1);
         }
         return result;
-    }
-
-    /**
-     * 设置Statement参数
-     *
-     * @param stat
-     * @param sql
-     * @param dataMap
-     * @param insert
-     */
-    private void setPrepareStatementData(PreparedStatement stat, String sql, Map dataMap, boolean insert) {
-        Map<String, Integer> fields = new HashMap();
-        if (insert) {
-            fields = this.buildInsertFieldMap(sql);
-        } else {
-            fields = this.buildUpdateFieldMap(sql);
-        }
-        try {
-            for (Iterator it = dataMap.entrySet().iterator(); it.hasNext();) {
-                Entry entry = (Entry) it.next();
-                if (fields.containsKey(entry.getKey())) {
-                    if (entry.getKey().toString().equals("licence_id")) {
-                        System.out.println("idx=" + fields.get(entry.getKey()) + "  value="
-                                        + this.changeDataType(entry.getValue()));
-                    }
-                    stat.setObject(fields.get(entry.getKey()), this.changeDataType(entry.getValue()));
-                    fields.remove(entry.getKey());
-                }
-            }
-            for (Iterator it = fields.entrySet().iterator(); it.hasNext();) {
-                Entry entry = (Entry) it.next();
-                stat.setObject(((Integer) entry.getValue()).intValue(), null);
-            }
-            stat.addBatch();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
     }
 
     /**
