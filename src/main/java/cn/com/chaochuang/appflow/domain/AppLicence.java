@@ -8,8 +8,6 @@
 
 package cn.com.chaochuang.appflow.domain;
 
-import java.util.Date;
-
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -31,11 +29,11 @@ public class AppLicence extends LongIdEntity {
     /** 许可证号 */
     private String licenceNo;
     /** 有效期（开始） */
-    private Date   fromDate;
+    private String fromDate;
     /** 有效期（结束） */
-    private Date   toDate;
+    private String toDate;
     /** 发证日期 */
-    private Date   licenceTime;
+    private String licenceTime;
     /** 许可类型名称 */
     private String entpTypeName;
 
@@ -87,7 +85,7 @@ public class AppLicence extends LongIdEntity {
     /**
      * @return the fromDate
      */
-    public Date getFromDate() {
+    public String getFromDate() {
         return fromDate;
     }
 
@@ -95,14 +93,14 @@ public class AppLicence extends LongIdEntity {
      * @param fromDate
      *            the fromDate to set
      */
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(String fromDate) {
         this.fromDate = fromDate;
     }
 
     /**
      * @return the toDate
      */
-    public Date getToDate() {
+    public String getToDate() {
         return toDate;
     }
 
@@ -110,14 +108,14 @@ public class AppLicence extends LongIdEntity {
      * @param toDate
      *            the toDate to set
      */
-    public void setToDate(Date toDate) {
+    public void setToDate(String toDate) {
         this.toDate = toDate;
     }
 
     /**
      * @return the licenceTime
      */
-    public Date getLicenceTime() {
+    public String getLicenceTime() {
         return licenceTime;
     }
 
@@ -125,7 +123,7 @@ public class AppLicence extends LongIdEntity {
      * @param licenceTime
      *            the licenceTime to set
      */
-    public void setLicenceTime(Date licenceTime) {
+    public void setLicenceTime(String licenceTime) {
         this.licenceTime = licenceTime;
     }
 

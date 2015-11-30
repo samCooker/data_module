@@ -222,7 +222,6 @@ public class SynchDataServiceImpl implements SynchDataService {
                                 continue;
                             }
                             try {
-                                System.out.println("rm_licence_id=" + licenceResult.getObject("rm_licence_id"));
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"),
                                                 seqResult.getLong(1));
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
@@ -234,11 +233,11 @@ public class SynchDataServiceImpl implements SynchDataService {
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
                                                 licenceResult.getObject("licence_no"));
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
-                                                this.changeDataType(licenceResult.getObject("from_date")));
+                                                this.changeDataType(licenceResult.getObject("from_date"), true));
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
-                                                this.changeDataType(licenceResult.getObject("to_date")));
+                                                this.changeDataType(licenceResult.getObject("to_date"), true));
                                 plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
-                                                this.changeDataType(licenceResult.getObject("licence_time")));
+                                                this.changeDataType(licenceResult.getObject("licence_time"), true));
                                 plicenceinsertstat.addBatch();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -386,11 +385,19 @@ public class SynchDataServiceImpl implements SynchDataService {
      * @param source
      * @return
      */
-    private Object changeDataType(Object source) {
+    private Object changeDataType(Object source, boolean toString) {
         if (source == null) {
             return null;
         }
-        if (source.getClass().getName().indexOf("java.util.Date") >= 0) {
+        if (source.getClass().getName().toLowerCase().indexOf("timestamp") >= 0
+                        || source.getClass().getName().toLowerCase().indexOf("date") >= 0) {
+            if (toString) {
+                try {
+                    return Tools.DATE_TIME_FORMAT.format(new Timestamp(((Date) source).getTime()));
+                } catch (Exception ex) {
+                    return source;
+                }
+            }
             return new Timestamp(((Date) source).getTime());
         }
         return source;
@@ -406,12 +413,12 @@ public class SynchDataServiceImpl implements SynchDataService {
         Map<String, Integer> fields = new HashMap();
         fields = this.buildUpdateFieldMap(this.taskUpdateSQL.substring(0, this.taskUpdateSQL.indexOf("where")));
         try {
-            stat.setObject(fields.get("need_synch"), this.changeDataType(task.getNeedSynch()));
-            stat.setObject(fields.get("finish_synch"), this.changeDataType(task.getFinishSynch()));
-            stat.setObject(fields.get("begin_time"), this.changeDataType(task.getBeginTime()));
-            stat.setObject(fields.get("finish_time"), this.changeDataType(task.getFinishTime()));
-            stat.setObject(fields.get("status"), this.changeDataType(task.getStatus().getKey()));
-            stat.setObject(fields.get("memo"), this.changeDataType(task.getMemo()));
+            stat.setObject(fields.get("need_synch"), task.getNeedSynch());
+            stat.setObject(fields.get("finish_synch"), task.getFinishSynch());
+            stat.setObject(fields.get("begin_time"), this.changeDataType(task.getBeginTime(), false));
+            stat.setObject(fields.get("finish_time"), this.changeDataType(task.getFinishTime(), false));
+            stat.setObject(fields.get("status"), task.getStatus().getKey());
+            stat.setObject(fields.get("memo"), task.getMemo());
             stat.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
