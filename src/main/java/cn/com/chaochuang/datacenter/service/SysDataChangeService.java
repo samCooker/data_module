@@ -10,6 +10,8 @@ package cn.com.chaochuang.datacenter.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 
@@ -21,8 +23,16 @@ public interface SysDataChangeService extends CrudRestService<SysDataChange, Lon
 
     /**
      * 保存远程系统记录
-     * 
+     *
      * @param sysDataChanges
      */
     void saveSysDataChange(List<SysDataChange> sysDataChanges);
+
+    /**
+     * 获取OA待办变更记录
+     * 
+     * @param page
+     * @return
+     */
+    List<SysDataChange> selectOAPendingItem(Pageable page);
 }

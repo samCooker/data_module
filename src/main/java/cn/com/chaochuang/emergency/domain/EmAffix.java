@@ -11,8 +11,11 @@ package cn.com.chaochuang.emergency.domain;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
+import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 
 /**
@@ -23,19 +26,22 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "affix_id")) })
 public class EmAffix extends LongIdEntity {
     /** 文件编号 */
-    private Long   fileId;
+    private Long      fileId;
     /** 文件保存名 */
-    private String saveName;
+    private String    saveName;
     /** 文件大小 */
-    private Long   fileSize;
+    private Long      fileSize;
     /** 真实文件名 */
-    private String trueName;
+    private String    trueName;
     /** 文件路径 */
-    private String savePath;
+    private String    savePath;
     /** 是否图片 */
-    private String isImage;
+    private String    isImage;
     /** 原系统附件编号 */
-    private String rmAffixId;
+    private String    rmAffixId;
+    /** 本地已有数据 */
+    @Convert(converter = LocalDataConverter.class)
+    private LocalData localData = LocalData.非本地数据;
 
     /**
      * @return the fileId
@@ -140,6 +146,21 @@ public class EmAffix extends LongIdEntity {
      */
     public void setRmAffixId(String rmAffixId) {
         this.rmAffixId = rmAffixId;
+    }
+
+    /**
+     * @return the localData
+     */
+    public LocalData getLocalData() {
+        return localData;
+    }
+
+    /**
+     * @param localData
+     *            the localData to set
+     */
+    public void setLocalData(LocalData localData) {
+        this.localData = localData;
     }
 
 }

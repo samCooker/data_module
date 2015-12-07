@@ -8,6 +8,12 @@
 
 package cn.com.chaochuang.datacenter.repository;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
 
@@ -16,5 +22,13 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
  *
  */
 public interface SysDataChangeRepository extends SimpleDomainRepository<SysDataChange, Long> {
-
+    /**
+     * 查询指定内容的变更数据
+     * 
+     * @param changeTableName
+     * @param page
+     * @return
+     */
+    @Query("select d from SysDataChange d where d.changeTableName=:ch order by d.id")
+    public List<SysDataChange> findByChangeTableName(@Param("ch") String changeTableName, Pageable page);
 }

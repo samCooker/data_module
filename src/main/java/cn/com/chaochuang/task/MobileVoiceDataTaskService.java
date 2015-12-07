@@ -97,7 +97,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情的待办记录
      */
-    // @Scheduled(cron = "11/30 * * * * ?")
+    // //@Scheduled(cron = "11 0/4 * * * ?")
+    // @Scheduled(cron = "11 0/4 * * * ?")
     public void getVoiceInfoFordo() {
         if (isGetVoiceInfoPendingRunning) {
             return;
@@ -134,7 +135,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取待办事件
      */
-    // @Scheduled(cron = "17/30 * * * * ?")
+    // //@Scheduled(cron = "17 0/4 * * * ?")
+    // @Scheduled(cron = "17 0/4 * * * ?")
     public void getVoiceEventFordo() {
         if (isGetVoiceEventPendingRunning) {
             return;
@@ -171,7 +173,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 提交舆情信息修改数据
      */
-    // @Scheduled(cron = "22/30 * * * * ?")
+    // //@Scheduled(cron = "22 0/3 * * * ?")
+    // @Scheduled(cron = "22 0/3 * * * ?")
     public void commitVoiceInfoDataTask() {
         if (isGetVoiceInfoSubmitRunning) {
             return;
@@ -213,7 +216,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 提交舆情事件的数据
      */
-    // @Scheduled(cron = "25/30 * * * * ?")
+    // //@Scheduled(cron = "25 0/2 * * * ?")
+    // @Scheduled(cron = "25 0/2 * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
             return;
@@ -255,7 +259,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情相关变更数据
      */
-    // @Scheduled(cron = "5/5 * * * * ?")
+    // //@Scheduled(cron = "15 0/2 * * * ?")
+    // @Scheduled(cron = "15 0/2 * * * ?")
     public void getDataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -280,7 +285,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情文件
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    // //@Scheduled(cron = "25 0/2 * * * ?")
+    // @Scheduled(cron = "25 0/2 * * * ?")
     public void getVoiceInfoAttachTask() {
         if (isGetVoiceInfoAttachRunning) {
             return;
@@ -334,7 +340,8 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情提醒信息
      */
-    // @Scheduled(cron = "7/12 * * * * ?")
+    // //@Scheduled(cron = "7 0/5 * * * ?")
+    // //@Scheduled(cron = "7 0/5 * * * ?")
     public void getVoiceAlarm() {
         if (isGetVoiceAlarmRunning) {
             return;
@@ -371,7 +378,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 推送舆情提醒
      */
-    // @Scheduled(cron = "5/10 * * * * ?")
+    // //@Scheduled(cron = "5 0/5 * * * ?")
     public void pushVoiceAlarm() {
         if (isGetPushAlarmRunning) {
             return;

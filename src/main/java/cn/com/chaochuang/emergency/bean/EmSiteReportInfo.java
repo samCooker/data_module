@@ -1,47 +1,41 @@
 /*
- * FileName:    EmSiteReport.java
+ * FileName:    EmSiteReportInfo.java
  * Description:
  * Company:     南宁超创信息工程有限公司
  * Copyright:   ChaoChuang (c) 2015
- * History:     2015年11月26日 (LLM) 1.0 Create
+ * History:     2015年12月4日 (LLM) 1.0 Create
  */
 
-package cn.com.chaochuang.emergency.domain;
+package cn.com.chaochuang.emergency.bean;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.emergency.domain.EmAffix;
 
 /**
  * @author LLM
  *
  */
-@Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "report_id")) })
-public class EmSiteReport extends LongIdEntity {
+public class EmSiteReportInfo {
     /** 原系统流水号 */
-    private Long   rmReportId;
+    private Long          rmReportId;
     /** 标题 */
-    private String title;
+    private String        title;
     /** 汇报内容 */
-    private String content;
+    private String        content;
     /** 汇报人编号 */
-    private Long   promerId;
-    /** 汇报人 */
-    private String promerName;
+    private Long          promerId;
     /** 汇报单位编号 */
-    private Long   promOrg;
+    private Long          promOrg;
     /** 汇报单位名称 */
-    private String promOrgName;
+    private String        promOrgName;
     /** 汇报日期 */
-    private Date   promTime;
+    private Date          promTime;
     /** 附件编号 */
-    private String rmAffixId;
+    private String        rmAffixId;
+    /** 附件列表 */
+    private List<EmAffix> affixs;
 
     /**
      * @return the rmReportId
@@ -74,18 +68,33 @@ public class EmSiteReport extends LongIdEntity {
     }
 
     /**
-     * @return the promerName
+     * @return the content
      */
-    public String getPromerName() {
-        return promerName;
+    public String getContent() {
+        return content;
     }
 
     /**
-     * @param promerName
-     *            the promerName to set
+     * @param content
+     *            the content to set
      */
-    public void setPromerName(String promerName) {
-        this.promerName = promerName;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * @return the promerId
+     */
+    public Long getPromerId() {
+        return promerId;
+    }
+
+    /**
+     * @param promerId
+     *            the promerId to set
+     */
+    public void setPromerId(Long promerId) {
+        this.promerId = promerId;
     }
 
     /**
@@ -149,33 +158,18 @@ public class EmSiteReport extends LongIdEntity {
     }
 
     /**
-     * @return the content
+     * @return the affixs
      */
-    public String getContent() {
-        return content;
+    public List<EmAffix> getAffixs() {
+        return affixs;
     }
 
     /**
-     * @param content
-     *            the content to set
+     * @param affixs
+     *            the affixs to set
      */
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    /**
-     * @return the promerId
-     */
-    public Long getPromerId() {
-        return promerId;
-    }
-
-    /**
-     * @param promerId
-     *            the promerId to set
-     */
-    public void setPromerId(Long promerId) {
-        this.promerId = promerId;
+    public void setAffixs(List<EmAffix> affixs) {
+        this.affixs = affixs;
     }
 
 }

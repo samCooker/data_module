@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.service.DocFileService;
+import cn.com.chaochuang.emergency.service.EmSiteReportService;
 import cn.com.chaochuang.examine.service.ExamineEntpObjectService;
 import cn.com.chaochuang.voice.service.VoiceEventService;
 import cn.com.chaochuang.voice.service.VoiceInfoService;
@@ -70,16 +72,20 @@ public class MobileCommonDataTaskService {
     private AppLicenceService          licenceService;
     @Autowired
     private ExamineEntpObjectService   examineService;
+    @Autowired
+    private EmSiteReportService        emSiteReportService;
 
     /** 获取公告阻塞标识 */
-    private static boolean             isGetSysDataChangeRunning  = false;
+    private static boolean             isGetSysDataChangeRunning            = false;
     /** 获取处理系统数据更改阻塞标识 */
-    private static boolean             isDealSysDataChangeRunning = false;
+    private static boolean             isDealSysDataChangeRunning           = false;
+    /** 获取OA待办数据更改阻塞标识 */
+    private static boolean             isDealOAPendingItemDataChangeRunning = false;
 
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "2 0/1 * * * ?")
+    // @Scheduled(cron = "2 0/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -117,7 +123,9 @@ public class MobileCommonDataTaskService {
                 try {
                     if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
                         // 同步公文系统的待办
-                        this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
+                        // this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
+                        isDealSysDataChangeRunning = false;
+                        return;
                     } else if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
                         // 同步审批系统的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.审批待办);
@@ -165,6 +173,9 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.日常检查.getKey().equals(item.getChangeTableName())) {
                         // 日常检查信息更新
                         this.examineService.saveExamineEntpObject(item);
+                    } else if (DataChangeTable.应急指挥情况汇报.getKey().equals(item.getChangeTableName())) {
+                        // 应急指挥情况汇报记录更新
+                        this.emSiteReportService.saveEmSiteReport(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());
@@ -178,6 +189,38 @@ public class MobileCommonDataTaskService {
             ex.printStackTrace();
         } finally {
             isDealSysDataChangeRunning = false;
+        }
+    }
+
+    /**
+     * 处理OA待办数据的变更
+     */
+    @Scheduled(cron = "8/20 * * * * ?")
+    public void dealOAPendingItemDataChange() {
+        if (isDealOAPendingItemDataChangeRunning) {
+            return;
+        }
+        isDealOAPendingItemDataChangeRunning = true;
+        try {
+            List<SysDataChange> datas = this.dataChangeService.selectOAPendingItem(new PageRequest(0, 10));
+            for (SysDataChange item : datas) {
+                try {
+                    if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步公文系统的待办
+                        this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
+                    }
+                    // 删除变更数据
+                    this.dataChangeService.delete(item.getId());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
+                    continue;
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isDealOAPendingItemDataChangeRunning = false;
         }
     }
 }

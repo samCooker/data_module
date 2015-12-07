@@ -13,12 +13,14 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.datacenter.repository.SysDataChangeRepository;
 
 /**
@@ -52,6 +54,15 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
                 ex.printStackTrace();
             }
         }
+    }
+
+    /**
+     * @see cn.com.chaochuang.datacenter.service.SysDataChangeService#selectOAPendingItem(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public List<SysDataChange> selectOAPendingItem(Pageable page) {
+        // 查询公文待办变更记录
+        return this.repository.findByChangeTableName(DataChangeTable.公文待办.getKey(), page);
     }
 
 }

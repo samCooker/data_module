@@ -39,6 +39,7 @@ import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceInfo;
 import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
 import cn.com.chaochuang.voice.domain.VoiceInfoEvent;
+import cn.com.chaochuang.voice.reference.VoiceInfoStatus;
 import cn.com.chaochuang.voice.repository.VoiceInfoAttachRepository;
 import cn.com.chaochuang.voice.repository.VoiceInfoEventRepository;
 import cn.com.chaochuang.voice.repository.VoiceInfoRepository;
@@ -77,7 +78,9 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     @Override
     public VoiceInfoPendingInfo selectMaxInputDate() {
         VoiceInfoPendingInfo result = new VoiceInfoPendingInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmInfoId) from ").append(VoiceInfo.class.getName());
+        // StringBuffer sql = new StringBuffer(" select Max(rmInfoId) from ").append(VoiceInfo.class.getName());
+        StringBuffer sql = new StringBuffer(" select Max(rmInfoId) from ").append(VoiceInfo.class.getName())
+                        .append(" where voiceInfoStatus='").append(VoiceInfoStatus.待办).append("'");
         Query query = this.entityManager.createQuery(sql.toString());
         List datas = (ArrayList) query.getResultList();
         if (Tools.isNotEmptyList(datas)) {

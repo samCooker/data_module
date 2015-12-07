@@ -59,21 +59,28 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
 
             // 将json转成department对象
             JsonMapper mapper = JsonMapper.getInstance();
-            SysUser newUser = mapper.readValue(json, SysUser.class);
-            // 根据原系统部门编号查询变更数据是否存在
-            SysUser curUser = this.repository.findByRmUserId(newUser.getRmUserId());
-            if (curUser == null) {
-                curUser = new SysUser();
-                // 新增人员要设置人员的本地部门编号（depId）
-                SysDepartment dept = this.departmentRepository.findByRmDepId(newUser.getRmDepId());
-                newUser.setDepartment(dept);
-            } else {
-                // 保证编号在BeanUtils.copyProperties后不被刷掉
-                newUser.setId(curUser.getId());
+            try {
+                SysUser newUser = mapper.readValue(json, SysUser.class);
+                if (newUser == null || newUser.getRmUserId() == null) {
+                    return;
+                }
+                // 根据原系统部门编号查询变更数据是否存在
+                SysUser curUser = this.repository.findByRmUserId(newUser.getRmUserId());
+                if (curUser == null) {
+                    curUser = new SysUser();
+                    // 新增人员要设置人员的本地部门编号（depId）
+                    SysDepartment dept = this.departmentRepository.findByRmDepId(newUser.getRmDepId());
+                    newUser.setDepartment(dept);
+                } else {
+                    // 保证编号在BeanUtils.copyProperties后不被刷掉
+                    newUser.setId(curUser.getId());
+                }
+                // 变更数据存在则获取对象后覆盖再保存
+                NullBeanUtils.copyProperties(curUser, newUser);
+                this.repository.save(curUser);
+            } catch (Exception ex) {
+                return;
             }
-            // 变更数据存在则获取对象后覆盖再保存
-            NullBeanUtils.copyProperties(curUser, newUser);
-            this.repository.save(curUser);
         } else if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
             String[] items = dataChange.getChangeScript().split("=");
             if (items != null && items.length == 2) {
