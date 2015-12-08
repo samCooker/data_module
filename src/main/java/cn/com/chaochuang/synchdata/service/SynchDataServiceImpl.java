@@ -8,6 +8,9 @@
 
 package cn.com.chaochuang.synchdata.service;
 
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,6 +35,8 @@ import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
 import cn.com.chaochuang.synchdata.reference.SynchDataStatus;
 import cn.com.chaochuang.synchdata.repository.SysSynchdataTaskRepository;
+import cn.com.chaochuang.voice.repository.VoiceInfoAttachRepository;
+import cn.com.chaochuang.voice.repository.VoiceInfoRepository;
 
 /**
  * @author LLM
@@ -52,6 +57,10 @@ public class SynchDataServiceImpl implements SynchDataService {
     private AppEntpRepository          entpRepository;
     @Autowired
     private AppLicenceRepository       licenceRepository;
+    @Autowired
+    private VoiceInfoRepository        voiceInfoRepository;
+    @Autowired
+    private VoiceInfoAttachRepository  voiceInfoAttachRepository;
     @Autowired
     private SysUserService             userService;
     @Value("${app.entp.countsql}")
@@ -84,7 +93,8 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     affixDataSQL;
     @Value("${voice.info.affixinsertsql}")
     private String                     affixInsertSQL;
-
+    @Value("${voice.info.rulesql}")
+    private String                     infoRuleSQL;
     /** 每次处理数据块记录数 */
     @Value("${datablock}")
     private Integer                    dataBlock = 500;
@@ -456,19 +466,22 @@ public class SynchDataServiceImpl implements SynchDataService {
         PreparedStatement pinsertstat = null;
         PreparedStatement pvoiceaffixstat = null;
         PreparedStatement paffixinsertstat = null;
+        PreparedStatement prulestat = null;
         PreparedStatement pseqstat = null;
         PreparedStatement ptaskstat = null;
 
         ResultSet result = null;
         ResultSet affixResult = null;
+        ResultSet ruleResult = null;
         ResultSet seqResult = null;
 
         Map<String, Integer> infoInsertSQLItem = this.buildInsertFieldMap(this.infoInsertSQL);
         Map<String, Integer> affixInsertSQLItem = this.buildInsertFieldMap(this.affixInsertSQL);
+        Map<Long, String> voiceRules = new HashMap();
         // 获取相对人库的企业数据
         try {
-            voiceConn = this.appSynchDataSourceService.getConnection();
-            localConn = this.localDataSourceService.getConnection();
+            voiceConn = this.voiceSynchDataSourceService.getConnection();
+            localConn = this.localDataSourceService.getConnectionByClassName();
             if (voiceConn == null) {
                 task.setMemo("无法连接目的服务器同步失败！");
                 task.setStatus(SynchDataStatus.同步完成);
@@ -477,7 +490,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             }
             stat = voiceConn.createStatement();
             // 获取本次同步任务需要同步的数据量
-            result = stat.executeQuery(this.entpCountSQL);
+            result = stat.executeQuery(this.infoCountSQL);
             result.next();
             // 需要同步的记录数
             Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
@@ -496,6 +509,8 @@ public class SynchDataServiceImpl implements SynchDataService {
 
             pvoiceaffixstat = voiceConn.prepareStatement(this.affixDataSQL);
             paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
+            // 舆情规则查询
+            prulestat = voiceConn.prepareStatement(this.infoRuleSQL);
             pseqstat = localConn.prepareStatement(this.sequenceSQL);
             ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
 
@@ -521,11 +536,11 @@ public class SynchDataServiceImpl implements SynchDataService {
                     idx++;
 
                     curId = result.getLong("info_id");
-                    pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"), null);
-                    pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), null);
                     // 查询当前编号的企业数据是否已经存在
-                    if (this.entpRepository.findByRmEntpId(curId) == null) {
+                    if (this.voiceInfoRepository.findByRmInfoId(curId) == null) {
                         countIdx++;
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"), null);
+                        pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), null);
                         if (result.getObject("voice_info_discover_user") != null) {
                             SysUser user = this.userService.findByRmUserInfoId(Long.valueOf(result.getObject(
                                             "voice_info_discover_user").toString()));
@@ -536,14 +551,36 @@ public class SynchDataServiceImpl implements SynchDataService {
                                                 .getAncestorDep());
                             }
                         }
+                        // 获取舆情规则名称
+                        pinsertstat.setObject(infoInsertSQLItem.get("rule_name"), null);
+                        if (result.getObject("rule_id") != null) {
+                            prulestat.setObject(1, result.getObject("rule_id"));
+                            ruleResult = prulestat.executeQuery();
+                            if (!voiceRules.containsKey(result.getObject("rule_id"))) {
+                                while (ruleResult.next()) {
+                                    voiceRules.put(result.getLong("rule_id"), ruleResult.getString("rule_name"));
+                                    continue;
+                                }
+                            }
+                            pinsertstat.setObject(infoInsertSQLItem.get("rule_name"),
+                                            voiceRules.get(result.getObject("rule_id")));
+                        }
                         pinsertstat.setObject(infoInsertSQLItem.get("rm_info_id"), curId);
-                        pinsertstat.setObject(infoInsertSQLItem.get("rule_name"), result.getObject("rule_name"));
                         pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_home"),
                                         result.getObject("voice_info_is_home"));
                         pinsertstat.setObject(infoInsertSQLItem.get("voice_info_title"),
                                         result.getObject("voice_info_title"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_content"),
-                                        result.getObject("voice_info_content"));
+                        // 设置Clob类型字段
+                        Clob voiceclob = result.getClob("voice_info_content");
+                        Clob clob = (Clob) createOracleLob(localConn, "oracle.sql.CLOB");
+                        if (result.getClob("voice_info_content") != null) {
+                            pinsertstat.setClob(
+                                            infoInsertSQLItem.get("voice_info_content"),
+                                            strToClob(voiceclob.getSubString(Long.valueOf(1),
+                                                            Long.valueOf(voiceclob.length()).intValue()), clob));
+                        } else {
+                            pinsertstat.setClob(infoInsertSQLItem.get("voice_info_content"), strToClob("", clob));
+                        }
                         pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source"),
                                         result.getObject("voice_info_source"));
                         pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source_url"),
@@ -569,44 +606,51 @@ public class SynchDataServiceImpl implements SynchDataService {
 
                         pinsertstat.setObject(infoInsertSQLItem.get("content_area"), result.getObject("content_area"));
                         pinsertstat.setObject(infoInsertSQLItem.get("rule_id"), result.getObject("rule_id"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("local_data"), LocalData.非本地数据);
+                        pinsertstat.setObject(infoInsertSQLItem.get("local_data"), LocalData.非本地数据.getKey());
                         seqResult = pseqstat.executeQuery();
                         seqResult.next();
                         pinsertstat.setObject(infoInsertSQLItem.get("info_id"), seqResult.getLong(1));
                         pinsertstat.addBatch();
-
-                        pvoiceaffixstat.setObject(1, result.getObject("affix_id"));
-                        affixResult = pvoiceaffixstat.executeQuery();
-                        while (affixResult.next()) {
-                            seqResult = pseqstat.executeQuery();
-                            seqResult.next();
-                            try {
-                                // file_id, affix_id, true_name, file_size, is_image, save_path, pdf_flag, grounp_id
-                                // attach_id, true_name, file_size, is_image, save_path, rm_attach_id, rm_affix_id,
-                                // local_data
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("attach_id"), seqResult.getLong(1));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
-                                                affixResult.getObject("true_name"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("file_size"),
-                                                affixResult.getObject("file_size"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("is_image"),
-                                                affixResult.getObject("is_image"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("save_path"),
-                                                affixResult.getObject("save_path"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
-                                                affixResult.getObject("true_name"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("rm_attach_id"),
-                                                affixResult.getObject("file_id"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("rm_affix_id"),
-                                                affixResult.getObject("affix_id"));
-                                paffixinsertstat.setObject(affixInsertSQLItem.get("local_data"), LocalData.非本地数据);
-                                paffixinsertstat.addBatch();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                continue;
+                        // 获取舆情附件记录
+                        if (result.getObject("affix_id") != null) {
+                            pvoiceaffixstat.setObject(1, result.getObject("affix_id"));
+                            affixResult = pvoiceaffixstat.executeQuery();
+                            while (affixResult.next()) {
+                                seqResult = pseqstat.executeQuery();
+                                seqResult.next();
+                                try {
+                                    // 若本地数据库数据不存在则插入数据，否则跳过
+                                    if (this.voiceInfoAttachRepository.findByRmAttachId(affixResult.getLong("file_id")) != null) {
+                                        continue;
+                                    }
+                                    // file_id, affix_id, true_name, file_size, is_image, save_path, pdf_flag, grounp_id
+                                    // attach_id, true_name, file_size, is_image, save_path, rm_attach_id, rm_affix_id,
+                                    // local_data
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("attach_id"),
+                                                    seqResult.getLong(1));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
+                                                    affixResult.getObject("true_name"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("file_size"),
+                                                    affixResult.getObject("file_size"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("is_image"),
+                                                    affixResult.getObject("is_image"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("save_path"),
+                                                    affixResult.getObject("save_path"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
+                                                    affixResult.getObject("true_name"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_attach_id"),
+                                                    affixResult.getObject("file_id"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_affix_id"),
+                                                    affixResult.getObject("affix_id"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("local_data"),
+                                                    LocalData.非本地数据.getKey());
+                                    paffixinsertstat.addBatch();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    continue;
+                                }
                             }
                         }
-
                     }
                 }
                 pinsertstat.executeBatch();
@@ -615,11 +659,11 @@ public class SynchDataServiceImpl implements SynchDataService {
                 pinsertstat.clearBatch();
                 paffixinsertstat.clearBatch();
 
-                pinsertstat.close();
-                paffixinsertstat.close();
-
-                pinsertstat = localConn.prepareStatement(this.infoInsertSQL);
-                paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
+                // pinsertstat.close();
+                // paffixinsertstat.close();
+                //
+                // pinsertstat = localConn.prepareStatement(this.infoInsertSQL);
+                // paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
                 task.setFinishSynch(Long.valueOf(idx));
                 this.updateTaskInfo(task, ptaskstat);
                 minId += this.dataBlock;
@@ -683,4 +727,39 @@ public class SynchDataServiceImpl implements SynchDataService {
         }
     }
 
+    /**
+     * 创建Oracle Lob类型
+     *
+     * @param conn
+     * @param lobClassName
+     * @return
+     * @throws Exception
+     */
+    public Object createOracleLob(Connection conn, String lobClassName) throws Exception {
+        Class lobClass = conn.getClass().getClassLoader().loadClass(lobClassName);
+        final Integer DURATION_SESSION = new Integer(lobClass.getField("DURATION_SESSION").getInt(null));
+        final Integer MODE_READWRITE = new Integer(lobClass.getField("MODE_READWRITE").getInt(null));
+        Method createTemporary = lobClass.getMethod("createTemporary", new Class[] { Connection.class, boolean.class,
+                        int.class });
+        Object lob = createTemporary.invoke(null, new Object[] { conn, false, DURATION_SESSION });
+        Method open = lobClass.getMethod("open", new Class[] { int.class });
+        open.invoke(lob, new Object[] { MODE_READWRITE });
+        return lob;
+    }
+
+    /**
+     * 字符串转成CLOB
+     *
+     * @param str
+     * @param lob
+     * @return
+     * @throws Exception
+     */
+    public Clob strToClob(String str, Clob lob) throws Exception {
+        Method methodToInvoke = lob.getClass().getMethod("getCharacterOutputStream", (Class[]) null);
+        Writer writer = (Writer) methodToInvoke.invoke(lob, (Object[]) null);
+        writer.write(str);
+        writer.close();
+        return lob;
+    }
 }

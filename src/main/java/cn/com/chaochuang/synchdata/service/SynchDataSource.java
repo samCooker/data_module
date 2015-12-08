@@ -23,4 +23,10 @@ public interface SynchDataSource {
      */
     Connection getConnection();
 
+    /**
+     * 用classforname方法获取Connection
+     * 
+     * @return
+     */
+    Connection getConnectionByClassName();
 }

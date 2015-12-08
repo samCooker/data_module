@@ -9,6 +9,7 @@
 package cn.com.chaochuang.synchdata.service;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.stereotype.Component;
@@ -55,6 +56,21 @@ public class LocalDataSourceService implements SynchDataSource {
             baseDataSource.setDefaultAutoCommit(false);
             baseDataSource.setUrl(url);
             this.connection = baseDataSource.getConnection();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return this.connection;
+    }
+
+    /**
+     * @see cn.com.chaochuang.synchdata.service.SynchDataSource#getConnectionByClassName()
+     */
+    @Override
+    public Connection getConnectionByClassName() {
+        try {
+            Class.forName(driver);
+            this.connection = DriverManager.getConnection(url, userName, passwd);
+            this.connection.setAutoCommit(false);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
