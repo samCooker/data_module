@@ -161,18 +161,23 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
         }
         JsonMapper mapper = JsonMapper.getInstance();
         VoiceInfo info = this.repository.findByRmInfoId(Long.valueOf(items[1]));
-        // 若舆情信息存在则更新舆情
-        if (info == null) {
-            return;
-        }
         // 删除相应的舆情信息
         if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
-            this.deleteVoiceInfo(info.getId());
+            this.deleteVoiceInfo(Long.valueOf(items[1]));
             return;
         }
         String updateInfo = this.voiceWebService.selectVoiceInfo(info.getRmInfoId());
         if (StringUtils.isNotEmpty(updateInfo)) {
             VoiceInfoPendingInfo updateVoice = mapper.readValue(updateInfo, VoiceInfoPendingInfo.class);
+            if (updateVoice == null) {
+                return;
+            }
+            // 若舆情信息不存在且舆情状态为待办或已办则新增舆情
+            if (info == null
+                            && (updateVoice.getVoiceInfoStatus().equals(VoiceInfoStatus.待办.getKey()) || updateVoice
+                                            .getVoiceInfoStatus().equals(VoiceInfoStatus.已办.getKey()))) {
+                info = new VoiceInfo();
+            }
             NullBeanUtils.copyProperties(info, updateVoice);
             info.setVoiceInfoDiscoverUser(this.userService.selectUserIdByInfoId(updateVoice.getVoiceInfoDiscoverUser()));
             repository.save(info);
@@ -194,8 +199,8 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
      * @see cn.com.chaochuang.voice.service.VoiceInfoService#deleteVoiceInfo(java.lang.Long)
      */
     @Override
-    public void deleteVoiceInfo(Long infoId) {
-        VoiceInfo info = this.repository.findOne(infoId);
+    public void deleteVoiceInfo(Long rmInfoId) {
+        VoiceInfo info = this.repository.findByRmInfoId(rmInfoId);
         if (info == null) {
             return;
         }
@@ -210,7 +215,7 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
             }
         }
         // 删除事件舆情信息关联表
-        List<VoiceInfoEvent> infoEvents = this.voiceInfoEventRepository.findByRmVoiceInfoId(infoId);
+        List<VoiceInfoEvent> infoEvents = this.voiceInfoEventRepository.findByRmVoiceInfoId(rmInfoId);
         if (Tools.isNotEmptyList(infoEvents)) {
             this.voiceInfoEventRepository.delete(infoEvents);
         }

@@ -38,6 +38,7 @@ public class SynchdataTask {
     /**
      * 获取案件办理系统的待办记录
      */
+    // @Scheduled(cron = "10 0/5 * * * ?")
     @Scheduled(cron = "10/30 * * * * ?")
     public void executeSynchDataTask() {
         if (isSynchDataTaskRunning) {
@@ -52,6 +53,8 @@ public class SynchdataTask {
             SysSynchdataTask task = tasks.get(0);
             if (task.getSynchDataFlag().equals(SynchDataFlag.企业数据)) {
                 this.synchDataService.synchAppEntpData(task);
+            } else if (task.getSynchDataFlag().equals(SynchDataFlag.舆情基本信息)) {
+                this.synchDataService.synchVoiceInfoData(task);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

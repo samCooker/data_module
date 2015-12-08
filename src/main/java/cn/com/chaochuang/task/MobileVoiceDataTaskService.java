@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
@@ -98,7 +99,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情的待办记录
      */
     // //@Scheduled(cron = "11 0/4 * * * ?")
-    // @Scheduled(cron = "11 0/4 * * * ?")
+    @Scheduled(cron = "11 0/4 * * * ?")
     public void getVoiceInfoFordo() {
         if (isGetVoiceInfoPendingRunning) {
             return;
@@ -136,7 +137,7 @@ public class MobileVoiceDataTaskService {
      * 获取待办事件
      */
     // //@Scheduled(cron = "17 0/4 * * * ?")
-    // @Scheduled(cron = "17 0/4 * * * ?")
+    @Scheduled(cron = "17 0/4 * * * ?")
     public void getVoiceEventFordo() {
         if (isGetVoiceEventPendingRunning) {
             return;
@@ -174,7 +175,7 @@ public class MobileVoiceDataTaskService {
      * 提交舆情信息修改数据
      */
     // //@Scheduled(cron = "22 0/3 * * * ?")
-    // @Scheduled(cron = "22 0/3 * * * ?")
+    @Scheduled(cron = "22 0/3 * * * ?")
     public void commitVoiceInfoDataTask() {
         if (isGetVoiceInfoSubmitRunning) {
             return;
@@ -217,7 +218,7 @@ public class MobileVoiceDataTaskService {
      * 提交舆情事件的数据
      */
     // //@Scheduled(cron = "25 0/2 * * * ?")
-    // @Scheduled(cron = "25 0/2 * * * ?")
+    @Scheduled(cron = "25 0/2 * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
             return;
@@ -260,7 +261,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情相关变更数据
      */
     // //@Scheduled(cron = "15 0/2 * * * ?")
-    // @Scheduled(cron = "15 0/2 * * * ?")
+    @Scheduled(cron = "15 0/2 * * * ?")
     public void getDataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -286,7 +287,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情文件
      */
     // //@Scheduled(cron = "25 0/2 * * * ?")
-    // @Scheduled(cron = "25 0/2 * * * ?")
+    @Scheduled(cron = "25 0/2 * * * ?")
     public void getVoiceInfoAttachTask() {
         if (isGetVoiceInfoAttachRunning) {
             return;

@@ -85,7 +85,8 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "2 0/1 * * * ?")
+    // @Scheduled(cron = "2 0/2 * * * ?")
+    @Scheduled(cron = "2 0/2 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -110,7 +111,8 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "8/10 * * * * ?")
+    // @Scheduled(cron = "8 0/2 * * * ?")
+    @Scheduled(cron = "8 0/2 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -123,9 +125,9 @@ public class MobileCommonDataTaskService {
                 try {
                     if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
                         // 同步公文系统的待办
-                        // this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
-                        isDealSysDataChangeRunning = false;
-                        return;
+                        this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
+                        // isDealSysDataChangeRunning = false;
+                        // return;
                     } else if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
                         // 同步审批系统的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.审批待办);
@@ -195,7 +197,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    @Scheduled(cron = "8/20 * * * * ?")
+    // @Scheduled(cron = "8/20 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;

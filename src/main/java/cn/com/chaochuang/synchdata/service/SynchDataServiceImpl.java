@@ -23,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.repository.AppLicenceRepository;
+import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
@@ -42,11 +45,15 @@ public class SynchDataServiceImpl implements SynchDataService {
     @Autowired
     private SynchDataSource            localDataSourceService;
     @Autowired
+    private SynchDataSource            voiceSynchDataSourceService;
+    @Autowired
     private SysSynchdataTaskRepository taskRepository;
     @Autowired
     private AppEntpRepository          entpRepository;
     @Autowired
     private AppLicenceRepository       licenceRepository;
+    @Autowired
+    private SysUserService             userService;
     @Value("${app.entp.countsql}")
     private String                     entpCountSQL;
     @Value("${app.entp.datasql}")
@@ -67,6 +74,17 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     sequenceSQL;
     @Value("${synchtasksql}")
     private String                     taskUpdateSQL;
+    @Value("${voice.info.countsql}")
+    private String                     infoCountSQL;
+    @Value("${voice.info.datasql}")
+    private String                     infoDataSQL;
+    @Value("${voice.info.insertsql}")
+    private String                     infoInsertSQL;
+    @Value("${voice.info.affixsql}")
+    private String                     affixDataSQL;
+    @Value("${voice.info.affixinsertsql}")
+    private String                     affixInsertSQL;
+
     /** 每次处理数据块记录数 */
     @Value("${datablock}")
     private Integer                    dataBlock = 500;
@@ -427,10 +445,242 @@ public class SynchDataServiceImpl implements SynchDataService {
     }
 
     /**
-     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchLicenceData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
+     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchVoiceInfoData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
      */
     @Override
-    public void synchLicenceData(SysSynchdataTask task) {
-        // TODO Auto-generated method stub
+    public void synchVoiceInfoData(SysSynchdataTask task) {
+        Connection voiceConn = null;
+        Connection localConn = null;
+        Statement stat = null;
+        PreparedStatement pvoicestat = null;
+        PreparedStatement pinsertstat = null;
+        PreparedStatement pvoiceaffixstat = null;
+        PreparedStatement paffixinsertstat = null;
+        PreparedStatement pseqstat = null;
+        PreparedStatement ptaskstat = null;
+
+        ResultSet result = null;
+        ResultSet affixResult = null;
+        ResultSet seqResult = null;
+
+        Map<String, Integer> infoInsertSQLItem = this.buildInsertFieldMap(this.infoInsertSQL);
+        Map<String, Integer> affixInsertSQLItem = this.buildInsertFieldMap(this.affixInsertSQL);
+        // 获取相对人库的企业数据
+        try {
+            voiceConn = this.appSynchDataSourceService.getConnection();
+            localConn = this.localDataSourceService.getConnection();
+            if (voiceConn == null) {
+                task.setMemo("无法连接目的服务器同步失败！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            stat = voiceConn.createStatement();
+            // 获取本次同步任务需要同步的数据量
+            result = stat.executeQuery(this.entpCountSQL);
+            result.next();
+            // 需要同步的记录数
+            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
+                            .getLong(3);
+            if (count <= 0) {
+                task.setMemo("本次需同步数据记录数为0！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            localConn.setAutoCommit(true);
+            // 获取SQL数据
+            pvoicestat = voiceConn.prepareStatement(this.infoDataSQL);
+            // 插入和更新SQL
+            pinsertstat = localConn.prepareStatement(this.infoInsertSQL);
+
+            pvoiceaffixstat = voiceConn.prepareStatement(this.affixDataSQL);
+            paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
+            pseqstat = localConn.prepareStatement(this.sequenceSQL);
+            ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
+
+            pvoicestat.setMaxRows(this.dataBlock);
+            pvoicestat.setFetchSize(this.dataBlock);
+            // 重置任务的信息
+            task.setNeedSynch(Long.valueOf(count));
+            task.setStatus(SynchDataStatus.同步中);
+            task.setBeginTime(new Date());
+            this.updateTaskInfo(task, ptaskstat);
+            int idx = 0, countIdx = 0;
+            // info_id, rule_name, voice_info_is_home, voice_info_title, voice_info_content, voice_info_source,
+            // voice_info_source_url, voice_info_author, voice_info_issue_time, voice_info_status,
+            // voice_info_discover_time,
+            // voice_info_discover_user, voice_info_nature, voice_info_is_local, meta_type, transmitconut,
+            // voice_info_is_sensitive,
+            // clickcount, rm_affix_id, rm_info_id, local_data, content_area, rule_id, unit_org_id
+            while (curId < maxId) {
+                pvoicestat.setObject(1, minId);
+                pvoicestat.setObject(2, minId + (this.dataBlock - 1));
+                result = pvoicestat.executeQuery();
+                while (result.next()) {
+                    idx++;
+
+                    curId = result.getLong("info_id");
+                    pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"), null);
+                    pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), null);
+                    // 查询当前编号的企业数据是否已经存在
+                    if (this.entpRepository.findByRmEntpId(curId) == null) {
+                        countIdx++;
+                        if (result.getObject("voice_info_discover_user") != null) {
+                            SysUser user = this.userService.findByRmUserInfoId(Long.valueOf(result.getObject(
+                                            "voice_info_discover_user").toString()));
+                            if (user != null) {
+                                pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"),
+                                                user.getRmUserId());
+                                pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), user.getDepartment()
+                                                .getAncestorDep());
+                            }
+                        }
+                        pinsertstat.setObject(infoInsertSQLItem.get("rm_info_id"), curId);
+                        pinsertstat.setObject(infoInsertSQLItem.get("rule_name"), result.getObject("rule_name"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_home"),
+                                        result.getObject("voice_info_is_home"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_title"),
+                                        result.getObject("voice_info_title"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_content"),
+                                        result.getObject("voice_info_content"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source"),
+                                        result.getObject("voice_info_source"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source_url"),
+                                        result.getObject("voice_info_source_url"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_author"),
+                                        result.getObject("voice_info_author"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_issue_time"),
+                                        result.getObject("voice_info_issue_time"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_status"),
+                                        result.getObject("voice_info_status"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_time"),
+                                        result.getObject("voice_info_discover_time"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_nature"),
+                                        result.getObject("voice_info_nature"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_local"),
+                                        result.getObject("voice_info_is_local"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("meta_type"), result.getObject("meta_type"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("transmitconut"), result.getObject("transmitconut"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_sensitive"),
+                                        result.getObject("voice_info_is_sensitive"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("clickcount"), result.getObject("clickcount"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("rm_affix_id"), result.getObject("affix_id"));
+
+                        pinsertstat.setObject(infoInsertSQLItem.get("content_area"), result.getObject("content_area"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("rule_id"), result.getObject("rule_id"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("local_data"), LocalData.非本地数据);
+                        seqResult = pseqstat.executeQuery();
+                        seqResult.next();
+                        pinsertstat.setObject(infoInsertSQLItem.get("info_id"), seqResult.getLong(1));
+                        pinsertstat.addBatch();
+
+                        pvoiceaffixstat.setObject(1, result.getObject("affix_id"));
+                        affixResult = pvoiceaffixstat.executeQuery();
+                        while (affixResult.next()) {
+                            seqResult = pseqstat.executeQuery();
+                            seqResult.next();
+                            try {
+                                // file_id, affix_id, true_name, file_size, is_image, save_path, pdf_flag, grounp_id
+                                // attach_id, true_name, file_size, is_image, save_path, rm_attach_id, rm_affix_id,
+                                // local_data
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("attach_id"), seqResult.getLong(1));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
+                                                affixResult.getObject("true_name"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("file_size"),
+                                                affixResult.getObject("file_size"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("is_image"),
+                                                affixResult.getObject("is_image"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("save_path"),
+                                                affixResult.getObject("save_path"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
+                                                affixResult.getObject("true_name"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("rm_attach_id"),
+                                                affixResult.getObject("file_id"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("rm_affix_id"),
+                                                affixResult.getObject("affix_id"));
+                                paffixinsertstat.setObject(affixInsertSQLItem.get("local_data"), LocalData.非本地数据);
+                                paffixinsertstat.addBatch();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                                continue;
+                            }
+                        }
+
+                    }
+                }
+                pinsertstat.executeBatch();
+                paffixinsertstat.executeBatch();
+
+                pinsertstat.clearBatch();
+                paffixinsertstat.clearBatch();
+
+                pinsertstat.close();
+                paffixinsertstat.close();
+
+                pinsertstat = localConn.prepareStatement(this.infoInsertSQL);
+                paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
+                task.setFinishSynch(Long.valueOf(idx));
+                this.updateTaskInfo(task, ptaskstat);
+                minId += this.dataBlock;
+            }
+            localConn.commit();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("完成数据同步！");
+            this.updateTaskInfo(task, ptaskstat);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("数据同步失败：" + ex.getMessage());
+            // 备注内容最大是500汉字
+            if (task.getMemo().length() > 500) {
+                task.setMemo(task.getMemo().substring(0, 500));
+            }
+            this.updateTaskInfo(task, ptaskstat);
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (affixResult != null) {
+                    affixResult.close();
+                }
+                if (seqResult != null) {
+                    seqResult.close();
+                }
+                if (stat != null) {
+                    stat.close();
+                }
+                if (pvoicestat != null) {
+                    pvoicestat.close();
+                }
+                if (pvoiceaffixstat != null) {
+                    pvoiceaffixstat.close();
+                }
+                if (paffixinsertstat != null) {
+                    paffixinsertstat.close();
+                }
+                if (pinsertstat != null) {
+                    pinsertstat.close();
+                }
+                if (pseqstat != null) {
+                    pseqstat.close();
+                }
+                if (ptaskstat != null) {
+                    ptaskstat.close();
+                }
+                if (localConn != null) {
+                    localConn.close();
+                }
+                if (voiceConn != null) {
+                    voiceConn.close();
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+        }
     }
+
 }
