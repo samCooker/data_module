@@ -99,7 +99,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情的待办记录
      */
     // //@Scheduled(cron = "11 0/4 * * * ?")
-    @Scheduled(cron = "11 0/4 * * * ?")
+    // @Scheduled(cron = "11 0/4 * * * ?")
     public void getVoiceInfoFordo() {
         if (isGetVoiceInfoPendingRunning) {
             return;

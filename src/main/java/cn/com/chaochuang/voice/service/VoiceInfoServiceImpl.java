@@ -166,17 +166,17 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
             this.deleteVoiceInfo(Long.valueOf(items[1]));
             return;
         }
-        String updateInfo = this.voiceWebService.selectVoiceInfo(info.getRmInfoId());
+        String updateInfo = this.voiceWebService.selectVoiceInfo(Long.valueOf(items[1]));
         if (StringUtils.isNotEmpty(updateInfo)) {
             VoiceInfoPendingInfo updateVoice = mapper.readValue(updateInfo, VoiceInfoPendingInfo.class);
             if (updateVoice == null) {
                 return;
             }
             // 若舆情信息不存在且舆情状态为待办或已办则新增舆情
-            if (info == null
-                            && (updateVoice.getVoiceInfoStatus().equals(VoiceInfoStatus.待办.getKey()) || updateVoice
-                                            .getVoiceInfoStatus().equals(VoiceInfoStatus.已办.getKey()))) {
+            if (info == null && !updateVoice.getVoiceInfoStatus().equals(VoiceInfoStatus.新建.getKey())) {
                 info = new VoiceInfo();
+            } else if (info == null && updateVoice.getVoiceInfoStatus().equals(VoiceInfoStatus.新建.getKey())) {
+                return;
             }
             NullBeanUtils.copyProperties(info, updateVoice);
             info.setVoiceInfoDiscoverUser(this.userService.selectUserIdByInfoId(updateVoice.getVoiceInfoDiscoverUser()));

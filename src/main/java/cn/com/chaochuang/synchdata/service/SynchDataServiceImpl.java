@@ -502,12 +502,13 @@ public class SynchDataServiceImpl implements SynchDataService {
                 return;
             }
             localConn.setAutoCommit(true);
-            // 获取SQL数据
+            // 获取舆情SQL数据
             pvoicestat = voiceConn.prepareStatement(this.infoDataSQL);
-            // 插入和更新SQL
+            // 插入舆情记录SQL
             pinsertstat = localConn.prepareStatement(this.infoInsertSQL);
-
+            // 获取舆情附件SQL
             pvoiceaffixstat = voiceConn.prepareStatement(this.affixDataSQL);
+            // 插入舆情附件SQL
             paffixinsertstat = localConn.prepareStatement(this.affixInsertSQL);
             // 舆情规则查询
             prulestat = voiceConn.prepareStatement(this.infoRuleSQL);
