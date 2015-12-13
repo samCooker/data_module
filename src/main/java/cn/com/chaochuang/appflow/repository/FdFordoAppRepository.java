@@ -29,7 +29,7 @@ public interface FdFordoAppRepository extends SimpleDomainRepository<FdFordoApp,
      *            原系统待办编号
      * @return
      */
-    FdFordoApp findByRmPendingId(String rmPendingId);
+    List<FdFordoApp> findByRmPendingId(String rmPendingId);
 
     /**
      * 根据本地数据标识获取待办数据

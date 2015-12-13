@@ -8,15 +8,6 @@
 
 package cn.com.chaochuang.audit.bean;
 
-import java.util.List;
-
-import cn.com.chaochuang.appflow.domain.AppItemAttach;
-import cn.com.chaochuang.audit.domain.AuditAppoint;
-import cn.com.chaochuang.audit.domain.AuditFlowNodeInfo;
-import cn.com.chaochuang.audit.domain.AuditFlowNodeOpinions;
-import cn.com.chaochuang.audit.domain.AuditPrjContent;
-import cn.com.chaochuang.audit.domain.AuditTask;
-import cn.com.chaochuang.audit.domain.AuditWatcher;
 import cn.com.chaochuang.common.fdfordo.bean.CommonPendingHandleInfo;
 
 /**
@@ -25,33 +16,19 @@ import cn.com.chaochuang.common.fdfordo.bean.CommonPendingHandleInfo;
  */
 public class AuditPendingHandleInfo extends CommonPendingHandleInfo {
     /** 环节状态 */
-    private String                      nodeStatus;
+    private String nodeStatus;
     /** 环节标识 */
-    private String                      nodeCode;
+    private String nodeCode;
     /** 环节编号 */
-    private Long                        nodeId;
+    private Long   nodeId;
     /** 原系统审查任务编号 */
-    private Long                        taskId;
+    private Long   businessKey;
     /** 流程实例编号 */
-    private Long                        flowInstId;
+    private Long   flowInstId;
     /** 待办来源类型(对应fordoType) */
-    private String                      fordoType;
+    private String fordoType;
     /** 流程编号 */
-    private String                      pendingModule;
-    /** 审查任务对象 */
-    private AuditTask                   taskInfo;
-    /** 指派记录列表 */
-    private List<AuditAppoint>          appointInfos;
-    /** 观察员列表 */
-    private List<AuditWatcher>          watcherInfos;
-    /** 审查项目列表 */
-    private List<AuditPrjContent>       prjContentInfos;
-    /** 审批环节记录列表 */
-    private List<AuditFlowNodeInfo>     nodeInfos;
-    /** 审批意见记录列表 */
-    private List<AuditFlowNodeOpinions> nodeOpinionsInfos;
-    /** 审批附件列表 */
-    private List<AppItemAttach>         appItemAttachInfos;
+    private String pendingModule;
 
     /**
      * @return the nodeStatus
@@ -99,18 +76,18 @@ public class AuditPendingHandleInfo extends CommonPendingHandleInfo {
     }
 
     /**
-     * @return the taskId
+     * @return the businessKey
      */
-    public Long getTaskId() {
-        return taskId;
+    public Long getBusinessKey() {
+        return businessKey;
     }
 
     /**
-     * @param taskId
-     *            the taskId to set
+     * @param businessKey
+     *            the businessKey to set
      */
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
+    public void setBusinessKey(Long businessKey) {
+        this.businessKey = businessKey;
     }
 
     /**
@@ -156,111 +133,6 @@ public class AuditPendingHandleInfo extends CommonPendingHandleInfo {
      */
     public void setPendingModule(String pendingModule) {
         this.pendingModule = pendingModule;
-    }
-
-    /**
-     * @return the taskInfo
-     */
-    public AuditTask getTaskInfo() {
-        return taskInfo;
-    }
-
-    /**
-     * @param taskInfo
-     *            the taskInfo to set
-     */
-    public void setTaskInfo(AuditTask taskInfo) {
-        this.taskInfo = taskInfo;
-    }
-
-    /**
-     * @return the appointInfos
-     */
-    public List<AuditAppoint> getAppointInfos() {
-        return appointInfos;
-    }
-
-    /**
-     * @param appointInfos
-     *            the appointInfos to set
-     */
-    public void setAppointInfos(List<AuditAppoint> appointInfos) {
-        this.appointInfos = appointInfos;
-    }
-
-    /**
-     * @return the watcherInfos
-     */
-    public List<AuditWatcher> getWatcherInfos() {
-        return watcherInfos;
-    }
-
-    /**
-     * @param watcherInfos
-     *            the watcherInfos to set
-     */
-    public void setWatcherInfos(List<AuditWatcher> watcherInfos) {
-        this.watcherInfos = watcherInfos;
-    }
-
-    /**
-     * @return the prjContentInfos
-     */
-    public List<AuditPrjContent> getPrjContentInfos() {
-        return prjContentInfos;
-    }
-
-    /**
-     * @param prjContentInfos
-     *            the prjContentInfos to set
-     */
-    public void setPrjContentInfos(List<AuditPrjContent> prjContentInfos) {
-        this.prjContentInfos = prjContentInfos;
-    }
-
-    /**
-     * @return the nodeInfos
-     */
-    public List<AuditFlowNodeInfo> getNodeInfos() {
-        return nodeInfos;
-    }
-
-    /**
-     * @param nodeInfos
-     *            the nodeInfos to set
-     */
-    public void setNodeInfos(List<AuditFlowNodeInfo> nodeInfos) {
-        this.nodeInfos = nodeInfos;
-    }
-
-    /**
-     * @return the nodeOpinionsInfos
-     */
-    public List<AuditFlowNodeOpinions> getNodeOpinionsInfos() {
-        return nodeOpinionsInfos;
-    }
-
-    /**
-     * @param nodeOpinionsInfos
-     *            the nodeOpinionsInfos to set
-     */
-    public void setNodeOpinionsInfos(List<AuditFlowNodeOpinions> nodeOpinionsInfos) {
-        this.nodeOpinionsInfos = nodeOpinionsInfos;
-    }
-
-    /**
-     * @return the appItemAttachInfos
-     */
-    public List<AppItemAttach> getAppItemAttachInfos() {
-        return appItemAttachInfos;
-    }
-
-    /**
-     * @param appItemAttachInfos
-     *            the appItemAttachInfos to set
-     */
-    public void setAppItemAttachInfos(List<AppItemAttach> appItemAttachInfos) {
-        this.appItemAttachInfos = appItemAttachInfos;
     }
 
 }

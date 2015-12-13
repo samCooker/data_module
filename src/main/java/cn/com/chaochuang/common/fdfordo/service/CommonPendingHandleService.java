@@ -25,10 +25,18 @@ public interface CommonPendingHandleService {
     void analysisDataChange(SysDataChange dataChange, DataChangeTable changName);
 
     /**
-     * 同步原系统与OA系统的待办及办理信息，若办理信息存在于本地数据库，则从原系统获取办理信息并删除旧待办，否则只删除旧待办
+     * 同步移动端与OA的待办及办理信息，若办理信息存在于移动端数据库，则从原系统获取办理信息并删除旧待办，否则只删除旧待办
      * 
      * @param dataChange
      * @param changeName
      */
     public void updateOADataIfExist(SysDataChange dataChange, DataChangeTable changeName);
+
+    /**
+     * 同步移动端与行政审批的待办及办理信息，若办理信息存在于移动端数据库，则从原系统获取办理信息并删除旧待办，否则只删除旧待办
+     * 
+     * @param dataChange
+     * @param changeName
+     */
+    public void updateSuperviseDataIfExist(SysDataChange dataChange, DataChangeTable changeName);
 }

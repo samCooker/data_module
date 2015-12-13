@@ -35,4 +35,12 @@ public interface SysDataChangeService extends CrudRestService<SysDataChange, Lon
      * @return
      */
     List<SysDataChange> selectOAPendingItem(Pageable page);
+
+    /**
+     * 获取行政审批待办变更记录
+     * 
+     * @param pageRequest
+     * @return
+     */
+    List<SysDataChange> selectSuperviseFordo(Pageable page);
 }

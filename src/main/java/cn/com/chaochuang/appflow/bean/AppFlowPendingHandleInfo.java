@@ -22,7 +22,8 @@ public class AppFlowPendingHandleInfo extends CommonPendingHandleInfo {
     /** 环节编号 */
     private Long   nodeId;
     /** 原系统审批项编号 */
-    private Long   itemApplyId;
+    // private Long itemApplyId;
+    private Long   businessKey;
     /** 流程实例编号 */
     private Long   flowInstId;
     /** 待办来源类型(对应fordoType) */
@@ -74,21 +75,6 @@ public class AppFlowPendingHandleInfo extends CommonPendingHandleInfo {
     }
 
     /**
-     * @return the itemApplyId
-     */
-    public Long getItemApplyId() {
-        return itemApplyId;
-    }
-
-    /**
-     * @param itemApplyId
-     *            the itemApplyId to set
-     */
-    public void setItemApplyId(Long itemApplyId) {
-        this.itemApplyId = itemApplyId;
-    }
-
-    /**
      * @return the flowInstId
      */
     public Long getFlowInstId() {
@@ -116,6 +102,21 @@ public class AppFlowPendingHandleInfo extends CommonPendingHandleInfo {
      */
     public void setFordoType(String fordoType) {
         this.fordoType = fordoType;
+    }
+
+    /**
+     * @return the businessKey
+     */
+    public Long getBusinessKey() {
+        return businessKey;
+    }
+
+    /**
+     * @param businessKey
+     *            the businessKey to set
+     */
+    public void setBusinessKey(Long businessKey) {
+        this.businessKey = businessKey;
     }
 
 }

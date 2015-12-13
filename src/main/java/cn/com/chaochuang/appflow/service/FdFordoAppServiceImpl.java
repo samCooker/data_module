@@ -98,17 +98,18 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
         Date currentDate = new Date();
         for (AppFlowPendingHandleInfo item : pendingItems) {
             // 判断当前记录是否已经存在,不存在的情况下才写入fdfordo表
-            if (this.repository.findByRmPendingId(item.getRmPendingId()) != null) {
+            if (Tools.isNotEmptyList(this.repository.findByRmPendingId(item.getRmPendingId()))) {
                 continue;
             }
             // 没有待办类别或待办类别长度小于3的记录不写入数据库
-            if (Tools.isEmptyString(item.getFordoType()) || item.getFordoType().length() < 3) {
-                continue;
-            }
+            // if (Tools.isEmptyString(item.getFordoType()) || item.getFordoType().length() < 3) {
+            // continue;
+            // }
             fdFordo = new FdFordoApp();
             SysUser user = userRepository.findByRmUserInfoId(item.getRecipientId());
-            item.setFordoType(item.getFordoType().substring(0, 3));
+            // item.setFordoType(item.getFordoType().substring(0, 3));
             NullBeanUtils.copyProperties(fdFordo, item);
+            fdFordo.setItemApplyId(item.getBusinessKey());
             // 将rmUserInfoId转成rmUserId
             if (user != null) {
                 fdFordo.setRecipientId(user.getRmUserId());
@@ -164,10 +165,10 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
      */
     @Override
     public void updateLocalData(String rmPendingId) {
-        FdFordoApp pending = this.repository.findByRmPendingId(rmPendingId);
-        if (pending != null) {
-            pending.setLocalData(LocalData.有本地数据);
-            this.repository.save(pending);
+        FdFordoApp fordo = this.findByRmPendingId(rmPendingId);
+        if (fordo != null) {
+            fordo.setLocalData(LocalData.有本地数据);
+            this.repository.save(fordo);
         }
     }
 
@@ -176,7 +177,7 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
      */
     @Override
     public void deleteExpirePending(String rmPendingId) {
-        FdFordoApp fordo = this.repository.findByRmPendingId(rmPendingId);
+        FdFordoApp fordo = this.findByRmPendingId(rmPendingId);
         if (fordo != null) {
             this.repository.delete(fordo);
         }
@@ -189,7 +190,8 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
      */
     @Override
     public FdFordoApp findByRmPendingId(String fordoId) {
-        return repository.findByRmPendingId(fordoId);
+        List<FdFordoApp> fordoList = repository.findByRmPendingId(fordoId);
+        return Tools.isNotEmptyList(fordoList) ? fordoList.get(0) : null;
     }
 
 }

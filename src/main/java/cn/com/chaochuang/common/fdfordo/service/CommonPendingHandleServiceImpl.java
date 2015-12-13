@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.repository.FdFordoAipcaseRepository;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
+import cn.com.chaochuang.appflow.repository.AppItemApplyRepository;
 import cn.com.chaochuang.appflow.repository.FdFordoAppRepository;
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.audit.repository.FdFordoAuditRepository;
@@ -59,6 +60,8 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     private ITransferOAService       transferOAService;
     @Autowired
     private DocFileService           docFileService;
+    @Autowired
+    private AppItemApplyRepository   appItemApplyRepository;
 
     /**
      * (non-Javadoc)
@@ -76,18 +79,6 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
             return;
         }
         switch (changeName) {
-        case 审批待办:// 审批系统
-            FdFordoApp superviseFordo = supviseRepository.findByRmPendingId(items[1]);
-            if (superviseFordo != null) {
-                supviseRepository.delete(superviseFordo);
-            } else {
-                List<FdFordoAudit> auditFordos = this.auditFordoRepository.findByRmPendingId(items[1]);
-                // 审批系统待办记录不存在则查询审评查验系统
-                if (Tools.isNotEmptyList(auditFordos)) {
-                    this.auditFordoRepository.delete(auditFordos);
-                }
-            }
-            break;
         case 办案待办:// 办案系统
             FdFordoAipcase aipcaseFordo = aipcaseRepository.findByRmPendingId(items[1]);
             if (aipcaseFordo != null) {
@@ -133,6 +124,33 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
                 }
             }
             oaRepository.delete(oaFordo);
+        }
+    }
+
+    /**
+     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateSuperviseDataIfExist(cn.com.chaochuang.datacenter.domain.SysDataChange,
+     *      cn.com.chaochuang.datacenter.reference.DataChangeTable)
+     */
+    @Override
+    public void updateSuperviseDataIfExist(SysDataChange dataChange, DataChangeTable changeName) {
+        if (changeName == null || dataChange == null || StringUtils.isEmpty(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的ID
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+        List<FdFordoApp> superviseFordoList = supviseRepository.findByRmPendingId(items[1]);
+        if (Tools.isNotEmptyList(superviseFordoList)) {
+            supviseRepository.delete(superviseFordoList);
+            // 更新办理数据？
+        } else {
+            List<FdFordoAudit> auditFordos = this.auditFordoRepository.findByRmPendingId(items[1]);
+            // 审批系统待办记录不存在则查询审评查验系统
+            if (Tools.isNotEmptyList(auditFordos)) {
+                this.auditFordoRepository.delete(auditFordos);
+            }
         }
     }
 

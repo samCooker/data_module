@@ -60,7 +60,7 @@ public class FdFordoApp extends LongIdEntity {
     @Convert(converter = FordoStatusConverter.class)
     private FordoStatus       status;
     /** 待办类型 */
-    private String            fordoType;
+    // private String fordoType;
     /** 限办日期 */
     @Temporal(TemporalType.TIMESTAMP)
     private Date              limitTime;
@@ -258,21 +258,6 @@ public class FdFordoApp extends LongIdEntity {
      */
     public void setStatus(FordoStatus status) {
         this.status = status;
-    }
-
-    /**
-     * @return the fordoType
-     */
-    public String getFordoType() {
-        return fordoType;
-    }
-
-    /**
-     * @param fordoType
-     *            the fordoType to set
-     */
-    public void setFordoType(String fordoType) {
-        this.fordoType = fordoType;
     }
 
     /**

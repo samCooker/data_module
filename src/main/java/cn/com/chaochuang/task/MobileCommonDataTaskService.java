@@ -76,17 +76,19 @@ public class MobileCommonDataTaskService {
     private EmSiteReportService        emSiteReportService;
 
     /** 获取公告阻塞标识 */
-    private static boolean             isGetSysDataChangeRunning            = false;
+    private static boolean             isGetSysDataChangeRunning             = false;
     /** 获取处理系统数据更改阻塞标识 */
-    private static boolean             isDealSysDataChangeRunning           = false;
+    private static boolean             isDealSysDataChangeRunning            = false;
     /** 获取OA待办数据更改阻塞标识 */
-    private static boolean             isDealOAPendingItemDataChangeRunning = false;
+    private static boolean             isDealOAPendingItemDataChangeRunning  = false;
+    /** 行政审批待办更改阻塞标识 */
+    private static boolean             isDealSuperviseFordoDataChangeRunning = false;
 
     /**
      * 获取远程系统修改记录数据
      */
+    @Scheduled(cron = "15/15 * * * * ?")
     // @Scheduled(cron = "2 0/2 * * * ?")
-    @Scheduled(cron = "2 0/2 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -111,8 +113,8 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
+    @Scheduled(cron = "10/10 * * * * ?")
     // @Scheduled(cron = "8 0/2 * * * ?")
-    @Scheduled(cron = "8 0/2 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -123,15 +125,7 @@ public class MobileCommonDataTaskService {
             List<SysDataChange> datas = page.getContent();
             for (SysDataChange item : datas) {
                 try {
-                    if (DataChangeTable.公文待办.getKey().equals(item.getChangeTableName())) {
-                        // 同步公文系统的待办
-                        this.commonFordoService.updateOADataIfExist(item, DataChangeTable.公文待办);
-                        // isDealSysDataChangeRunning = false;
-                        // return;
-                    } else if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
-                        // 同步审批系统的待办
-                        this.commonFordoService.analysisDataChange(item, DataChangeTable.审批待办);
-                    } else if (DataChangeTable.办案待办.getKey().equals(item.getChangeTableName())) {
+                    if (DataChangeTable.办案待办.getKey().equals(item.getChangeTableName())) {
                         // 同步办案系统的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.办案待办);
                     } else if (DataChangeTable.投诉举报待办.getKey().equals(item.getChangeTableName())) {
@@ -197,7 +191,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    // @Scheduled(cron = "8/20 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;
@@ -223,6 +217,38 @@ public class MobileCommonDataTaskService {
             ex.printStackTrace();
         } finally {
             isDealOAPendingItemDataChangeRunning = false;
+        }
+    }
+
+    /**
+     * 处理审批待办数据的变更
+     */
+    // @Scheduled(cron = "15/15 * * * * ?")
+    public void dealSuperviseFordoDataChange() {
+        if (isDealSuperviseFordoDataChangeRunning) {
+            return;
+        }
+        isDealSuperviseFordoDataChangeRunning = true;
+        try {
+            List<SysDataChange> datas = this.dataChangeService.selectSuperviseFordo(new PageRequest(0, 10));
+            for (SysDataChange item : datas) {
+                try {
+                    if (DataChangeTable.审批待办.getKey().equals(item.getChangeTableName())) {
+                        // 同步审批系统的待办
+                        this.commonFordoService.updateSuperviseDataIfExist(item, DataChangeTable.审批待办);
+                    }
+                    // 删除变更数据
+                    this.dataChangeService.delete(item.getId());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
+                    continue;
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            isDealSuperviseFordoDataChangeRunning = false;
         }
     }
 }

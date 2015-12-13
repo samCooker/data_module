@@ -19,6 +19,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
@@ -74,7 +75,7 @@ public class MobileAuditDataTaskService {
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    // @Scheduled(cron = "5/5 * * * * ?")
+    @Scheduled(cron = "25/25 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -117,7 +118,7 @@ public class MobileAuditDataTaskService {
     /**
      * 提交审批项数据
      */
-    // @Scheduled(cron = "10/15 * * * * ?")
+    @Scheduled(cron = "10/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;

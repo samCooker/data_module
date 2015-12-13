@@ -28,6 +28,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -97,12 +98,12 @@ public class MobileAppDataTaskService {
     /** 下载公文附件阻塞标识 */
     private static boolean             isDownLoadAttachRunning = false;
     /** 是否正在登录 */
-    private static boolean             isLoging                = false;
+    private static boolean             isLogingSys             = false;
 
     /**
-     * 向行政审批系统获取待办事宜数据 每5秒进行一次数据获取
+     * 向行政审批系统获取待办事宜数据
      */
-    // @Scheduled(cron = "5 0/5 * * * ?")
+//    @Scheduled(cron = "30/30 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -145,24 +146,27 @@ public class MobileAppDataTaskService {
      * 登录系统
      */
     public void loginSuperviseSys() {
-        if (isLoging) {
+        if (isLogingSys) {
             return;
         }
         try {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("account", userName));
             params.add(new BasicNameValuePair("password", pwd));
-            isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
+            boolean isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params,
+                            HttpClientHelper.ENCODE_GBK);
             System.out.println(isLoging);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            isLogingSys = false;
         }
     }
 
     /**
      * 获取行政审批数据
      */
-    // @Scheduled(cron = "8 0/6 * * * ?")
+    // @Scheduled(cron = "20/20 * * * * ?")
     public void getAppItemDataTask() {
         if (isAppItemDataRunning) {
             return;
@@ -204,7 +208,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-    // @Scheduled(cron = "10 0/2 * * * ?")
+//    @Scheduled(cron = "15/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -260,7 +264,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "15/20 * * * * ?")
+//    @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
