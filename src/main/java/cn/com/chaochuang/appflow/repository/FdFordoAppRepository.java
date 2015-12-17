@@ -11,6 +11,7 @@ package cn.com.chaochuang.appflow.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.FdFordoApp;
@@ -47,4 +48,10 @@ public interface FdFordoAppRepository extends SimpleDomainRepository<FdFordoApp,
      * @return
      */
     List<FdFordoApp> findByLocalDataOrderBySendTimeAsc(LocalData localData, Pageable page);
+
+    /**
+     * 
+     */
+    @Query(value = "select max(to_number(rm_pending_id)) from fd_fordo_app", nativeQuery = true)
+    String findMaxRmPendingId();
 }

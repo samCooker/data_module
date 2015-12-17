@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
@@ -43,8 +40,6 @@ import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 @Service
 @Transactional
 public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> implements FdFordoService {
-    @PersistenceContext
-    private EntityManager     entityManager;
 
     @Autowired
     private FdFordoRepository repository;
@@ -66,23 +61,14 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
     @Override
     public OAPendingHandleInfo selectMaxInputDate(FordoSource source) {
         OAPendingHandleInfo result = new OAPendingHandleInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmPendingItemId) from ").append(FdFordo.class.getName())
-                        .append(" where fordoSource=").append(source);
-        Query query = this.entityManager.createQuery(sql.toString());
-        List datas = (ArrayList) query.getResultList();
-        if (Tools.isNotEmptyList(datas)) {
-            for (Object o : datas) {
-                if (o != null) {
-                    result.setRmPendingItemId(o.toString());
-                    result.setLastSendTime(null);
-                    break;
-                }
-            }
-        }
-        if (result.getRmPendingItemId() == null) {
+        String rmPendingItemId = repository.findMaxRmPendingItemId();
+        if (Tools.isEmptyString(rmPendingItemId)) {
             Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
             result.setLastSendTime(sendTime);
             result.setRmPendingItemId("");
+        } else {
+            result.setRmPendingItemId(rmPendingItemId);
+            result.setLastSendTime(null);
         }
         return result;
     }

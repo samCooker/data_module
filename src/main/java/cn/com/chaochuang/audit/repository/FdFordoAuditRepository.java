@@ -10,6 +10,8 @@ package cn.com.chaochuang.audit.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+
 import cn.com.chaochuang.audit.domain.FdFordoAudit;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 
@@ -26,4 +28,10 @@ public interface FdFordoAuditRepository extends SimpleDomainRepository<FdFordoAu
      * @return
      */
     List<FdFordoAudit> findByRmPendingId(String rmPendingId);
+
+    /**
+     * 
+     */
+    @Query(value = "select max(to_number(rm_pending_id)) from fd_fordo_audit", nativeQuery = true)
+    String findMaxAuditPendingHandleId();
 }

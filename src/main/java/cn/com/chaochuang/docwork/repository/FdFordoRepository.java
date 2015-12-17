@@ -11,6 +11,7 @@ package cn.com.chaochuang.docwork.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
@@ -52,5 +53,11 @@ public interface FdFordoRepository extends SimpleDomainRepository<FdFordo, Long>
      * @return
      */
     List<FdFordo> findByRmInstanceIdAndLocalData(String rmInstanceId, LocalData localData);
+
+    /**
+     * 
+     */
+    @Query(value = "select max(to_number(rm_pending_item_id)) from fd_fordo", nativeQuery = true)
+    String findMaxRmPendingItemId();
 
 }
