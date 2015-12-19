@@ -18,10 +18,17 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
+import cn.com.chaochuang.appflow.domain.AppPrjMaterial;
 import cn.com.chaochuang.appflow.repository.AppItemAttachRepository;
+import cn.com.chaochuang.appflow.repository.AppPrjMaterialRepository;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
+import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.reference.OperationType;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 /**
  * @author LLM
@@ -32,7 +39,11 @@ import cn.com.chaochuang.common.util.NullBeanUtils;
 public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppItemAttach> implements
                 AppItemAttachService {
     @Autowired
-    private AppItemAttachRepository repository;
+    private AppItemAttachRepository  repository;
+    @Autowired
+    private AppPrjMaterialRepository appPrjMaterialRepository;
+    @Autowired
+    private SuperviseWebService      superviseWebService;
 
     @Override
     public SimpleDomainRepository<AppItemAttach, Long> getRepository() {
@@ -115,5 +126,43 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
             repository.deleteInBatch(deleteAttachList);
         }
 
+    }
+
+    /**
+     * 
+     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#updatePrjMaterial(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void updatePrjMaterial(SysDataChange dataChange) {
+        // 分解变更内容
+        if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的事件审批编号
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+        Long materialId = Long.valueOf(items[1]);
+        if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
+            List<AppPrjMaterial> materialList = appPrjMaterialRepository.findByRmMaterialId(materialId);
+            if (Tools.isNotEmptyList(materialList)) {
+                appPrjMaterialRepository.delete(materialList);
+            }
+        } else {
+            // 从原系统获取数据
+            String json = superviseWebService.selectAppPrjMaterial(materialId);
+            if (StringUtils.isNotBlank(json)) {
+                JsonMapper mapper = JsonMapper.getInstance();
+                AppPrjMaterial appPrjMaterial = mapper.readValue(json, AppPrjMaterial.class);
+                List<AppPrjMaterial> materialList = appPrjMaterialRepository.findByRmMaterialId(appPrjMaterial
+                                .getRmMaterialId());
+                if (Tools.isNotEmptyList(materialList)) {
+                    // 更新已有的数据
+                    appPrjMaterial.setId(materialList.get(0).getId());
+                }
+                appPrjMaterialRepository.save(appPrjMaterial);
+            }
+        }
     }
 }

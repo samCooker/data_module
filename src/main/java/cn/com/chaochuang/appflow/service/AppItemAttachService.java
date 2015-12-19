@@ -13,6 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 
 /**
  * @author LLM
@@ -53,4 +54,12 @@ public interface AppItemAttachService extends CrudRestService<AppItemAttach, Lon
      *            本地数据路径，若不为空则localData=本地数据
      */
     void saveAttachForLocal(AppItemAttach attach, LocalData localData, String localFileName);
+
+    /**
+     * 审批材料清单更新
+     * 
+     * @param item
+     */
+    void updatePrjMaterial(SysDataChange item);
+
 }

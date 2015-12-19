@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.appflow.repository;
 
+import java.util.List;
+
 import cn.com.chaochuang.appflow.domain.AppPrjMaterial;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 
@@ -16,5 +18,11 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
  *
  */
 public interface AppPrjMaterialRepository extends SimpleDomainRepository<AppPrjMaterial, Long> {
+
+    /**
+     * @param rmMaterialId
+     * @return
+     */
+    List<AppPrjMaterial> findByRmMaterialId(Long rmMaterialId);
 
 }

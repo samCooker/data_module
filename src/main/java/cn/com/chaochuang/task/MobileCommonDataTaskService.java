@@ -18,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
+import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.AppLicenceService;
 import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
 import cn.com.chaochuang.common.user.service.SysDepartmentService;
@@ -74,6 +75,8 @@ public class MobileCommonDataTaskService {
     private ExamineEntpObjectService   examineService;
     @Autowired
     private EmSiteReportService        emSiteReportService;
+    @Autowired
+    private AppItemAttachService       appItemAttachService;
 
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning             = false;
@@ -172,6 +175,9 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.应急指挥情况汇报.getKey().equals(item.getChangeTableName())) {
                         // 应急指挥情况汇报记录更新
                         this.emSiteReportService.saveEmSiteReport(item);
+                    } else if (DataChangeTable.审批材料清单.getKey().equals(item.getChangeTableName())) {
+                        // 审批材料清单更新
+                        appItemAttachService.updatePrjMaterial(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());

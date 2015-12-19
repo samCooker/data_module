@@ -21,7 +21,8 @@ public enum DataChangeTable implements IDictionary {
                     "oa_pub_board"), 企业信息("gxfda_app_app_entp"), 行政处罚信息("aip_punish_entp"), 投诉举报待办(
                     "case_complaint_pending_handle"), 舆情信息("voice_info"), 舆情事件("voice_event"), 舆情事件内容(
                     "voice_event_content"), 舆情事件办理("voice_event_handle_man"), 舆情事件办理意见("voice_event_handle_approve"), 许可证信息(
-                    "app_item_licence"), 日常检查("examine_entp_object"), 应急指挥情况汇报("em_site_report");
+                    "app_item_licence"), 日常检查("examine_entp_object"), 应急指挥情况汇报("em_site_report"), 审批材料清单(
+                    "gxfda_app_app_prj_material");
 
     private String key;
     private String value;
