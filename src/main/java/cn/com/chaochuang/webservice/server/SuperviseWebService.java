@@ -12,26 +12,60 @@ import java.util.Date;
 
 import javax.jws.WebMethod;
 import javax.jws.WebResult;
-
-import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
+import javax.jws.WebService;
 
 /**
  * @author LLM
  *
  */
-//2015年9月6日 已修改，不使用cxf方法
-// @WebService(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+@WebService(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
 public interface SuperviseWebService {
+
     /**
-     * 根据指定的时间或待办编号获取待办事宜
+     * 根据指定的时间或待办编号获取行政审批待办事宜
      *
      * @param lastOutputTime
      * @param pendingHandleId
      * @return
      */
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
     @WebMethod
     String selectPendingHandleList(Date lastOutputTime, Long pendingHandleId);
+
+    /**
+     * 获取用户的经办记录
+     * 
+     * @param userId
+     * @param title
+     * @param pageNo
+     * @param pageSize
+     * @param prjSortId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectHistoryHandleList(String userId, String title, Integer pageNo, Integer pageSize, String prjSortId);
+
+    /**
+     * 根据审批事项id查询审批数据
+     * 
+     * @param itemApplyId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String getAppItemApplyDatesByItemApplyId(Long itemApplyId);
+
+    /**
+     * 根据指定的时间或待办编号获取审批查验待办事宜
+     *
+     * @param lastOutputTime
+     * @param pendingHandleId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectAuditPendingHandleList(Date lastOutputTime, Long pendingHandleId);
 
     /**
      * 根据待办事宜编号获取对应的审批数据
@@ -40,41 +74,95 @@ public interface SuperviseWebService {
      *            待办事宜编号字符串集合按"，"分隔
      * @return AppFlowShowData列表的json字符串
      */
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
     @WebMethod
     String selectAppItemApplyDates(String pendingHandleIds);
 
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
-    @WebMethod
-    String getApplyExcuteInfo(Long pendingHandleId, Long curNodeId);
-
     /**
-     * 提交审批项
-     * */
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
-    @WebMethod
-    String submitAppItemInfo(WebServiceNodeInfo nodeInfo);
-
-    /**
-     * 获取公文的附件
+     * 获取指定的文件
      *
      * @param fileName
      * @param offset
      * @param reads
      * @return
      */
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    // byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+
+    /**
+     * 获取行政审批按钮和选人信息
+     *
+     * @param nodeId
+     *            远程节点id
+     * @param pendingHandleId
+     *            远程待办id
+     * @param userId
+     *            对应远程的userInfoId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
     @WebMethod
-    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+    String getBtnAndUsersInfo(Long nodeId, Long pendingHandleId, Long userId);
+
+    /**
+     * 根据待办id获取审评数据
+     * 
+     * @param pendingHandleIds
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectAuditData(String pendingHandleIds);
 
     /**
      * 获取变动的企业信息
-     * 
+     *
      * @param entpId
      * @return
      */
-    @WebResult(targetNamespace = "http://server.webservice.supervise.mobile.sbt.com/")
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
     @WebMethod
     String getChangeEntpInfo(Long entpId);
+
+    /**
+     * 获取审批查验系统指定环节的功能按钮和选人信息
+     *
+     * @param nodeId
+     * @param pendingHandleId
+     * @param userId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String getAuditBtnAndUsersInfo(Long nodeId, Long pendingHandleId, Long userId);
+
+    /**
+     * 根据日常检查编号查询检查记录，并转成json格式
+     *
+     * @param entpObjectId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectExamineData(Long entpObjectId);
+
+    /**
+     * 根据许可证编号获取许可证记录
+     *
+     * @param licenceId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectAppLicence(Long licenceId);
+
+    /**
+     * 根据材料清单Id获取材料清单
+     * 
+     * @param materialId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectAppPrjMaterial(Long materialId);
 
 }
