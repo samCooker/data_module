@@ -165,4 +165,14 @@ public interface SuperviseWebService {
     @WebMethod
     String selectAppPrjMaterial(Long materialId);
 
+    /**
+     * 根据企业id获取行政审批，日常检查等基本数据列表
+     * 
+     * @param rmEntpId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectEntpOtherData(Long rmEntpId);
+
 }
