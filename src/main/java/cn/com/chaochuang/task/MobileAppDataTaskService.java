@@ -103,7 +103,7 @@ public class MobileAppDataTaskService {
     /**
      * 向行政审批系统获取待办事宜数据
      */
-//    @Scheduled(cron = "30/30 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -208,7 +208,7 @@ public class MobileAppDataTaskService {
     /**
      * 提交审批项数据
      */
-//    @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "20/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -264,7 +264,7 @@ public class MobileAppDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-//    @Scheduled(cron = "15/20 * * * * ?")
+    @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

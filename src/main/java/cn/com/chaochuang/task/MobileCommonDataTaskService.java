@@ -197,7 +197,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;
@@ -229,7 +229,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理审批待办数据的变更
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealSuperviseFordoDataChange() {
         if (isDealSuperviseFordoDataChangeRunning) {
             return;

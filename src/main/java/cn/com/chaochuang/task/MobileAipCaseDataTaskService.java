@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
@@ -104,7 +105,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取案件办理系统的待办记录
      */
-    // @Scheduled(cron = "10/30 * * * * ?")
+    @Scheduled(cron = "10/30 * * * * ?")
     public void getAipCaseFordo() {
         if (isAipCaseFordoRunning) {
             return;
@@ -147,7 +148,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取案件办理数据写入本地表
      */
-    // @Scheduled(cron = "20/40 * * * * ?")
+    @Scheduled(cron = "20/40 * * * * ?")
     public void getAipCaseDataTask() {
         if (isGetAipCaseRunning) {
             return;
@@ -180,7 +181,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 根据待办获取文书内容，将远程生成html文件的路径保存
      */
-    // @Scheduled(cron = "30/50 * * * * ?")
+    @Scheduled(cron = "30/50 * * * * ?")
     public void AipLawContentToPDF() {
         if (isTransferFileRunning) {
             return;
@@ -265,7 +266,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 提交或退回案件审批
      */
-    // @Scheduled(cron = "10/15 * * * * ?")
+    @Scheduled(cron = "10/15 * * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -308,7 +309,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取远程系统待办修改记录数据
      */
-    // @Scheduled(cron = "15/6 * * * * ?")
+    @Scheduled(cron = "15/6 * * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -333,7 +334,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "15/20 * * * * ?")
+    @Scheduled(cron = "15/20 * * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -389,7 +390,7 @@ public class MobileAipCaseDataTaskService {
     /**
      * 获取企业处罚记录
      */
-    // @Scheduled(cron = "20/10 * * * * ?")
+    @Scheduled(cron = "20/10 * * * * ?")
     public void getAipCasePunishDataTask() {
         if (isAipCasePunishRunning) {
             return;

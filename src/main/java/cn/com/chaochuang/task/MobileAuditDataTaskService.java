@@ -75,7 +75,7 @@ public class MobileAuditDataTaskService {
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "25/25 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -144,6 +144,8 @@ public class MobileAuditDataTaskService {
             params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
             params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
             params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
+            params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
+
             if (nodeInfo.getRmPrjContentIds() != null) {
                 // 整改内容
                 for (int i = 0; i < nodeInfo.getRmPrjContentIds().length; i++) {
