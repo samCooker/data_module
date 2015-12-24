@@ -619,4 +619,22 @@ public abstract class Tools {
         return result;
     }
 
+    /**
+     * 返回源字符串中含有目标字符串的个数
+     * 
+     * @param src
+     * @param target
+     * @return
+     */
+    public static int countStrQty(String src, String target) {
+        int count = 0;
+        int pos = 0;
+        pos = src.indexOf(target);
+        while (pos != -1) {
+            count++;
+            pos = src.indexOf(target, pos + 1);
+        }
+        return count;
+    }
+
 }

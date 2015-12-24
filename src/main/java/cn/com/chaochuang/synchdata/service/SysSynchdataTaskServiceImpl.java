@@ -17,9 +17,8 @@ import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.synchdata.bean.SynchDataParams;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
-import cn.com.chaochuang.synchdata.reference.SynchDataClearFlag;
-import cn.com.chaochuang.synchdata.reference.SynchDataFlag;
 import cn.com.chaochuang.synchdata.reference.SynchDataStatus;
 import cn.com.chaochuang.synchdata.repository.SysSynchdataTaskRepository;
 
@@ -53,8 +52,8 @@ public class SysSynchdataTaskServiceImpl extends SimpleLongIdCrudRestService<Sys
      *      cn.com.chaochuang.synchdata.reference.SynchDataClearFlag)
      */
     @Override
-    public void saveSynchdataTask(SynchDataFlag synchDataFlag, SynchDataClearFlag clearFlag) {
-        SysSynchdataTask task = new SysSynchdataTask(synchDataFlag, clearFlag);
+    public void saveSynchdataTask(SynchDataParams params) {
+        SysSynchdataTask task = new SysSynchdataTask(params.getSynchDataFlag(), params.getClearFlag());
         this.repository.save(task);
     }
 

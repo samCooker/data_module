@@ -38,8 +38,8 @@ public class SynchdataTask {
     /**
      * 获取案件办理系统的待办记录
      */
-    // @Scheduled(cron = "10 0/5 * * * ?")
-    @Scheduled(cron = "10/30 * * * * ?")
+    // // @Scheduled(cron = "10 0/5 * * * ?")
+    @Scheduled(cron = "10/10 * * * * ?")
     public void executeSynchDataTask() {
         if (isSynchDataTaskRunning) {
             return;
@@ -55,6 +55,8 @@ public class SynchdataTask {
                 this.synchDataService.synchAppEntpData(task);
             } else if (task.getSynchDataFlag().equals(SynchDataFlag.舆情基本信息)) {
                 this.synchDataService.synchVoiceInfoData(task);
+            } else if (task.getSynchDataFlag().equals(SynchDataFlag.行政审批待办)) {
+                this.synchDataService.synchSuperviseFdData(task);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -63,4 +65,5 @@ public class SynchdataTask {
             isSynchDataTaskRunning = false;
         }
     }
+
 }

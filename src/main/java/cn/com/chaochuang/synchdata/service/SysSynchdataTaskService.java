@@ -11,9 +11,8 @@ package cn.com.chaochuang.synchdata.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.synchdata.bean.SynchDataParams;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
-import cn.com.chaochuang.synchdata.reference.SynchDataClearFlag;
-import cn.com.chaochuang.synchdata.reference.SynchDataFlag;
 import cn.com.chaochuang.synchdata.reference.SynchDataStatus;
 
 /**
@@ -34,10 +33,7 @@ public interface SysSynchdataTaskService extends CrudRestService<SysSynchdataTas
     /**
      * 保存数据同步任务记录
      *
-     * @param synchDataFlag
-     *            任务标识
-     * @param clearFlag
-     *            是否清除原数据
+     * @param params
      */
-    void saveSynchdataTask(SynchDataFlag synchDataFlag, SynchDataClearFlag clearFlag);
+    void saveSynchdataTask(SynchDataParams params);
 }

@@ -24,10 +24,9 @@ import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.util.SearchBuilderHelper;
 import cn.com.chaochuang.common.util.SearchListHelper;
+import cn.com.chaochuang.synchdata.bean.SynchDataParams;
 import cn.com.chaochuang.synchdata.bean.SysSynchdataTaskShowBean;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
-import cn.com.chaochuang.synchdata.reference.SynchDataClearFlag;
-import cn.com.chaochuang.synchdata.reference.SynchDataFlag;
 import cn.com.chaochuang.synchdata.service.SysSynchdataTaskService;
 
 /**
@@ -86,8 +85,8 @@ public class SynchDataController {
      */
     @RequestMapping("/savesynchdatatask.json")
     @ResponseBody
-    public Result saveSynchdataTask(SynchDataFlag synchDataFlag, SynchDataClearFlag clearFlag) {
-        this.synchdataTaskService.saveSynchdataTask(synchDataFlag, clearFlag);
+    public Result saveSynchdataTask(SynchDataParams params) {
+        this.synchdataTaskService.saveSynchdataTask(params);
         return new Result("成功添加数据同步任务！", null);
     }
 }

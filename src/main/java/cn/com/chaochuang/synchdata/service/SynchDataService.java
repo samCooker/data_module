@@ -28,4 +28,12 @@ public interface SynchDataService {
      * @param task
      */
     void synchVoiceInfoData(SysSynchdataTask task);
+
+    /**
+     * 同步行政审批待办
+     * 
+     * @param task
+     */
+    void synchSuperviseFdData(SysSynchdataTask task);
+
 }

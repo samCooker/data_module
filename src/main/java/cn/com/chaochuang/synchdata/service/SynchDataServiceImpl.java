@@ -14,8 +14,10 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,7 @@ import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
+import cn.com.chaochuang.docwork.reference.FordoStatus;
 import cn.com.chaochuang.synchdata.domain.SysSynchdataTask;
 import cn.com.chaochuang.synchdata.reference.SynchDataStatus;
 import cn.com.chaochuang.synchdata.repository.SysSynchdataTaskRepository;
@@ -63,6 +66,20 @@ public class SynchDataServiceImpl implements SynchDataService {
     private VoiceInfoAttachRepository  voiceInfoAttachRepository;
     @Autowired
     private SysUserService             userService;
+    @Autowired
+    private SynchDataSource            superviseDataSourceService;
+    @Value("${supervise.fetch.interval}")
+    private String                     fdDataInterval;
+    @Value("${supervise.fd.countsql}")
+    private String                     fdDataCountsql;
+    @Value("${supervise.fd.datasql}")
+    private String                     fdDatasql;
+    @Value("${supervise.target.fd.findsql}")
+    private String                     targetDataFindsql;
+    @Value("${supervise.target.fd.insertsql}")
+    private String                     targetDataInsertsql;
+    @Value("${supervise.target.fd.updatesql}")
+    private String                     targetDataUpdatasql;
     @Value("${app.entp.countsql}")
     private String                     entpCountSQL;
     @Value("${app.entp.datasql}")
@@ -728,6 +745,159 @@ public class SynchDataServiceImpl implements SynchDataService {
         }
     }
 
+    @Override
+    public void synchSuperviseFdData(SysSynchdataTask task) {
+        Connection superviseConn = null;
+        Connection localConn = null;
+        PreparedStatement ptaskstat = null;
+
+        PreparedStatement countPreSta = null;
+        PreparedStatement dataPreSta = null;
+        PreparedStatement findPreSta = null;
+        PreparedStatement insertPreSta = null;
+        PreparedStatement updatePreSta = null;
+
+        ResultSet countRes = null;
+        ResultSet findRes = null;
+        ResultSet fdDataRes = null;
+        try {
+            superviseConn = this.superviseDataSourceService.getConnection();
+            localConn = this.localDataSourceService.getConnection();
+            if (superviseConn == null) {
+                task.setMemo("无法连接目的服务器同步失败！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            localConn.setAutoCommit(false);
+            Date startTime = Tools.diffDate(new Date(), new Integer(this.fdDataInterval));
+            String fmtTime = Tools.DATE_FORMAT.format(startTime);
+            java.sql.Date nowDate = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
+            // 1.查找大于指定时间的记录数
+            countPreSta = superviseConn.prepareStatement(this.fdDataCountsql);
+            countPreSta.setObject(1, fmtTime);
+            countRes = countPreSta.executeQuery();
+            countRes.next();
+            Long totalCount = countRes.getLong(1);// 总记录数据
+            Long maxId = countRes.getLong(2);// 最大id数
+            Long curId = 0L;
+            if (totalCount <= 0) {
+                task.setMemo("本次需同步数据记录数为0！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
+            // 重置任务的信息
+            task.setNeedSynch(totalCount);
+            task.setStatus(SynchDataStatus.同步中);
+            task.setBeginTime(new Date());
+            this.updateTaskInfo(task, ptaskstat);
+            // 2.获取大于指定时间的数据
+            dataPreSta = superviseConn.prepareStatement(this.fdDatasql);
+            findPreSta = localConn.prepareStatement(this.targetDataFindsql);
+            int inParamsQty = Tools.countStrQty(this.targetDataInsertsql, "@");
+            int upParamsQty = Tools.countStrQty(this.targetDataUpdatasql, "@");
+            insertPreSta = localConn.prepareStatement(this.targetDataInsertsql.replaceAll("@", "?"));
+            updatePreSta = localConn.prepareStatement(this.targetDataUpdatasql.replaceAll("@", "?"));
+            Object rmPendingId = null;
+            while (curId < maxId) {
+                dataPreSta.setObject(1, fmtTime);
+                dataPreSta.setObject(2, curId);
+                dataPreSta.setMaxRows(this.dataBlock);
+                dataPreSta.setFetchSize(this.dataBlock);
+                fdDataRes = dataPreSta.executeQuery();
+                while (fdDataRes.next()) {
+                    // 3.循环数据项，先通过原待办id查询本地数据是否存在，存在则更新，否则新增
+                    rmPendingId = fdDataRes.getObject(1);
+                    findPreSta.setObject(1, rmPendingId);
+                    findRes = findPreSta.executeQuery();
+                    if (findRes.next()) {
+                        // 4.更新
+                        int i = 1;
+                        for (; i < inParamsQty; i++) {
+                            updatePreSta.setObject(i, fdDataRes.getObject(i + 1));
+                        }
+                        updatePreSta.setObject(i, fdDataRes.getObject(1));
+                        updatePreSta.setObject(i + 1, LocalData.非本地数据.getKey());
+                        updatePreSta.addBatch();
+                    } else {
+                        // 4.新增
+                        int i = 1;
+                        for (; i <= upParamsQty; i++) {
+                            insertPreSta.setObject(i, fdDataRes.getObject(i));
+                        }
+                        insertPreSta.setObject(i, nowDate);
+                        insertPreSta.setObject(i + 1, LocalData.非本地数据.getKey());
+                        insertPreSta.setObject(i + 2, FordoStatus.未读.getKey());
+                        insertPreSta.addBatch();
+                    }
+
+                }
+                curId = new Long(rmPendingId.toString());
+                int updateQty = updatePreSta.executeBatch().length;
+                System.out.println("更新成功：" + updateQty + "条");
+                int insertQty = insertPreSta.executeBatch().length;
+                System.out.println("新增成功：" + insertQty + "条");
+                updatePreSta.clearBatch();
+                insertPreSta.clearBatch();
+            }
+            localConn.commit();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("完成数据同步！");
+            this.updateTaskInfo(task, ptaskstat);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("数据同步失败：" + ex.getMessage());
+            // 备注内容最大是500汉字
+            if (task.getMemo().length() > 500) {
+                task.setMemo(task.getMemo().substring(0, 500));
+            }
+            this.updateTaskInfo(task, ptaskstat);
+        } finally {
+            try {
+                if (countRes != null) {
+                    countRes.close();
+                }
+                if (findRes != null) {
+                    findRes.close();
+                }
+                if (fdDataRes != null) {
+                    fdDataRes.close();
+                }
+                if (ptaskstat != null) {
+                    ptaskstat.close();
+                }
+                if (countPreSta != null) {
+                    countPreSta.close();
+                }
+                if (dataPreSta != null) {
+                    dataPreSta.close();
+                }
+                if (findPreSta != null) {
+                    findPreSta.close();
+                }
+                if (insertPreSta != null) {
+                    insertPreSta.close();
+                }
+                if (updatePreSta != null) {
+                    updatePreSta.close();
+                }
+                if (superviseConn != null) {
+                    superviseConn.close();
+                }
+                if (localConn != null) {
+                    localConn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     /**
      * 创建Oracle Lob类型
      *
@@ -763,4 +933,5 @@ public class SynchDataServiceImpl implements SynchDataService {
         writer.close();
         return lob;
     }
+
 }
