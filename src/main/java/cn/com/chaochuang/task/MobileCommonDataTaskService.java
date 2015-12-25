@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
+import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.AppLicenceService;
 import cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService;
@@ -36,8 +38,6 @@ import cn.com.chaochuang.examine.service.ExamineEntpObjectService;
 import cn.com.chaochuang.voice.service.VoiceEventService;
 import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -77,6 +77,8 @@ public class MobileCommonDataTaskService {
     private EmSiteReportService        emSiteReportService;
     @Autowired
     private AppItemAttachService       appItemAttachService;
+    @Autowired
+    private AppItemApplyService appItemApplyService;
 
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning             = false;
@@ -91,7 +93,7 @@ public class MobileCommonDataTaskService {
      * 获取远程系统修改记录数据
      */
     @Scheduled(cron = "15/15 * * * * ?")
-    // @Scheduled(cron = "2 0/2 * * * ?")
+    // //@Scheduled(cron = "2 0/2 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -117,15 +119,14 @@ public class MobileCommonDataTaskService {
      * 处理远程系统更改数据
      */
     @Scheduled(cron = "10/10 * * * * ?")
-    // @Scheduled(cron = "8 0/2 * * * ?")
+    // //@Scheduled(cron = "8 0/2 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
         }
         isDealSysDataChangeRunning = true;
         try {
-            Page page = this.dataChangeService.findAllByPage(1, 10);
-            List<SysDataChange> datas = page.getContent();
+            List<SysDataChange> datas = this.dataChangeService.findByPageOrderById(new PageRequest(0, 10));
             for (SysDataChange item : datas) {
                 try {
                     if (DataChangeTable.办案待办.getKey().equals(item.getChangeTableName())) {
@@ -178,6 +179,9 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.审批材料清单.getKey().equals(item.getChangeTableName())) {
                         // 审批材料清单更新
                         appItemAttachService.updatePrjMaterial(item);
+                    }else if(DataChangeTable.执业药师.getKey().equals(item.getChangeTableName())){
+                        //更新、插入或删除执业药师
+                        appItemApplyService.updateOrDelPharmacist(item);
                     }
                     // 删除变更数据
                     this.dataChangeService.delete(item.getId());
@@ -197,7 +201,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    //@Scheduled(cron = "15/15 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;
@@ -229,7 +233,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理审批待办数据的变更
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    //@Scheduled(cron = "15/15 * * * * ?")
     public void dealSuperviseFordoDataChange() {
         if (isDealSuperviseFordoDataChangeRunning) {
             return;

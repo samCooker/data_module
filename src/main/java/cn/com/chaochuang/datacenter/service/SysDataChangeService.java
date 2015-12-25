@@ -30,7 +30,7 @@ public interface SysDataChangeService extends CrudRestService<SysDataChange, Lon
 
     /**
      * 获取OA待办变更记录
-     * 
+     *
      * @param page
      * @return
      */
@@ -38,9 +38,16 @@ public interface SysDataChangeService extends CrudRestService<SysDataChange, Lon
 
     /**
      * 获取行政审批待办变更记录
-     * 
+     *
      * @param pageRequest
      * @return
      */
     List<SysDataChange> selectSuperviseFordo(Pageable page);
+
+    /**
+     * 分页查询记录并按id排序
+     * @param page
+     * @return
+     */
+    List<SysDataChange> findByPageOrderById(Pageable page);
 }

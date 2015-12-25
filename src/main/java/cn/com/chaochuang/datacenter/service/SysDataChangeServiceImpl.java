@@ -73,4 +73,12 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
         return this.repository.findByChangeTableName(DataChangeTable.审批待办.getKey(), page);
     }
 
+    /**
+     * @see cn.com.chaochuang.datacenter.service.SysDataChangeService#findByPageOrderById(org.springframework.data.domain.Pageable)
+     */
+    @Override
+    public List<SysDataChange> findByPageOrderById(Pageable page) {
+        return repository.findByPageOrderById(page);
+    }
+
 }

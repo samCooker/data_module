@@ -34,7 +34,7 @@ public interface SuperviseWebService {
 
     /**
      * 获取用户的经办记录
-     * 
+     *
      * @param userId
      * @param title
      * @param pageNo
@@ -48,7 +48,7 @@ public interface SuperviseWebService {
 
     /**
      * 根据审批事项id查询审批数据
-     * 
+     *
      * @param itemApplyId
      * @return
      */
@@ -105,7 +105,7 @@ public interface SuperviseWebService {
 
     /**
      * 根据待办id获取审评数据
-     * 
+     *
      * @param pendingHandleIds
      * @return
      */
@@ -157,7 +157,7 @@ public interface SuperviseWebService {
 
     /**
      * 根据材料清单Id获取材料清单
-     * 
+     *
      * @param materialId
      * @return
      */
@@ -167,12 +167,22 @@ public interface SuperviseWebService {
 
     /**
      * 根据企业id获取行政审批，日常检查等基本数据列表
-     * 
+     *
      * @param rmEntpId
      * @return
      */
     @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
     @WebMethod
     String selectEntpOtherData(Long rmEntpId);
+
+    /**
+     * 根据原系统执业药师id查找执业药师信息
+     *
+     * @param rmPharmId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    String selectPharmacistByRmPharmId(Long rmPharmId);
 
 }

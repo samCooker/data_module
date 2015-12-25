@@ -34,7 +34,7 @@ public class AppPharmacist extends LongIdEntity {
     /** 性别：不祥；男；女 */
     private String            pharmGender;
     /** 民族 */
-    private Long              pharmNation;
+    private String              pharmNation;
     /** 学历 */
     private String            pharmDiploma;
     /** 所学专业 */
@@ -118,7 +118,7 @@ public class AppPharmacist extends LongIdEntity {
     /**
      * @return the pharmNation
      */
-    public Long getPharmNation() {
+    public String getPharmNation() {
         return pharmNation;
     }
 
@@ -126,7 +126,7 @@ public class AppPharmacist extends LongIdEntity {
      * @param pharmNation
      *            the pharmNation to set
      */
-    public void setPharmNation(Long pharmNation) {
+    public void setPharmNation(String pharmNation) {
         this.pharmNation = pharmNation;
     }
 

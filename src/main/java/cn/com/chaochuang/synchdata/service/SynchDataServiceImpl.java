@@ -68,6 +68,11 @@ public class SynchDataServiceImpl implements SynchDataService {
     private SysUserService             userService;
     @Autowired
     private SynchDataSource            superviseDataSourceService;
+    @Autowired
+    private SynchDataSource            auditDataSourceService;
+    @Value("${target.user.findsql}")
+    private String                     userFindsql;
+    // 行政审批
     @Value("${supervise.fetch.interval}")
     private String                     fdDataInterval;
     @Value("${supervise.fd.countsql}")
@@ -80,6 +85,20 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     targetDataInsertsql;
     @Value("${supervise.target.fd.updatesql}")
     private String                     targetDataUpdatasql;
+    // 审评查验
+    @Value("${audit.fetch.interval}")
+    private String                     auditFdDataInterval;
+    @Value("${audit.fd.countsql}")
+    private String                     auditFdDataCountsql;
+    @Value("${audit.fd.datasql}")
+    private String                     auditFdDatasql;
+    @Value("${audit.target.fd.findsql}")
+    private String                     auditTargetDataFindsql;
+    @Value("${audit.target.fd.insertsql}")
+    private String                     auditTargetDataInsertsql;
+    @Value("${audit.target.fd.updatesql}")
+    private String                     auditTargetDataUpdatasql;
+    // 企业数据
     @Value("${app.entp.countsql}")
     private String                     entpCountSQL;
     @Value("${app.entp.datasql}")
@@ -157,8 +176,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             result = stat.executeQuery(this.entpCountSQL);
             result.next();
             // 需要同步的记录数
-            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
-                            .getLong(3);
+            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result.getLong(3);
             if (count <= 0) {
                 task.setMemo("本次需同步数据记录数为0！");
                 task.setStatus(SynchDataStatus.同步完成);
@@ -215,20 +233,14 @@ public class SynchDataServiceImpl implements SynchDataService {
                         pinsertstat.setObject(entpInsertSQLItem.get("contact"), result.getObject("contact"));
                         pinsertstat.setObject(entpInsertSQLItem.get("contact_duty"), result.getObject("contact_duty"));
                         pinsertstat.setObject(entpInsertSQLItem.get("cell_phone"), result.getObject("cell_phone"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("contact_address"),
-                                        result.getObject("contact_address"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("contact_postal_code"),
-                                        result.getObject("contact_postal_code"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact_address"), result.getObject("contact_address"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("contact_postal_code"), result.getObject("contact_postal_code"));
                         pinsertstat.setObject(entpInsertSQLItem.get("tel"), result.getObject("tel"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("register_address"),
-                                        result.getObject("register_address"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("register_address"), result.getObject("register_address"));
                         pinsertstat.setObject(entpInsertSQLItem.get("register_fund"), result.getObject("register_fund"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("business_license"),
-                                        result.getObject("business_license"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("business_license_date"),
-                                        result.getObject("business_license_date"));
-                        pinsertstat.setObject(entpInsertSQLItem.get("handle_unit_name"),
-                                        result.getObject("handle_unit_name"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("business_license"), result.getObject("business_license"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("business_license_date"), result.getObject("business_license_date"));
+                        pinsertstat.setObject(entpInsertSQLItem.get("handle_unit_name"), result.getObject("handle_unit_name"));
                         pinsertstat.setObject(entpInsertSQLItem.get("city_name"), result.getObject("city_name"));
                         pinsertstat.setObject(entpInsertSQLItem.get("longitude"), null);
                         pinsertstat.setObject(entpInsertSQLItem.get("latitude"), null);
@@ -237,8 +249,7 @@ public class SynchDataServiceImpl implements SynchDataService {
                         busName = new StringBuilder("");
                         while (busResult.next()) {
                             if (!Tools.isEmptyString(busResult.getString("bus_name"))) {
-                                busName.append(busResult.getString("entp_type_name")).append("：")
-                                                .append(busResult.getString("bus_name")).append("<br>");
+                                busName.append(busResult.getString("entp_type_name")).append("：").append(busResult.getString("bus_name")).append("<br>");
                             }
                         }
                         pinsertstat.setObject(entpInsertSQLItem.get("bus_name"), busName.toString());
@@ -262,27 +273,18 @@ public class SynchDataServiceImpl implements SynchDataService {
                         while (licenceResult.next()) {
                             seqResult = pseqstat.executeQuery();
                             seqResult.next();
-                            if (this.licenceRepository.findByRmLicenceId(Long.valueOf(licenceResult.getObject(
-                                            "rm_licence_id").toString())) != null) {
+                            if (this.licenceRepository.findByRmLicenceId(Long.valueOf(licenceResult.getObject("rm_licence_id").toString())) != null) {
                                 continue;
                             }
                             try {
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"),
-                                                seqResult.getLong(1));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
-                                                licenceResult.getObject("rm_licence_id"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"),
-                                                licenceResult.getObject("rm_entp_id"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"),
-                                                licenceResult.getObject("entp_type_name"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
-                                                licenceResult.getObject("licence_no"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
-                                                this.changeDataType(licenceResult.getObject("from_date"), true));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
-                                                this.changeDataType(licenceResult.getObject("to_date"), true));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
-                                                this.changeDataType(licenceResult.getObject("licence_time"), true));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"), seqResult.getLong(1));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"), licenceResult.getObject("rm_licence_id"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"), licenceResult.getObject("rm_entp_id"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"), licenceResult.getObject("entp_type_name"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"), licenceResult.getObject("licence_no"));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"), this.changeDataType(licenceResult.getObject("from_date"), true));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"), this.changeDataType(licenceResult.getObject("to_date"), true));
+                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"), this.changeDataType(licenceResult.getObject("licence_time"), true));
                                 plicenceinsertstat.addBatch();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -316,7 +318,6 @@ public class SynchDataServiceImpl implements SynchDataService {
                 this.updateTaskInfo(task, ptaskstat);
                 minId += this.dataBlock;
             }
-            localConn.commit();
             task.setStatus(SynchDataStatus.同步完成);
             task.setFinishTime(new Date());
             task.setMemo("完成数据同步！");
@@ -434,8 +435,7 @@ public class SynchDataServiceImpl implements SynchDataService {
         if (source == null) {
             return null;
         }
-        if (source.getClass().getName().toLowerCase().indexOf("timestamp") >= 0
-                        || source.getClass().getName().toLowerCase().indexOf("date") >= 0) {
+        if (source.getClass().getName().toLowerCase().indexOf("timestamp") >= 0 || source.getClass().getName().toLowerCase().indexOf("date") >= 0) {
             if (toString) {
                 try {
                     return Tools.DATE_TIME_FORMAT.format(new Timestamp(((Date) source).getTime()));
@@ -510,8 +510,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             result = stat.executeQuery(this.infoCountSQL);
             result.next();
             // 需要同步的记录数
-            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
-                            .getLong(3);
+            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result.getLong(3);
             if (count <= 0) {
                 task.setMemo("本次需同步数据记录数为0！");
                 task.setStatus(SynchDataStatus.同步完成);
@@ -560,13 +559,10 @@ public class SynchDataServiceImpl implements SynchDataService {
                         pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"), null);
                         pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), null);
                         if (result.getObject("voice_info_discover_user") != null) {
-                            SysUser user = this.userService.findByRmUserInfoId(Long.valueOf(result.getObject(
-                                            "voice_info_discover_user").toString()));
+                            SysUser user = this.userService.findByRmUserInfoId(Long.valueOf(result.getObject("voice_info_discover_user").toString()));
                             if (user != null) {
-                                pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"),
-                                                user.getRmUserId());
-                                pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), user.getDepartment()
-                                                .getAncestorDep());
+                                pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_user"), user.getRmUserId());
+                                pinsertstat.setObject(infoInsertSQLItem.get("unit_org_id"), user.getDepartment().getAncestorDep());
                             }
                         }
                         // 获取舆情规则名称
@@ -580,45 +576,30 @@ public class SynchDataServiceImpl implements SynchDataService {
                                     continue;
                                 }
                             }
-                            pinsertstat.setObject(infoInsertSQLItem.get("rule_name"),
-                                            voiceRules.get(result.getObject("rule_id")));
+                            pinsertstat.setObject(infoInsertSQLItem.get("rule_name"), voiceRules.get(result.getObject("rule_id")));
                         }
                         pinsertstat.setObject(infoInsertSQLItem.get("rm_info_id"), curId);
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_home"),
-                                        result.getObject("voice_info_is_home"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_title"),
-                                        result.getObject("voice_info_title"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_home"), result.getObject("voice_info_is_home"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_title"), result.getObject("voice_info_title"));
                         // 设置Clob类型字段
                         Clob voiceclob = result.getClob("voice_info_content");
                         Clob clob = (Clob) createOracleLob(localConn, "oracle.sql.CLOB");
                         if (result.getClob("voice_info_content") != null) {
-                            pinsertstat.setClob(
-                                            infoInsertSQLItem.get("voice_info_content"),
-                                            strToClob(voiceclob.getSubString(Long.valueOf(1),
-                                                            Long.valueOf(voiceclob.length()).intValue()), clob));
+                            pinsertstat.setClob(infoInsertSQLItem.get("voice_info_content"), strToClob(voiceclob.getSubString(Long.valueOf(1), Long.valueOf(voiceclob.length()).intValue()), clob));
                         } else {
                             pinsertstat.setClob(infoInsertSQLItem.get("voice_info_content"), strToClob("", clob));
                         }
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source"),
-                                        result.getObject("voice_info_source"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source_url"),
-                                        result.getObject("voice_info_source_url"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_author"),
-                                        result.getObject("voice_info_author"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_issue_time"),
-                                        result.getObject("voice_info_issue_time"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_status"),
-                                        result.getObject("voice_info_status"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_time"),
-                                        result.getObject("voice_info_discover_time"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_nature"),
-                                        result.getObject("voice_info_nature"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_local"),
-                                        result.getObject("voice_info_is_local"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source"), result.getObject("voice_info_source"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_source_url"), result.getObject("voice_info_source_url"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_author"), result.getObject("voice_info_author"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_issue_time"), result.getObject("voice_info_issue_time"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_status"), result.getObject("voice_info_status"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_discover_time"), result.getObject("voice_info_discover_time"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_nature"), result.getObject("voice_info_nature"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_local"), result.getObject("voice_info_is_local"));
                         pinsertstat.setObject(infoInsertSQLItem.get("meta_type"), result.getObject("meta_type"));
                         pinsertstat.setObject(infoInsertSQLItem.get("transmitconut"), result.getObject("transmitconut"));
-                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_sensitive"),
-                                        result.getObject("voice_info_is_sensitive"));
+                        pinsertstat.setObject(infoInsertSQLItem.get("voice_info_is_sensitive"), result.getObject("voice_info_is_sensitive"));
                         pinsertstat.setObject(infoInsertSQLItem.get("clickcount"), result.getObject("clickcount"));
                         pinsertstat.setObject(infoInsertSQLItem.get("rm_affix_id"), result.getObject("affix_id"));
 
@@ -644,24 +625,15 @@ public class SynchDataServiceImpl implements SynchDataService {
                                     // file_id, affix_id, true_name, file_size, is_image, save_path, pdf_flag, grounp_id
                                     // attach_id, true_name, file_size, is_image, save_path, rm_attach_id, rm_affix_id,
                                     // local_data
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("attach_id"),
-                                                    seqResult.getLong(1));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
-                                                    affixResult.getObject("true_name"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("file_size"),
-                                                    affixResult.getObject("file_size"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("is_image"),
-                                                    affixResult.getObject("is_image"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("save_path"),
-                                                    affixResult.getObject("save_path"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"),
-                                                    affixResult.getObject("true_name"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_attach_id"),
-                                                    affixResult.getObject("file_id"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_affix_id"),
-                                                    affixResult.getObject("affix_id"));
-                                    paffixinsertstat.setObject(affixInsertSQLItem.get("local_data"),
-                                                    LocalData.非本地数据.getKey());
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("attach_id"), seqResult.getLong(1));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"), affixResult.getObject("true_name"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("file_size"), affixResult.getObject("file_size"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("is_image"), affixResult.getObject("is_image"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("save_path"), affixResult.getObject("save_path"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("true_name"), affixResult.getObject("true_name"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_attach_id"), affixResult.getObject("file_id"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("rm_affix_id"), affixResult.getObject("affix_id"));
+                                    paffixinsertstat.setObject(affixInsertSQLItem.get("local_data"), LocalData.非本地数据.getKey());
                                     paffixinsertstat.addBatch();
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
@@ -756,10 +728,14 @@ public class SynchDataServiceImpl implements SynchDataService {
         PreparedStatement findPreSta = null;
         PreparedStatement insertPreSta = null;
         PreparedStatement updatePreSta = null;
+        PreparedStatement pseqstat = null;
+        PreparedStatement userFindPreSta = null;
 
+        ResultSet userRes = null;
         ResultSet countRes = null;
         ResultSet findRes = null;
         ResultSet fdDataRes = null;
+        ResultSet seqResult = null;
         try {
             superviseConn = this.superviseDataSourceService.getConnection();
             localConn = this.localDataSourceService.getConnection();
@@ -769,7 +745,7 @@ public class SynchDataServiceImpl implements SynchDataService {
                 this.taskRepository.save(task);
                 return;
             }
-            localConn.setAutoCommit(false);
+            localConn.setAutoCommit(true);
             Date startTime = Tools.diffDate(new Date(), new Integer(this.fdDataInterval));
             String fmtTime = Tools.DATE_FORMAT.format(startTime);
             java.sql.Date nowDate = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
@@ -781,6 +757,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             Long totalCount = countRes.getLong(1);// 总记录数据
             Long maxId = countRes.getLong(2);// 最大id数
             Long curId = 0L;
+            Long finishQty = 0L;
             if (totalCount <= 0) {
                 task.setMemo("本次需同步数据记录数为0！");
                 task.setStatus(SynchDataStatus.同步完成);
@@ -796,10 +773,14 @@ public class SynchDataServiceImpl implements SynchDataService {
             // 2.获取大于指定时间的数据
             dataPreSta = superviseConn.prepareStatement(this.fdDatasql);
             findPreSta = localConn.prepareStatement(this.targetDataFindsql);
-            int inParamsQty = Tools.countStrQty(this.targetDataInsertsql, "@");
-            int upParamsQty = Tools.countStrQty(this.targetDataUpdatasql, "@");
-            insertPreSta = localConn.prepareStatement(this.targetDataInsertsql.replaceAll("@", "?"));
-            updatePreSta = localConn.prepareStatement(this.targetDataUpdatasql.replaceAll("@", "?"));
+            Map<String, Integer> insertSQLItem = this.buildInsertFieldMap(this.targetDataInsertsql);
+            Map<String, Integer> updateSQLItem = this.buildUpdateFieldMap(this.targetDataUpdatasql);
+            insertPreSta = localConn.prepareStatement(this.targetDataInsertsql);
+            updatePreSta = localConn.prepareStatement(this.targetDataUpdatasql);
+            // 获取序列号
+            pseqstat = localConn.prepareStatement(this.sequenceSQL);
+            // 查询用户rmUserId
+            userFindPreSta = localConn.prepareStatement(this.userFindsql);
             Object rmPendingId = null;
             while (curId < maxId) {
                 dataPreSta.setObject(1, fmtTime);
@@ -814,37 +795,80 @@ public class SynchDataServiceImpl implements SynchDataService {
                     findRes = findPreSta.executeQuery();
                     if (findRes.next()) {
                         // 4.更新
-                        int i = 1;
-                        for (; i < inParamsQty; i++) {
-                            updatePreSta.setObject(i, fdDataRes.getObject(i + 1));
+                        updatePreSta.setObject(updateSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        updatePreSta.setObject(updateSQLItem.get("title"), fdDataRes.getObject("title"));
+                        updatePreSta.setObject(updateSQLItem.get("url"), fdDataRes.getObject("url"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_id"), fdDataRes.getObject("sender_id"));
+                        updatePreSta.setObject(updateSQLItem.get("send_time"), fdDataRes.getObject("send_time"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_name"), fdDataRes.getObject("sender_name"));
+                        updatePreSta.setObject(updateSQLItem.get("read_time"), fdDataRes.getObject("read_time"));
+                        updatePreSta.setObject(updateSQLItem.get("emergency_level"), fdDataRes.getObject("emergency_flag"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_dept_name"), fdDataRes.getObject("receiver_dep_name"));
+                        updatePreSta.setObject(updateSQLItem.get("node_status"), fdDataRes.getObject("status"));
+                        updatePreSta.setObject(updateSQLItem.get("node_id"), fdDataRes.getObject("node_id"));
+                        updatePreSta.setObject(updateSQLItem.get("item_apply_id"), fdDataRes.getObject("business_key"));
+                        updatePreSta.setObject(updateSQLItem.get("node_code"), fdDataRes.getObject("node_code"));
+                        updatePreSta.setObject(updateSQLItem.get("flow_inst_id"), fdDataRes.getObject("flow_inst_id"));
+                        updatePreSta.setObject(updateSQLItem.get("local_data"), LocalData.非本地数据.getKey());
+                        updatePreSta.setObject(updateSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        // 将用户的rmUserInfoId转成rmUserId
+                        userFindPreSta.setObject(1, fdDataRes.getObject("receiver_id"));
+                        userRes = userFindPreSta.executeQuery();
+                        if (userRes.next()) {
+                            updatePreSta.setObject(updateSQLItem.get("recipient_id"), userRes.getObject(1));
+                        } else {
+                            System.out.println("找不到id为：" + fdDataRes.getObject("receiver_id") + " 的用户");
+                            updatePreSta.setObject(updateSQLItem.get("recipient_id"), 0);
                         }
-                        updatePreSta.setObject(i, fdDataRes.getObject(1));
-                        updatePreSta.setObject(i + 1, LocalData.非本地数据.getKey());
                         updatePreSta.addBatch();
                     } else {
                         // 4.新增
-                        int i = 1;
-                        for (; i <= upParamsQty; i++) {
-                            insertPreSta.setObject(i, fdDataRes.getObject(i));
+                        insertPreSta.setObject(insertSQLItem.get("local_data"), LocalData.非本地数据.getKey());
+                        insertPreSta.setObject(insertSQLItem.get("status"), FordoStatus.未读.getKey());
+                        insertPreSta.setObject(insertSQLItem.get("input_date"), nowDate);
+                        insertPreSta.setObject(insertSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        insertPreSta.setObject(insertSQLItem.get("title"), fdDataRes.getObject("title"));
+                        insertPreSta.setObject(insertSQLItem.get("url"), fdDataRes.getObject("url"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_id"), fdDataRes.getObject("sender_id"));
+                        insertPreSta.setObject(insertSQLItem.get("send_time"), fdDataRes.getObject("send_time"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_name"), fdDataRes.getObject("sender_name"));
+                        insertPreSta.setObject(insertSQLItem.get("read_time"), fdDataRes.getObject("read_time"));
+                        insertPreSta.setObject(insertSQLItem.get("emergency_level"), fdDataRes.getObject("emergency_flag"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_dept_name"), fdDataRes.getObject("receiver_dep_name"));
+                        insertPreSta.setObject(insertSQLItem.get("node_status"), fdDataRes.getObject("status"));
+                        insertPreSta.setObject(insertSQLItem.get("node_id"), fdDataRes.getObject("node_id"));
+                        insertPreSta.setObject(insertSQLItem.get("item_apply_id"), fdDataRes.getObject("business_key"));
+                        insertPreSta.setObject(insertSQLItem.get("node_code"), fdDataRes.getObject("node_code"));
+                        insertPreSta.setObject(insertSQLItem.get("flow_inst_id"), fdDataRes.getObject("flow_inst_id"));
+                        // 将用户的rmUserInfoId转成rmUserId
+                        userFindPreSta.setObject(1, fdDataRes.getObject("receiver_id"));
+                        userRes = userFindPreSta.executeQuery();
+                        if (userRes.next()) {
+                            insertPreSta.setObject(insertSQLItem.get("recipient_id"), userRes.getObject(1));
+                        } else {
+                            System.out.println("找不到id为：" + fdDataRes.getObject("receiver_id") + " 的用户");
+                            insertPreSta.setObject(insertSQLItem.get("recipient_id"), 0);
                         }
-                        insertPreSta.setObject(i, nowDate);
-                        insertPreSta.setObject(i + 1, LocalData.非本地数据.getKey());
-                        insertPreSta.setObject(i + 2, FordoStatus.未读.getKey());
+                        seqResult = pseqstat.executeQuery();
+                        seqResult.next();
+                        insertPreSta.setObject(insertSQLItem.get("fordo_id"), seqResult.getLong(1));
                         insertPreSta.addBatch();
                     }
 
                 }
                 curId = new Long(rmPendingId.toString());
                 int updateQty = updatePreSta.executeBatch().length;
-                System.out.println("更新成功：" + updateQty + "条");
                 int insertQty = insertPreSta.executeBatch().length;
-                System.out.println("新增成功：" + insertQty + "条");
                 updatePreSta.clearBatch();
                 insertPreSta.clearBatch();
+                finishQty = finishQty + updateQty + insertQty;
+                task.setFinishSynch(finishQty);
+                this.updateTaskInfo(task, ptaskstat);
             }
             localConn.commit();
             task.setStatus(SynchDataStatus.同步完成);
             task.setFinishTime(new Date());
+            task.setFinishSynch(finishQty);
             task.setMemo("完成数据同步！");
             this.updateTaskInfo(task, ptaskstat);
         } catch (Exception ex) {
@@ -868,6 +892,15 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (fdDataRes != null) {
                     fdDataRes.close();
                 }
+                if (seqResult != null) {
+                    seqResult.close();
+                }
+                if (userRes != null) {
+                    userRes.close();
+                }
+                if (userFindPreSta != null) {
+                    userFindPreSta.close();
+                }
                 if (ptaskstat != null) {
                     ptaskstat.close();
                 }
@@ -886,6 +919,9 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (updatePreSta != null) {
                     updatePreSta.close();
                 }
+                if (pseqstat != null) {
+                    pseqstat.close();
+                }
                 if (superviseConn != null) {
                     superviseConn.close();
                 }
@@ -896,6 +932,226 @@ public class SynchDataServiceImpl implements SynchDataService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchAuditFdData(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
+     */
+    @Override
+    public void synchAuditFdData(SysSynchdataTask task) {
+        Connection auditConn = null;
+        Connection localConn = null;
+        PreparedStatement ptaskstat = null;
+
+        PreparedStatement countPreSta = null;
+        PreparedStatement dataPreSta = null;
+        PreparedStatement findPreSta = null;
+        PreparedStatement insertPreSta = null;
+        PreparedStatement updatePreSta = null;
+        PreparedStatement pseqstat = null;
+        PreparedStatement userFindPreSta = null;
+
+        ResultSet userRes = null;
+        ResultSet countRes = null;
+        ResultSet findRes = null;
+        ResultSet fdDataRes = null;
+        ResultSet seqResult = null;
+        try {
+            auditConn = this.auditDataSourceService.getConnection();
+            localConn = this.localDataSourceService.getConnection();
+            if (auditConn == null) {
+                task.setMemo("无法连接目的服务器同步失败！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            localConn.setAutoCommit(true);
+            Date startTime = Tools.diffDate(new Date(), new Integer(this.auditFdDataInterval));
+            String fmtTime = Tools.DATE_FORMAT.format(startTime);
+            java.sql.Date nowDate = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
+            // 1.查找大于指定时间的记录数
+            countPreSta = auditConn.prepareStatement(this.auditFdDataCountsql);
+            countPreSta.setObject(1, fmtTime);
+            countRes = countPreSta.executeQuery();
+            countRes.next();
+            Long totalCount = countRes.getLong(1);// 总记录数据
+            Long maxId = countRes.getLong(2);// 最大id数
+            Long curId = 0L;
+            Long finishQty = 0L;
+            if (totalCount <= 0) {
+                task.setMemo("本次需同步数据记录数为0！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
+            // 重置任务的信息
+            task.setNeedSynch(totalCount);
+            task.setStatus(SynchDataStatus.同步中);
+            task.setBeginTime(new Date());
+            this.updateTaskInfo(task, ptaskstat);
+            // 2.获取大于指定时间的数据
+            dataPreSta = auditConn.prepareStatement(this.auditFdDatasql);
+            findPreSta = localConn.prepareStatement(this.auditTargetDataFindsql);
+            Map<String, Integer> insertSQLItem = this.buildInsertFieldMap(this.auditTargetDataInsertsql);
+            Map<String, Integer> updateSQLItem = this.buildUpdateFieldMap(this.auditTargetDataUpdatasql);
+            insertPreSta = localConn.prepareStatement(this.auditTargetDataInsertsql);
+            updatePreSta = localConn.prepareStatement(this.auditTargetDataUpdatasql);
+            // 获取序列号
+            pseqstat = localConn.prepareStatement(this.sequenceSQL);
+            // 查询用户rmUserId
+            userFindPreSta = localConn.prepareStatement(this.userFindsql);
+            Object rmPendingId = null;
+            while (curId < maxId) {
+                dataPreSta.setObject(1, fmtTime);
+                dataPreSta.setObject(2, curId);
+                dataPreSta.setMaxRows(this.dataBlock);
+                dataPreSta.setFetchSize(this.dataBlock);
+                fdDataRes = dataPreSta.executeQuery();
+                while (fdDataRes.next()) {
+                    // 3.循环数据项，先通过原待办id查询本地数据是否存在，存在则更新，否则新增
+                    rmPendingId = fdDataRes.getObject(1);
+                    findPreSta.setObject(1, rmPendingId);
+                    findRes = findPreSta.executeQuery();
+                    if (findRes.next()) {
+                        // 4.更新
+                        updatePreSta.setObject(updateSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        updatePreSta.setObject(updateSQLItem.get("title"), fdDataRes.getObject("title"));
+                        updatePreSta.setObject(updateSQLItem.get("url"), fdDataRes.getObject("url"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_id"), fdDataRes.getObject("sender_id"));
+                        updatePreSta.setObject(updateSQLItem.get("send_time"), fdDataRes.getObject("send_time"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_name"), fdDataRes.getObject("sender_name"));
+                        updatePreSta.setObject(updateSQLItem.get("read_time"), fdDataRes.getObject("read_time"));
+                        updatePreSta.setObject(updateSQLItem.get("emergency_level"), fdDataRes.getObject("emergency_flag"));
+                        updatePreSta.setObject(updateSQLItem.get("sender_dept_name"), fdDataRes.getObject("receiver_dep_name"));
+                        updatePreSta.setObject(updateSQLItem.get("node_status"), fdDataRes.getObject("status"));
+                        updatePreSta.setObject(updateSQLItem.get("node_id"), fdDataRes.getObject("node_id"));
+                        updatePreSta.setObject(updateSQLItem.get("task_id"), fdDataRes.getObject("business_key"));
+                        updatePreSta.setObject(updateSQLItem.get("node_code"), fdDataRes.getObject("node_code"));
+                        updatePreSta.setObject(updateSQLItem.get("flow_inst_id"), fdDataRes.getObject("flow_inst_id"));
+                        updatePreSta.setObject(updateSQLItem.get("local_data"), LocalData.非本地数据.getKey());
+                        updatePreSta.setObject(updateSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        // 将用户的rmUserInfoId转成rmUserId
+                        userFindPreSta.setObject(1, fdDataRes.getObject("receiver_id"));
+                        userRes = userFindPreSta.executeQuery();
+                        if (userRes.next()) {
+                            updatePreSta.setObject(updateSQLItem.get("recipient_id"), userRes.getObject(1));
+                        } else {
+                            System.out.println("找不到id为：" + fdDataRes.getObject("receiver_id") + " 的用户");
+                            updatePreSta.setObject(updateSQLItem.get("recipient_id"), 0);
+                        }
+                        updatePreSta.addBatch();
+                    } else {
+                        // 4.新增
+                        insertPreSta.setObject(insertSQLItem.get("local_data"), LocalData.非本地数据.getKey());
+                        insertPreSta.setObject(insertSQLItem.get("status"), FordoStatus.未读.getKey());
+                        insertPreSta.setObject(insertSQLItem.get("input_date"), nowDate);
+                        insertPreSta.setObject(insertSQLItem.get("rm_pending_id"), fdDataRes.getObject("pending_handle_id"));
+                        insertPreSta.setObject(insertSQLItem.get("title"), fdDataRes.getObject("title"));
+                        insertPreSta.setObject(insertSQLItem.get("url"), fdDataRes.getObject("url"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_id"), fdDataRes.getObject("sender_id"));
+                        insertPreSta.setObject(insertSQLItem.get("send_time"), fdDataRes.getObject("send_time"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_name"), fdDataRes.getObject("sender_name"));
+                        insertPreSta.setObject(insertSQLItem.get("read_time"), fdDataRes.getObject("read_time"));
+                        insertPreSta.setObject(insertSQLItem.get("emergency_level"), fdDataRes.getObject("emergency_flag"));
+                        insertPreSta.setObject(insertSQLItem.get("sender_dept_name"), fdDataRes.getObject("receiver_dep_name"));
+                        insertPreSta.setObject(insertSQLItem.get("node_status"), fdDataRes.getObject("status"));
+                        insertPreSta.setObject(insertSQLItem.get("node_id"), fdDataRes.getObject("node_id"));
+                        insertPreSta.setObject(insertSQLItem.get("task_id"), fdDataRes.getObject("business_key"));
+                        insertPreSta.setObject(insertSQLItem.get("node_code"), fdDataRes.getObject("node_code"));
+                        insertPreSta.setObject(insertSQLItem.get("flow_inst_id"), fdDataRes.getObject("flow_inst_id"));
+                        // 将用户的rmUserInfoId转成rmUserId
+                        userFindPreSta.setObject(1, fdDataRes.getObject("receiver_id"));
+                        userRes = userFindPreSta.executeQuery();
+                        if (userRes.next()) {
+                            insertPreSta.setObject(insertSQLItem.get("recipient_id"), userRes.getObject(1));
+                        } else {
+                            System.out.println("找不到id为：" + fdDataRes.getObject("receiver_id") + " 的用户");
+                            insertPreSta.setObject(insertSQLItem.get("recipient_id"), 0);
+                        }
+                        seqResult = pseqstat.executeQuery();
+                        seqResult.next();
+                        insertPreSta.setObject(insertSQLItem.get("fordo_id"), seqResult.getLong(1));
+                        insertPreSta.addBatch();
+                    }
+
+                }
+                curId = new Long(rmPendingId.toString());
+                int updateQty = updatePreSta.executeBatch().length;
+                int insertQty = insertPreSta.executeBatch().length;
+                updatePreSta.clearBatch();
+                insertPreSta.clearBatch();
+                finishQty = finishQty + updateQty + insertQty;
+                task.setFinishSynch(finishQty);
+                this.updateTaskInfo(task, ptaskstat);
+            }
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setFinishSynch(finishQty);
+            task.setMemo("完成数据同步！");
+            this.updateTaskInfo(task, ptaskstat);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("数据同步失败：" + ex.getMessage());
+            // 备注内容最大是500汉字
+            if (task.getMemo().length() > 500) {
+                task.setMemo(task.getMemo().substring(0, 500));
+            }
+            this.updateTaskInfo(task, ptaskstat);
+        } finally {
+            try {
+                if (countRes != null) {
+                    countRes.close();
+                }
+                if (findRes != null) {
+                    findRes.close();
+                }
+                if (fdDataRes != null) {
+                    fdDataRes.close();
+                }
+                if (seqResult != null) {
+                    seqResult.close();
+                }
+                if (userRes != null) {
+                    userRes.close();
+                }
+                if (userFindPreSta != null) {
+                    userFindPreSta.close();
+                }
+                if (ptaskstat != null) {
+                    ptaskstat.close();
+                }
+                if (countPreSta != null) {
+                    countPreSta.close();
+                }
+                if (dataPreSta != null) {
+                    dataPreSta.close();
+                }
+                if (findPreSta != null) {
+                    findPreSta.close();
+                }
+                if (insertPreSta != null) {
+                    insertPreSta.close();
+                }
+                if (updatePreSta != null) {
+                    updatePreSta.close();
+                }
+                if (pseqstat != null) {
+                    pseqstat.close();
+                }
+                if (auditConn != null) {
+                    auditConn.close();
+                }
+                if (localConn != null) {
+                    localConn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     /**
@@ -910,8 +1166,7 @@ public class SynchDataServiceImpl implements SynchDataService {
         Class lobClass = conn.getClass().getClassLoader().loadClass(lobClassName);
         final Integer DURATION_SESSION = new Integer(lobClass.getField("DURATION_SESSION").getInt(null));
         final Integer MODE_READWRITE = new Integer(lobClass.getField("MODE_READWRITE").getInt(null));
-        Method createTemporary = lobClass.getMethod("createTemporary", new Class[] { Connection.class, boolean.class,
-                        int.class });
+        Method createTemporary = lobClass.getMethod("createTemporary", new Class[] { Connection.class, boolean.class, int.class });
         Object lob = createTemporary.invoke(null, new Object[] { conn, false, DURATION_SESSION });
         Method open = lobClass.getMethod("open", new Class[] { int.class });
         open.invoke(lob, new Object[] { MODE_READWRITE });

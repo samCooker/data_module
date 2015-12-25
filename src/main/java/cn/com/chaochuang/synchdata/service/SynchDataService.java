@@ -31,9 +31,15 @@ public interface SynchDataService {
 
     /**
      * 同步行政审批待办
-     * 
+     *
      * @param task
      */
     void synchSuperviseFdData(SysSynchdataTask task);
 
+    /**
+     * 同步审评查验待办
+     * 
+     * @param task
+     */
+    void synchAuditFdData(SysSynchdataTask task);
 }

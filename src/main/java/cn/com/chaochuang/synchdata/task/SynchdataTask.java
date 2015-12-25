@@ -33,12 +33,12 @@ public class SynchdataTask {
     private SysSynchdataTaskService synchdataTaskService;
 
     /** 获取办案系统处罚记录阻塞标识 */
-    private static boolean          isSynchDataTaskRunning = false;
+    private static boolean isSynchDataTaskRunning = false;
 
     /**
      * 获取案件办理系统的待办记录
      */
-    // // @Scheduled(cron = "10 0/5 * * * ?")
+    // // //@Scheduled(cron = "10 0/5 * * * ?")
     @Scheduled(cron = "10/10 * * * * ?")
     public void executeSynchDataTask() {
         if (isSynchDataTaskRunning) {
@@ -57,6 +57,8 @@ public class SynchdataTask {
                 this.synchDataService.synchVoiceInfoData(task);
             } else if (task.getSynchDataFlag().equals(SynchDataFlag.行政审批待办)) {
                 this.synchDataService.synchSuperviseFdData(task);
+            } else if (task.getSynchDataFlag().equals(SynchDataFlag.审评查验待办)) {
+                this.synchDataService.synchAuditFdData(task);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
