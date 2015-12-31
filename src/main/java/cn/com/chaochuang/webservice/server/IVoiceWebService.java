@@ -131,4 +131,16 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String selectVoiceAlarmRecord(String lastOutputTime, String pendingInfoId);
+
+    /**
+     * 分页获取不重复的舆情信息
+     *
+     * @param unitId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getVoiceInfoSingleTitle(Long unitId, Integer pageNum, Integer pageSize);
 }
