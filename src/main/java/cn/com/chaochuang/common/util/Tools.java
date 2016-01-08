@@ -136,8 +136,7 @@ public abstract class Tools {
         Object obj;
         for (int i = 0; i < src.size(); ++i) {
             obj = (src.get(i) == null) ? src.get(i) : src.get(i).toString().trim();
-            buffer.append(quote ? "'" : "").append(obj).append(quote ? "'" : "")
-                            .append((splitChr != null && i < src.size() - 1) ? splitChr : "");
+            buffer.append(quote ? "'" : "").append(obj).append(quote ? "'" : "").append((splitChr != null && i < src.size() - 1) ? splitChr : "");
         }
         return buffer.toString();
     }
@@ -159,8 +158,7 @@ public abstract class Tools {
         }
         StringBuffer buffer = new StringBuffer("");
         for (int i = 0; i < src.size(); ++i) {
-            buffer.append(quote ? "'" : "").append(src.get(i)).append(quote ? "'" : "")
-                            .append((splitChr != null && i < src.size() - 1) ? splitChr : "");
+            buffer.append(quote ? "'" : "").append(src.get(i)).append(quote ? "'" : "").append((splitChr != null && i < src.size() - 1) ? splitChr : "");
         }
         return buffer.toString();
     }
@@ -183,8 +181,7 @@ public abstract class Tools {
         BeanWrapper infoWrapper;
         for (int i = 0; i < src.size(); ++i) {
             infoWrapper = new BeanWrapperImpl(src.get(i));
-            buffer.append(quote ? "'" : "").append(infoWrapper.getPropertyValue(property)).append(quote ? "'" : "")
-                            .append((splitChr != null && i < src.size() - 1) ? splitChr : "");
+            buffer.append(quote ? "'" : "").append(infoWrapper.getPropertyValue(property)).append(quote ? "'" : "").append((splitChr != null && i < src.size() - 1) ? splitChr : "");
         }
         return buffer.toString();
     }
@@ -207,11 +204,9 @@ public abstract class Tools {
         for (Iterator iter = src.entrySet().iterator(); iter.hasNext();) {
             Map.Entry element = (Map.Entry) iter.next();
             if (key) {
-                buffer.append(quote ? "'" : "").append(element.getKey()).append(quote ? "'" : "")
-                                .append((splitChr != null && iter.hasNext()) ? splitChr : "");
+                buffer.append(quote ? "'" : "").append(element.getKey()).append(quote ? "'" : "").append((splitChr != null && iter.hasNext()) ? splitChr : "");
             } else {
-                buffer.append(quote ? "'" : "").append(element.getValue()).append(quote ? "'" : "")
-                                .append((splitChr != null && iter.hasNext()) ? splitChr : "");
+                buffer.append(quote ? "'" : "").append(element.getValue()).append(quote ? "'" : "").append((splitChr != null && iter.hasNext()) ? splitChr : "");
             }
         }
         return buffer.toString();
@@ -261,6 +256,20 @@ public abstract class Tools {
 
         if (list != null && !list.isEmpty()) {
             return result;
+        }
+        return false;
+    }
+
+    /**
+     * 判断list是否为空列表（null和零长度的字符串都是空）
+     *
+     * @param list
+     *            源列表
+     * @return true：空列表 false：非空列表
+     */
+    public static boolean isEmptyList(List list) {
+        if (list == null || list.isEmpty()) {
+            return true;
         }
         return false;
     }
@@ -446,8 +455,7 @@ public abstract class Tools {
         // endDate当天也算工作日
         for (int i = 0; i < lastDate.intValue() + 1; i++) {
             // 从今天开始计算双休日数量
-            if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-                            || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
+            if ((calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)) {
                 restDay += 1;
             }
             calendar.add(Calendar.DAY_OF_YEAR, 1);
@@ -546,8 +554,7 @@ public abstract class Tools {
      */
     public static boolean isBetweenDate(Date compareDate, Date betweenDateLow, Date betweenDateHi) {
         boolean result = false;
-        String comps = DATE_FORMAT.format(compareDate), dateLow = DATE_FORMAT.format(betweenDateLow), dateHi = DATE_FORMAT
-                        .format(betweenDateHi);
+        String comps = DATE_FORMAT.format(compareDate), dateLow = DATE_FORMAT.format(betweenDateLow), dateHi = DATE_FORMAT.format(betweenDateHi);
         if (comps.compareTo(dateLow) >= 0 && comps.compareTo(dateHi) <= 0) {
             result = true;
         }

@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.casecomplaint.bean.ComplaintSubmitContent;
 import cn.com.chaochuang.casecomplaint.domain.CaseComplaintAttach;
@@ -47,8 +49,6 @@ import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author Shicx
@@ -137,7 +137,7 @@ public class MobileComplaintDataTask {
 
     /**
      * 获取待办信息（通过待办id或指定时间获取）
-     * */
+     */
     // @Scheduled(cron = "5/10 * * * * ?")
     public void getFordoData() {
         if (isGettingFordoData) {
@@ -150,8 +150,7 @@ public class MobileComplaintDataTask {
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             if (maxId == null) {
-                params.add(new BasicNameValuePair("inputDate", Tools.diffDate(new Date(), new Integer(timeInterval))
-                                .getTime() + ""));
+                params.add(new BasicNameValuePair("inputDate", Tools.diffDate(new Date(), new Integer(timeInterval)).getTime() + ""));
             } else {
                 params.add(new BasicNameValuePair("maxId", maxId));
             }
@@ -159,8 +158,7 @@ public class MobileComplaintDataTask {
                 params.add(new BasicNameValuePair("fordoStatus", fordoStatus));
             }
             // 发送请求
-            String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+            String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params, HttpClientHelper.ENCODE_GBK);
             if (HttpClientHelper.RE_LOGIN.equals(returnInfo)) {
                 // 需要登录
                 loginComplaintSys();
@@ -177,7 +175,7 @@ public class MobileComplaintDataTask {
 
     /**
      * 查询待办localData=0的待办,根据远程待办id获取投诉举报信息
-     * */
+     */
     // @Scheduled(cron = "8/8 * * * * ?")
     public void getComplaintInfoByFordoId() {
         if (isGettingComplaintData) {
@@ -193,8 +191,7 @@ public class MobileComplaintDataTask {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("pendingIds", mapper.writeValueAsString(pendingIds)));
                 // 发送请求
-                String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getComplaintDataUrl, params,
-                                HttpClientHelper.ENCODE_GBK);
+                String returnInfo = HttpClientHelper.doPost(httpClient, baseUrl + getComplaintDataUrl, params, HttpClientHelper.ENCODE_GBK);
                 if (HttpClientHelper.RE_LOGIN.equals(returnInfo)) {
                     // 需要登录
                     loginComplaintSys();
@@ -212,7 +209,7 @@ public class MobileComplaintDataTask {
 
     /**
      * 投诉举报提交办理
-     * */
+     */
     // @Scheduled(cron = "10/12 * * * * ?")
     public void submitComplaintData() {
         if (isSubmitComplaintData) {
@@ -221,24 +218,20 @@ public class MobileComplaintDataTask {
         isSubmitComplaintData = true;
         try {
             // 扫描DataUpdate数据列表，条件：workType=04;operationType=update
-            List<DataUpdate> datas = dataUpdateService.selectDfferentDataByWorkType(WorkType.投诉举报提交, new PageRequest(0,
-                            5));
+            List<DataUpdate> datas = dataUpdateService.selectDfferentDataByWorkType(WorkType.投诉举报提交, new PageRequest(0, 5));
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             for (DataUpdate dataUpdate : datas) {
                 JsonMapper mapper = JsonMapper.getInstance();
-                ComplaintSubmitContent submitContent = mapper.readValue(dataUpdate.getContent(),
-                                ComplaintSubmitContent.class);
+                ComplaintSubmitContent submitContent = mapper.readValue(dataUpdate.getContent(), ComplaintSubmitContent.class);
                 params.clear(); // 先清除提交参数
                 params.add(new BasicNameValuePair("approveContent", submitContent.getApproveContent()));
                 params.add(new BasicNameValuePair("assignee", submitContent.getAssignee()));
-                params.add(new BasicNameValuePair("approveTime", Tools.DATE_TIME_FORMAT.format(submitContent
-                                .getApproveTime())));
+                params.add(new BasicNameValuePair("approveTime", Tools.DATE_TIME_FORMAT.format(submitContent.getApproveTime())));
                 params.add(new BasicNameValuePair("next", submitContent.getNext()));
                 params.add(new BasicNameValuePair("taskId", submitContent.getTaskId()));
                 // 提交数据
-                String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params,
-                                HttpClientHelper.ENCODE_GBK);
+                String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
                 if (StringUtils.isNotBlank(json)) {
                     if (HttpClientHelper.RE_LOGIN.equals(json)) {
                         loginComplaintSys();// 需要登录
@@ -259,7 +252,7 @@ public class MobileComplaintDataTask {
     /**
      * 获取远程系统待办修改记录数据
      */
-    // @Scheduled(cron = "15/6 * * * * ?")
+    // //@Scheduled(cron = "15/6 * * * * ?")
     public void getCaseCompalintDataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -274,7 +267,7 @@ public class MobileComplaintDataTask {
                     // 保存变动的数据信息
                     JsonMapper mapper = JsonMapper.getInstance();
                     JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
-                    List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+                    List<SysDataChange> datas = mapper.readValue(json, javaType);
                     dataChangeService.saveSysDataChange(datas);
                 }
             }
@@ -302,8 +295,7 @@ public class MobileComplaintDataTask {
         try {
             String localFilePath = this.rootPath + this.complaintAttachPath + Tools.DATE_FORMAT4.format(new Date());
             // 获取投诉举报的附件 查询localData为非本地数据("0")的数据，一次处理一个文件
-            List<CaseComplaintAttach> datas = caseComplaintAttachService.findAttachByLocalData(LocalData.非本地数据,
-                            new PageRequest(0, 1));
+            List<CaseComplaintAttach> datas = caseComplaintAttachService.findAttachByLocalData(LocalData.非本地数据, new PageRequest(0, 1));
             if (!Tools.isNotEmptyList(datas)) {
                 return;
             }

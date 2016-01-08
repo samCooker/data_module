@@ -25,7 +25,7 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
  *
  */
 @Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "info_id")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "info_id") ) })
 public class VoiceInfo extends LongIdEntity {
     /** 原系统流水号 */
     private Long      rmInfoId;
@@ -60,11 +60,11 @@ public class VoiceInfo extends LongIdEntity {
     /** 媒体类型 */
     private String    metaType;
     /** 转载量 */
-    private String    transmitconut;
+    private String    transmitCount;
+    /** 点击量 */
+    private String    clickCount;
     /** 是否敏感 */
     private String    voiceInfoIsSensitive;
-    /** 点击量 */
-    private String    clickcount;
     /** 舆情附件标识 */
     private String    rmAffixId;
     /** 内容区域标识 */
@@ -301,21 +301,6 @@ public class VoiceInfo extends LongIdEntity {
     }
 
     /**
-     * @return the transmitconut
-     */
-    public String getTransmitconut() {
-        return transmitconut;
-    }
-
-    /**
-     * @param transmitconut
-     *            the transmitconut to set
-     */
-    public void setTransmitconut(String transmitconut) {
-        this.transmitconut = transmitconut;
-    }
-
-    /**
      * @return the voiceInfoIsSensitive
      */
     public String getVoiceInfoIsSensitive() {
@@ -330,19 +315,20 @@ public class VoiceInfo extends LongIdEntity {
         this.voiceInfoIsSensitive = voiceInfoIsSensitive;
     }
 
-    /**
-     * @return the clickcount
-     */
-    public String getClickcount() {
-        return clickcount;
+    public String getTransmitCount() {
+        return transmitCount;
     }
 
-    /**
-     * @param clickcount
-     *            the clickcount to set
-     */
-    public void setClickcount(String clickcount) {
-        this.clickcount = clickcount;
+    public void setTransmitCount(String transmitCount) {
+        this.transmitCount = transmitCount;
+    }
+
+    public String getClickCount() {
+        return clickCount;
+    }
+
+    public void setClickCount(String clickCount) {
+        this.clickCount = clickCount;
     }
 
     /**

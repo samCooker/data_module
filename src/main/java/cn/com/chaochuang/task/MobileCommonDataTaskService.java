@@ -78,7 +78,7 @@ public class MobileCommonDataTaskService {
     @Autowired
     private AppItemAttachService       appItemAttachService;
     @Autowired
-    private AppItemApplyService appItemApplyService;
+    private AppItemApplyService        appItemApplyService;
 
     /** 获取公告阻塞标识 */
     private static boolean             isGetSysDataChangeRunning             = false;
@@ -106,7 +106,7 @@ public class MobileCommonDataTaskService {
             }
             JsonMapper mapper = JsonMapper.getInstance();
             JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
-            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+            List<SysDataChange> datas = mapper.readValue(json, javaType);
             this.dataChangeService.saveSysDataChange(datas);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -165,6 +165,8 @@ public class MobileCommonDataTaskService {
                         this.voiceEventService.saveVoiceEvent(item);
                     } else if (DataChangeTable.舆情事件办理.getKey().equals(item.getChangeTableName())) {
                         this.voiceEventService.saveVoiceEventHandleApprove(item);
+                    } else if (DataChangeTable.舆情事件处理意见.getKey().equals(item.getChangeTableName())) {
+                        this.voiceEventService.saveVoiceEventHandleResult(item);
                     } else if (DataChangeTable.舆情事件办理意见.getKey().equals(item.getChangeTableName())) {
                         this.voiceEventService.saveVoiceEventHandleOpinion(item);
                     } else if (DataChangeTable.许可证信息.getKey().equals(item.getChangeTableName())) {
@@ -179,8 +181,8 @@ public class MobileCommonDataTaskService {
                     } else if (DataChangeTable.审批材料清单.getKey().equals(item.getChangeTableName())) {
                         // 审批材料清单更新
                         appItemAttachService.updatePrjMaterial(item);
-                    }else if(DataChangeTable.执业药师.getKey().equals(item.getChangeTableName())){
-                        //更新、插入或删除执业药师
+                    } else if (DataChangeTable.执业药师.getKey().equals(item.getChangeTableName())) {
+                        // 更新、插入或删除执业药师
                         appItemApplyService.updateOrDelPharmacist(item);
                     }
                     // 删除变更数据
@@ -201,7 +203,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    //@Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;
@@ -233,7 +235,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理审批待办数据的变更
      */
-    //@Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void dealSuperviseFordoDataChange() {
         if (isDealSuperviseFordoDataChangeRunning) {
             return;

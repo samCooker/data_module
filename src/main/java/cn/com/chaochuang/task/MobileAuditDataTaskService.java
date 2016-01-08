@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
 import cn.com.chaochuang.audit.service.FdFordoAuditService;
 import cn.com.chaochuang.common.util.HttpClientHelper;
@@ -31,8 +33,6 @@ import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.AuditSubmitData;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -87,15 +87,13 @@ public class MobileAuditDataTaskService {
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             if (info.getLastSendTime() != null) {
-                params.add(new BasicNameValuePair("lastOutputTime", Tools.DATE_TIME_FORMAT.format(info
-                                .getLastSendTime())));
+                params.add(new BasicNameValuePair("lastOutputTime", Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())));
             }
             if (info.getRmPendingId() != null) {
                 params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId()));
             }
             // 发送请求
-            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params, HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     mobileAppDataTaskService.loginSuperviseSys();
@@ -103,8 +101,7 @@ public class MobileAuditDataTaskService {
                     // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                     JsonMapper mapper = JsonMapper.getInstance();
                     JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
-                    List<AuditPendingHandleInfo> datas = (List<AuditPendingHandleInfo>) mapper
-                                    .readValue(json, javaType);
+                    List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
                     this.fdFordoAuditService.insertFdFordos(datas);
                 }
             }
@@ -157,8 +154,7 @@ public class MobileAuditDataTaskService {
                     params.add(new BasicNameValuePair("auditRecord", nodeInfo.getAuditRecords()[i]));
                 }
             }
-            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     mobileAppDataTaskService.loginSuperviseSys();

@@ -26,4 +26,11 @@ public interface VoiceEventFordoService extends CrudRestService<VoiceEventFordo,
      * @param approve
      */
     void saveVoiceEventFordo(VoiceEvent event, VoiceEventHandleApprove approve);
+
+    /**
+     * 根据流程更新待办信息
+     * 
+     * @param rmEventHandleId
+     */
+    void updateEventFordo(Long rmEventHandleId);
 }

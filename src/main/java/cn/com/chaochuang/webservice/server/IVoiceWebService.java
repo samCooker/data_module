@@ -110,6 +110,16 @@ public interface IVoiceWebService {
     String getVoiceEventHandleOpinion(Long handleApproveId);
 
     /**
+     * 获取舆情处理意见数据，将其转成json字符串格式
+     * 
+     * @param handleResultId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getVoiceEventHandleResult(Long handleResultId);
+
+    /**
      * 获取指定的文件
      *
      * @param fileName
@@ -143,4 +153,14 @@ public interface IVoiceWebService {
     @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
     @WebMethod
     String getVoiceInfoSingleTitle(Long unitId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 获取舆情事件的办理按钮
+     * 
+     * @param rmEventHandleId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String getVoiceEventButton(Long rmEventHandleId);
 }

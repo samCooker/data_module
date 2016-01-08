@@ -11,16 +11,13 @@ package cn.com.chaochuang.common.util;
 import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
  * 简单封装Jackson，实现JSON String<->Java Object的Mapper.
@@ -47,13 +44,13 @@ public class JsonMapper extends ObjectMapper {
         // 设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
         this.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         // 空值处理为空串
-        this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
-            @Override
-            public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException,
-                            JsonProcessingException {
-                jgen.writeString("");
-            }
-        });
+        // this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+        // @Override
+        // public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException,
+        // JsonProcessingException {
+        // jgen.writeString("");
+        // }
+        // });
     }
 
     /**
@@ -120,7 +117,7 @@ public class JsonMapper extends ObjectMapper {
      */
     public <T> T readValue(String jsonString, JavaType javaType) {
         try {
-            return (T) super.readValue(jsonString, javaType);
+            return super.readValue(jsonString, javaType);
         } catch (JsonParseException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -132,8 +129,8 @@ public class JsonMapper extends ObjectMapper {
     }
 
     /**
-     * 构造泛型的Collection Type如: ArrayList<MyBean>, 则调用constructCollectionType(ArrayList.class,MyBean.class)
-     * HashMap<String,MyBean>, 则调用(HashMap.class,String.class, MyBean.class)
+     * 构造泛型的Collection Type如: ArrayList<MyBean>, 则调用constructCollectionType(ArrayList.class,MyBean.class) HashMap
+     * <String,MyBean>, 则调用(HashMap.class,String.class, MyBean.class)
      */
     public JavaType constructParametricType(Class<?> collectionClass, Class<?>... elementClasses) {
         return this.getTypeFactory().constructParametricType(collectionClass, elementClasses);
@@ -142,10 +139,9 @@ public class JsonMapper extends ObjectMapper {
     /**
      * 当JSON含有Bean的部分属性时，更新一个已存在Bean，只覆盖该部分的属性.
      */
-    @SuppressWarnings("unchecked")
     public <T> T update(String jsonString, T object) {
         try {
-            return (T) this.readerForUpdating(object).readValue(jsonString);
+            return this.readerForUpdating(object).readValue(jsonString);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -23,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
 import cn.com.chaochuang.aipcase.bean.AipCaseShowData;
 import cn.com.chaochuang.aipcase.domain.AipCaseAttach;
@@ -48,8 +50,6 @@ import cn.com.chaochuang.task.bean.AipCaseSubmitInfo;
 import cn.com.chaochuang.task.bean.AipLawContentData;
 import cn.com.chaochuang.task.bean.AipPunishInfo;
 import cn.com.chaochuang.webservice.server.aipcasetransfer.AipCaseWebService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -117,8 +117,7 @@ public class MobileAipCaseDataTaskService {
             if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
                 return;
             }
-            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(),
-                            info.getRmPendingId());
+            String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(), info.getRmPendingId());
             // 将案件办理的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.行政办案);
         } catch (Exception ex) {
@@ -141,14 +140,14 @@ public class MobileAipCaseDataTaskService {
         // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
         JsonMapper mapper = JsonMapper.getInstance();
         JavaType javaType = mapper.constructParametricType(ArrayList.class, AipCasePendingInfo.class);
-        List<AipCasePendingInfo> datas = (List<AipCasePendingInfo>) mapper.readValue(jsonData, javaType);
+        List<AipCasePendingInfo> datas = mapper.readValue(jsonData, javaType);
         this.fdFordoService.insertFdFordos(datas);
     }
 
     /**
      * 获取案件办理数据写入本地表
      */
-    @Scheduled(cron = "20/40 * * * * ?")
+    // @Scheduled(cron = "20/40 * * * * ?")
     public void getAipCaseDataTask() {
         if (isGetAipCaseRunning) {
             return;
@@ -168,7 +167,7 @@ public class MobileAipCaseDataTaskService {
                 // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                 JsonMapper mapper = JsonMapper.getInstance();
                 JavaType javaType = mapper.constructParametricType(ArrayList.class, AipCaseShowData.class);
-                List<AipCaseShowData> datas = (List<AipCaseShowData>) mapper.readValue(json, javaType);
+                List<AipCaseShowData> datas = mapper.readValue(json, javaType);
                 this.aipCaseApplyService.saveAipCaseApply(datas);
             }
         } catch (Exception ex) {
@@ -189,13 +188,11 @@ public class MobileAipCaseDataTaskService {
         isTransferFileRunning = true;
         try {
             // 查找AIP_CASE_NOTE_FILE表的非本地数据
-            List<AipCaseNoteFile> noteFileList = aipCaseNoteFileService.findByLocalData(LocalData.非本地数据,
-                            new PageRequest(0, 10));
+            List<AipCaseNoteFile> noteFileList = aipCaseNoteFileService.findByLocalData(LocalData.非本地数据, new PageRequest(0, 10));
             if (noteFileList != null) {
                 JsonMapper mapper = JsonMapper.getInstance();
                 for (AipCaseNoteFile noteFile : noteFileList) {
-                    String jsonData = transferAipCaseService.getLawContentData(noteFile.getRmNoteFileId(),
-                                    noteFile.getMdfCode());
+                    String jsonData = transferAipCaseService.getLawContentData(noteFile.getRmNoteFileId(), noteFile.getMdfCode());
                     AipLawContentData data = null;
                     if (StringUtils.isNotEmpty(jsonData)) {
                         data = mapper.readValue(jsonData, AipLawContentData.class);
@@ -222,8 +219,7 @@ public class MobileAipCaseDataTaskService {
      * @param datas
      */
     private void downloadHtmlFile(AipLawContentData contentData) {
-        String localFilePath = this.rootPath + this.htmlFilePath + File.separatorChar
-                        + Tools.DATE_FORMAT4.format(new Date()) + File.separator + contentData.getRmCaseApplyId();
+        String localFilePath = this.rootPath + this.htmlFilePath + File.separatorChar + Tools.DATE_FORMAT4.format(new Date()) + File.separator + contentData.getRmCaseApplyId();
         File file = new File(localFilePath);
         // 目录不存在则建立新目录
         if (!file.exists()) {
@@ -231,8 +227,7 @@ public class MobileAipCaseDataTaskService {
         }
         BufferedOutputStream bufferedOutputStream = null;
         try {
-            String localFileName = localFilePath + File.separatorChar + contentData.getNoteName() + "(rmid="
-                            + contentData.getRmNoteFileId() + ").html";
+            String localFileName = localFilePath + File.separatorChar + contentData.getNoteName() + "(rmid=" + contentData.getRmNoteFileId() + ").html";
             String remoteFileName = contentData.getRmFilePath();
             file = new File(localFileName);
 
@@ -322,7 +317,7 @@ public class MobileAipCaseDataTaskService {
             }
             JsonMapper mapper = JsonMapper.getInstance();
             JavaType javaType = mapper.constructParametricType(ArrayList.class, SysDataChange.class);
-            List<SysDataChange> datas = (List<SysDataChange>) mapper.readValue(json, javaType);
+            List<SysDataChange> datas = mapper.readValue(json, javaType);
             this.dataChangeService.saveSysDataChange(datas);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -410,7 +405,7 @@ public class MobileAipCaseDataTaskService {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             JsonMapper mapper = JsonMapper.getInstance();
             JavaType javaType = mapper.constructParametricType(ArrayList.class, AipPunishInfo.class);
-            List<AipPunishInfo> datas = (List<AipPunishInfo>) mapper.readValue(json, javaType);
+            List<AipPunishInfo> datas = mapper.readValue(json, javaType);
             this.punishEntpService.savePunishInfo(datas);
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -15,6 +15,8 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.aipcase.reference.LocalDataConverter;
@@ -25,7 +27,7 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
  *
  */
 @Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_id")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_id") ) })
 public class VoiceEvent extends LongIdEntity {
     /** 原系统事件流水号 */
     private Long      rmEventId;
@@ -41,9 +43,121 @@ public class VoiceEvent extends LongIdEntity {
     private Long      createrId;
     /** 创建人姓名 */
     private String    createrName;
+    /***/
+    private Long      unitOrgId;
+    /***/
+    private String    voiceInfoTitle;
+    /***/
+    private String    voiceInfoSource;
+    /***/
+    private String    voiceInfoSourceUrl;
+    /***/
+    private String    voiceInfoAuthor;
+    /***/
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date      voiceInfoIssueTime;
+    /***/
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date      voiceInfoDiscoverTime;
+    /***/
+    private Long      voiceInfoDiscoverUser;
+    /***/
+    private String    voiceInfoNature;
+    /***/
+    private String    voiceInfoContent;
+    /***/
+    private Long      rmInfoId;
     /** 是否本地新增数据 */
     @Convert(converter = LocalDataConverter.class)
     private LocalData localNewData;
+
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
+    }
+
+    public String getVoiceInfoTitle() {
+        return voiceInfoTitle;
+    }
+
+    public void setVoiceInfoTitle(String voiceInfoTitle) {
+        this.voiceInfoTitle = voiceInfoTitle;
+    }
+
+    public String getVoiceInfoSource() {
+        return voiceInfoSource;
+    }
+
+    public void setVoiceInfoSource(String voiceInfoSource) {
+        this.voiceInfoSource = voiceInfoSource;
+    }
+
+    public String getVoiceInfoSourceUrl() {
+        return voiceInfoSourceUrl;
+    }
+
+    public void setVoiceInfoSourceUrl(String voiceInfoSourceUrl) {
+        this.voiceInfoSourceUrl = voiceInfoSourceUrl;
+    }
+
+    public String getVoiceInfoAuthor() {
+        return voiceInfoAuthor;
+    }
+
+    public void setVoiceInfoAuthor(String voiceInfoAuthor) {
+        this.voiceInfoAuthor = voiceInfoAuthor;
+    }
+
+    public Date getVoiceInfoIssueTime() {
+        return voiceInfoIssueTime;
+    }
+
+    public void setVoiceInfoIssueTime(Date voiceInfoIssueTime) {
+        this.voiceInfoIssueTime = voiceInfoIssueTime;
+    }
+
+    public Date getVoiceInfoDiscoverTime() {
+        return voiceInfoDiscoverTime;
+    }
+
+    public void setVoiceInfoDiscoverTime(Date voiceInfoDiscoverTime) {
+        this.voiceInfoDiscoverTime = voiceInfoDiscoverTime;
+    }
+
+    public Long getVoiceInfoDiscoverUser() {
+        return voiceInfoDiscoverUser;
+    }
+
+    public void setVoiceInfoDiscoverUser(Long voiceInfoDiscoverUser) {
+        this.voiceInfoDiscoverUser = voiceInfoDiscoverUser;
+    }
+
+    public String getVoiceInfoNature() {
+        return voiceInfoNature;
+    }
+
+    public void setVoiceInfoNature(String voiceInfoNature) {
+        this.voiceInfoNature = voiceInfoNature;
+    }
+
+    public String getVoiceInfoContent() {
+        return voiceInfoContent;
+    }
+
+    public void setVoiceInfoContent(String voiceInfoContent) {
+        this.voiceInfoContent = voiceInfoContent;
+    }
+
+    public Long getRmInfoId() {
+        return rmInfoId;
+    }
+
+    public void setRmInfoId(Long rmInfoId) {
+        this.rmInfoId = rmInfoId;
+    }
 
     /**
      * @return the rmEventId

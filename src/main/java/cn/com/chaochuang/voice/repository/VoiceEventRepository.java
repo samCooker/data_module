@@ -24,4 +24,5 @@ public interface VoiceEventRepository extends SimpleDomainRepository<VoiceEvent,
      * @return
      */
     VoiceEvent findByRmEventId(Long rmEventId);
+
 }

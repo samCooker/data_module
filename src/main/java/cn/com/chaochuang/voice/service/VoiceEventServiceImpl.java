@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.user.service.SysUserService;
@@ -43,6 +45,7 @@ import cn.com.chaochuang.voice.domain.VoiceEventHandle;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleApprove;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleOpinion;
 import cn.com.chaochuang.voice.domain.VoiceInfoEvent;
+import cn.com.chaochuang.voice.reference.VoiceEventOpinionType;
 import cn.com.chaochuang.voice.reference.VoiceEventStatus;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleApproveRepository;
 import cn.com.chaochuang.voice.repository.VoiceEventHandleOpinionRepository;
@@ -146,14 +149,14 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
             // 将createrId改成userId，原系统对应的userInfoId
             event.setCreaterId(this.userService.selectUserIdByInfoId(event.getCreaterId()));
             // 保存VoiceInfo、VoiceInfoAttach
-            if (Tools.isNotEmptyList(pendingItem.getVoiceInfos())) {
-                // 先查询是否存在VoiceInfo对象，若存在则跳过，仅插入不存在的舆情信息
-                for (VoiceInfoPendingInfo voiceItem : pendingItem.getVoiceInfos()) {
-                    this.voiceInfoService.insertVoiceInfo(voiceItem);
-                    this.voiceInfoEventRepository
-                                    .save(new VoiceInfoEvent(event.getRmEventId(), voiceItem.getRmInfoId()));
-                }
-            }
+            // if (Tools.isNotEmptyList(pendingItem.getVoiceInfos())) {
+            // // 先查询是否存在VoiceInfo对象，若存在则跳过，仅插入不存在的舆情信息
+            // for (VoiceInfoPendingInfo voiceItem : pendingItem.getVoiceInfos()) {
+            // this.voiceInfoService.insertVoiceInfo(voiceItem);
+            // this.voiceInfoEventRepository
+            // .save(new VoiceInfoEvent(event.getRmEventId(), voiceItem.getRmInfoId()));
+            // }
+            // }
             // 若rmEventHandleId不为空则表示有审批记录，保存VoiceEventHandle等对象
             if (pendingItem.getRmEventHandleId() != null) {
                 VoiceEventHandle eventHandle = new VoiceEventHandle();
@@ -182,11 +185,8 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                             this.eventHandleOpinionRepository.save(opinion);
                         }
                         // 若审批环节的状态为EVENT_STATE_NEW(1)或EVENT_STATE_HANDING(2)则判断最大的rmHandleApproveId是否比当前的rmHandleApproveId小，是则写入待办表
-                        if (VoiceEventStatus.新建.getKey().equals(approve.getStatus())
-                                        || VoiceEventStatus.办理中.getKey().equals(approve.getStatus())) {
-                            if (fordoApproves.containsKey(approve.getUserId())
-                                            && fordoApproves.get(approve.getUserId()).getRmHandleApproveId() < approve
-                                                            .getRmHandleApproveId()) {
+                        if (VoiceEventStatus.新建.getKey().equals(approve.getStatus()) || VoiceEventStatus.办理中.getKey().equals(approve.getStatus())) {
+                            if (fordoApproves.containsKey(approve.getUserId()) && fordoApproves.get(approve.getUserId()).getRmHandleApproveId() < approve.getRmHandleApproveId()) {
                                 fordoApproves.put(approve.getUserId(), approve);
                             } else if (!fordoApproves.containsKey(approve.getUserId())) {
                                 fordoApproves.put(approve.getUserId(), approve);
@@ -197,8 +197,7 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                     if (Tools.isNotEmptyMap(fordoApproves)) {
                         for (Iterator it = fordoApproves.entrySet().iterator(); it.hasNext();) {
                             Entry entry = (Entry) it.next();
-                            this.voiceEventFordoService.saveVoiceEventFordo(event,
-                                            (VoiceEventHandleApprove) entry.getValue());
+                            this.voiceEventFordoService.saveVoiceEventFordo(event, (VoiceEventHandleApprove) entry.getValue());
                         }
                         fordoApproves = new HashMap();
                     }
@@ -229,8 +228,7 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
         try {
             // 删除相应的舆情事件映射记录
             if (OperationType.删除.getKey().equals(dataChange.getOperationType())) {
-                VoiceInfoEvent voiceInfoEvent = this.voiceInfoEventRepository.findByRmVoiceEventIdAndRmVoiceInfoId(
-                                eventId, infoId);
+                VoiceInfoEvent voiceInfoEvent = this.voiceInfoEventRepository.findByRmVoiceEventIdAndRmVoiceInfoId(eventId, infoId);
                 if (voiceInfoEvent != null) {
                     this.voiceInfoEventRepository.delete(voiceInfoEvent);
                 }
@@ -304,13 +302,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                 }
             } else {
                 // 事件删除,先删除voiceEventHandleOpinion、voiceEventHandleApprove、voiceEventHandle、voiceInfoEvent、voiceEvent
-                List<VoiceEventHandle> eventHandles = this.eventHandleRepository
-                                .findByRmEventIdOrderByRmEventHandleIdDesc(eventId);
+                List<VoiceEventHandle> eventHandles = this.eventHandleRepository.findByRmEventIdOrderByRmEventHandleIdDesc(eventId);
                 if (Tools.isNotEmptyList(eventHandles)) {
-                    this.eventHandleOpinionRepository.delete(this.eventHandleOpinionRepository
-                                    .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
-                    this.eventHandleApproveRepository.delete(this.eventHandleApproveRepository
-                                    .findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
+                    this.eventHandleOpinionRepository.delete(this.eventHandleOpinionRepository.findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
+                    this.eventHandleApproveRepository.delete(this.eventHandleApproveRepository.findByRmEventHandleId(eventHandles.get(0).getRmEventHandleId()));
                     this.eventHandleRepository.delete(eventHandles.get(0));
                 }
                 this.voiceInfoEventRepository.delete(this.voiceInfoEventRepository.findByRmVoiceEventId(eventId));
@@ -341,10 +336,8 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
 
         Long handleApproveId = Long.valueOf(items[1]);
         try {
-            VoiceEventHandleApprove approve = this.eventHandleApproveRepository
-                            .findByRmHandleApproveId(handleApproveId);
-            if (OperationType.新增.getKey().equals(dataChange.getOperationType())
-                            || OperationType.修改.getKey().equals(dataChange.getOperationType())) {
+            VoiceEventHandleApprove approve = this.eventHandleApproveRepository.findByRmHandleApproveId(handleApproveId);
+            if (OperationType.新增.getKey().equals(dataChange.getOperationType()) || OperationType.修改.getKey().equals(dataChange.getOperationType())) {
                 // 本地审批环节不为空时不能执行新增操作
                 if (OperationType.新增.getKey().equals(dataChange.getOperationType()) && approve != null) {
                     return;
@@ -368,14 +361,12 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                         // 保存审批环节
                         NullBeanUtils.copyProperties(approve, eventInfo.getVoiceEventHandleApproves().get(0));
                         approve.setRmEventHandleId(eventInfo.getRmEventHandleId());
-                        approve.setUserId(this.userService.selectUserIdByInfoId(eventInfo.getVoiceEventHandleApproves()
-                                        .get(0).getUserInfoId()));
+                        approve.setUserId(this.userService.selectUserIdByInfoId(eventInfo.getVoiceEventHandleApproves().get(0).getUserInfoId()));
                         approve.setAssigngeeId(this.userService.selectUserIdByInfoId(approve.getAssigngeeId()));
                         approve.setAssigngeeNode(this.userService.selectUserIdByInfoId(approve.getAssigngeeNode()));
                         this.eventHandleApproveRepository.save(approve);
                         // 保存办理流程(仅status属性可能会改变)
-                        VoiceEventHandle handle = this.eventHandleRepository.findByRmEventHandleId(approve
-                                        .getRmEventHandleId());
+                        VoiceEventHandle handle = this.eventHandleRepository.findByRmEventHandleId(approve.getRmEventHandleId());
                         handle.setStatus(eventInfo.getEventHandleStatus());
                         this.eventHandleRepository.save(handle);
                     }
@@ -384,12 +375,15 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
                 if (approve == null) {
                     return;
                 }
-                List<VoiceEventHandleOpinion> opinionDatas = this.eventHandleOpinionRepository
-                                .findByRmHandleApproveId(handleApproveId);
+                List<VoiceEventHandleOpinion> opinionDatas = this.eventHandleOpinionRepository.findByRmHandleApproveId(handleApproveId);
                 // 删除审批意见集合
                 this.eventHandleOpinionRepository.delete(opinionDatas);
                 // 删除审批环节
                 this.eventHandleApproveRepository.delete(approve);
+            }
+            // 更新舆情待办信息
+            if (approve != null) {
+                voiceEventFordoService.updateEventFordo(approve.getRmEventHandleId());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -414,18 +408,23 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
 
         Long opinionId = Long.valueOf(items[1]);
         try {
-            VoiceEventHandleOpinion opinion = this.eventHandleOpinionRepository.findByRmOpinionId(opinionId);
-            if (opinion != null) {
-                return;
-            }
-            opinion = new VoiceEventHandleOpinion();
+            List<String> typeList = Lists.newArrayList();
+            typeList.add(VoiceEventOpinionType.拟办意见.getKey());
+            typeList.add(VoiceEventOpinionType.经办意见.getKey());
             if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                // 查询意见是否已经存在，不存在则根据意见id从原系统获取
+                VoiceEventHandleOpinion opinion = this.eventHandleOpinionRepository.findByRmOpinionIdAndApproveTypeIn(opinionId, typeList);
+                if (opinion != null) {
+                    return;
+                }
+                opinion = new VoiceEventHandleOpinion();
                 String addOpinion = this.voiceWebService.getVoiceEventHandleOpinion(opinionId);
-                JsonMapper mapper = JsonMapper.getInstance();
-                VoiceEventHandleOpinionInfo opinionInfo = mapper.readValue(addOpinion,
-                                VoiceEventHandleOpinionInfo.class);
-                NullBeanUtils.copyProperties(opinion, opinionInfo);
-                this.eventHandleOpinionRepository.save(opinion);
+                if (StringUtils.isNotBlank(addOpinion)) {
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    VoiceEventHandleOpinionInfo opinionInfo = mapper.readValue(addOpinion, VoiceEventHandleOpinionInfo.class);
+                    NullBeanUtils.copyProperties(opinion, opinionInfo);
+                    this.eventHandleOpinionRepository.save(opinion);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -444,6 +443,47 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
         }
         event.setRmEventId(rmEventId);
         this.repository.save(event);
+    }
+
+    /**
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleResult(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void saveVoiceEventHandleResult(SysDataChange dataChange) {
+        // 分解变更内容
+        if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
+            return;
+        }
+        // 获取要操作的事件审批编号
+        String[] items = dataChange.getChangeScript().split("=");
+        if (items == null || items.length != 2) {
+            return;
+        }
+
+        Long opinionId = Long.valueOf(items[1]);
+        try {
+            List<String> typeList = Lists.newArrayList();
+            typeList.add(VoiceEventOpinionType.处理情况.getKey());
+            if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
+                // 查询意见是否已经存在，不存在则根据意见id从原系统获取
+                VoiceEventHandleOpinion opinion = this.eventHandleOpinionRepository.findByRmOpinionIdAndApproveTypeIn(opinionId, typeList);
+                if (opinion != null) {
+                    return;
+                }
+                opinion = new VoiceEventHandleOpinion();
+                String addOpinion = this.voiceWebService.getVoiceEventHandleResult(opinionId);
+                if (StringUtils.isNotBlank(addOpinion)) {
+                    JsonMapper mapper = JsonMapper.getInstance();
+                    VoiceEventHandleOpinionInfo opinionInfo = mapper.readValue(addOpinion, VoiceEventHandleOpinionInfo.class);
+                    NullBeanUtils.copyProperties(opinion, opinionInfo);
+                    this.eventHandleOpinionRepository.save(opinion);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+
     }
 
 }

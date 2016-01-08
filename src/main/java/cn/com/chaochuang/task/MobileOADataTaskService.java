@@ -24,31 +24,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.aipcase.reference.LocalData;
-import cn.com.chaochuang.common.user.service.SysDepartmentService;
-import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.commoninfo.service.DepLinkmanService;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
-import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
 import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.DocFileAttachService;
 import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
-import cn.com.chaochuang.docwork.service.FlowNodeInfoService;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -75,24 +70,6 @@ public class MobileOADataTaskService {
 
     @Autowired
     private DocFileAttachService docFileAttachService;
-
-    @Autowired
-    private FlowNodeInfoService  flowNodeInfoService;
-
-    @Autowired
-    private SysDataChangeService dataChangeService;
-
-    @Autowired
-    private SysDepartmentService departmentService;
-
-    @Autowired
-    private SysUserService       userService;
-
-    @Autowired
-    private DocFileAttachService attachmentsService;
-
-    @Autowired
-    private DepLinkmanService    depLinkmanService;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
@@ -121,7 +98,7 @@ public class MobileOADataTaskService {
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
     @Scheduled(cron = "10/10 * * * * ?")
-    // @Scheduled(cron = "10 0/4 * * * ?")
+    // //@Scheduled(cron = "10 0/4 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -135,9 +112,7 @@ public class MobileOADataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(
-                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
-                                            : "", info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -161,7 +136,7 @@ public class MobileOADataTaskService {
             // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
             JsonMapper mapper = JsonMapper.getInstance();
             JavaType javaType = mapper.constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
-            List<OAPendingHandleInfo> datas = (List<OAPendingHandleInfo>) mapper.readValue(jsonData, javaType);
+            List<OAPendingHandleInfo> datas = mapper.readValue(jsonData, javaType);
             this.fdFordoService.insertFdFordos(datas, fdSource);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -197,7 +172,7 @@ public class MobileOADataTaskService {
             try {
                 JsonMapper mapper = JsonMapper.getInstance();
                 JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
-                List<DocFileInfo> datas = (List<DocFileInfo>) mapper.readValue(json, javaType);
+                List<DocFileInfo> datas = mapper.readValue(json, javaType);
                 fileService.saveDocFilesDatas(datas, fordoData);
             } catch (Exception ex) {
                 for (FdFordo fordo : fordoData) {
@@ -338,7 +313,7 @@ public class MobileOADataTaskService {
                     if (StringUtils.isNotEmpty(json)) {
                         JsonMapper mapper = JsonMapper.getInstance();
                         JavaType javaType = mapper.constructParametricType(ArrayList.class, PubInfoBean.class);
-                        List<PubInfoBean> datas = (List<PubInfoBean>) mapper.readValue(json, javaType);
+                        List<PubInfoBean> datas = mapper.readValue(json, javaType);
                         pubInfoService.savePubInfoDatas(datas);
                     }
                 } catch (Exception ex) {
@@ -354,7 +329,7 @@ public class MobileOADataTaskService {
     /**
      * 获取缺漏的正文附件方法
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
+    // //@Scheduled(cron = "10/10 * * * * ?")
     // public void getSharewordAttach() {
     // if (isGetSharewordRunning) {
     // return;

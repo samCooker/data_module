@@ -27,6 +27,8 @@ public class VoiceEventHandleOpinionInfo {
     private String handleName;
     /** 创建日期 */
     private Date   createTime;
+    /** 意见类型 */
+    private String approveType;
 
     /**
      * @return the rmOpinionId
@@ -116,6 +118,21 @@ public class VoiceEventHandleOpinionInfo {
      */
     public void setRmEventHandleId(Long rmEventHandleId) {
         this.rmEventHandleId = rmEventHandleId;
+    }
+
+    /**
+     * @return the approveType
+     */
+    public String getApproveType() {
+        return approveType;
+    }
+
+    /**
+     * @param approveType
+     *            the approveType to set
+     */
+    public void setApproveType(String approveType) {
+        this.approveType = approveType;
     }
 
 }

@@ -35,6 +35,29 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
     /** 由移动系统添加的事件 */
     private String                            webserviceId;
 
+    /***/
+    private Long                              unitOrgId;
+    /***/
+    private String                            voiceInfoTitle;
+    /***/
+    private String                            voiceInfoSource;
+    /***/
+    private String                            voiceInfoSourceUrl;
+    /***/
+    private String                            voiceInfoAuthor;
+    /***/
+    private Date                              voiceInfoIssueTime;
+    /***/
+    private Date                              voiceInfoDiscoverTime;
+    /***/
+    private Long                              voiceInfoDiscoverUser;
+    /***/
+    private String                            voiceInfoNature;
+    /***/
+    private String                            voiceInfoContent;
+    /***/
+    private Long                              rmInfoId;
+
     /** 舆情事件办理编号 */
     private Long                              rmEventHandleId;
     /** 舆情事件办理单位 */
@@ -48,6 +71,171 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
     private List<VoiceInfoPendingInfo>        voiceInfos;
     /** 舆情审批记录 */
     private List<VoiceEventHandleApproveInfo> voiceEventHandleApproves;
+
+    /**
+     * @return the unitOrgId
+     */
+    public Long getUnitOrgId() {
+        return unitOrgId;
+    }
+
+    /**
+     * @param unitOrgId
+     *            the unitOrgId to set
+     */
+    public void setUnitOrgId(Long unitOrgId) {
+        this.unitOrgId = unitOrgId;
+    }
+
+    /**
+     * @return the voiceInfoTitle
+     */
+    public String getVoiceInfoTitle() {
+        return voiceInfoTitle;
+    }
+
+    /**
+     * @param voiceInfoTitle
+     *            the voiceInfoTitle to set
+     */
+    public void setVoiceInfoTitle(String voiceInfoTitle) {
+        this.voiceInfoTitle = voiceInfoTitle;
+    }
+
+    /**
+     * @return the voiceInfoSource
+     */
+    public String getVoiceInfoSource() {
+        return voiceInfoSource;
+    }
+
+    /**
+     * @param voiceInfoSource
+     *            the voiceInfoSource to set
+     */
+    public void setVoiceInfoSource(String voiceInfoSource) {
+        this.voiceInfoSource = voiceInfoSource;
+    }
+
+    /**
+     * @return the voiceInfoSourceUrl
+     */
+    public String getVoiceInfoSourceUrl() {
+        return voiceInfoSourceUrl;
+    }
+
+    /**
+     * @param voiceInfoSourceUrl
+     *            the voiceInfoSourceUrl to set
+     */
+    public void setVoiceInfoSourceUrl(String voiceInfoSourceUrl) {
+        this.voiceInfoSourceUrl = voiceInfoSourceUrl;
+    }
+
+    /**
+     * @return the voiceInfoAuthor
+     */
+    public String getVoiceInfoAuthor() {
+        return voiceInfoAuthor;
+    }
+
+    /**
+     * @param voiceInfoAuthor
+     *            the voiceInfoAuthor to set
+     */
+    public void setVoiceInfoAuthor(String voiceInfoAuthor) {
+        this.voiceInfoAuthor = voiceInfoAuthor;
+    }
+
+    /**
+     * @return the voiceInfoIssueTime
+     */
+    public Date getVoiceInfoIssueTime() {
+        return voiceInfoIssueTime;
+    }
+
+    /**
+     * @param voiceInfoIssueTime
+     *            the voiceInfoIssueTime to set
+     */
+    public void setVoiceInfoIssueTime(Date voiceInfoIssueTime) {
+        this.voiceInfoIssueTime = voiceInfoIssueTime;
+    }
+
+    /**
+     * @return the voiceInfoDiscoverTime
+     */
+    public Date getVoiceInfoDiscoverTime() {
+        return voiceInfoDiscoverTime;
+    }
+
+    /**
+     * @param voiceInfoDiscoverTime
+     *            the voiceInfoDiscoverTime to set
+     */
+    public void setVoiceInfoDiscoverTime(Date voiceInfoDiscoverTime) {
+        this.voiceInfoDiscoverTime = voiceInfoDiscoverTime;
+    }
+
+    /**
+     * @return the voiceInfoDiscoverUser
+     */
+    public Long getVoiceInfoDiscoverUser() {
+        return voiceInfoDiscoverUser;
+    }
+
+    /**
+     * @param voiceInfoDiscoverUser
+     *            the voiceInfoDiscoverUser to set
+     */
+    public void setVoiceInfoDiscoverUser(Long voiceInfoDiscoverUser) {
+        this.voiceInfoDiscoverUser = voiceInfoDiscoverUser;
+    }
+
+    /**
+     * @return the voiceInfoNature
+     */
+    public String getVoiceInfoNature() {
+        return voiceInfoNature;
+    }
+
+    /**
+     * @param voiceInfoNature
+     *            the voiceInfoNature to set
+     */
+    public void setVoiceInfoNature(String voiceInfoNature) {
+        this.voiceInfoNature = voiceInfoNature;
+    }
+
+    /**
+     * @return the voiceInfoContent
+     */
+    public String getVoiceInfoContent() {
+        return voiceInfoContent;
+    }
+
+    /**
+     * @param voiceInfoContent
+     *            the voiceInfoContent to set
+     */
+    public void setVoiceInfoContent(String voiceInfoContent) {
+        this.voiceInfoContent = voiceInfoContent;
+    }
+
+    /**
+     * @return the rmInfoId
+     */
+    public Long getRmInfoId() {
+        return rmInfoId;
+    }
+
+    /**
+     * @param rmInfoId
+     *            the rmInfoId to set
+     */
+    public void setRmInfoId(Long rmInfoId) {
+        this.rmInfoId = rmInfoId;
+    }
 
     /**
      * @return the rmEventId

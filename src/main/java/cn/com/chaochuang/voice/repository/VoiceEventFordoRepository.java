@@ -29,4 +29,12 @@ public interface VoiceEventFordoRepository extends SimpleDomainRepository<VoiceE
      * @return
      */
     List<VoiceEventFordo> findByRmEventIdAndUserIdOrderByRmHandleApproveIdDesc(Long rmEventId, Long userId);
+
+    /**
+     * 根据办理环节id查找待办
+     * 
+     * @param rmHandleApproveId
+     * @return
+     */
+    List<VoiceEventFordo> RmHandleApproveId(Long rmHandleApproveId);
 }

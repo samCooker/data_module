@@ -22,7 +22,7 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
  *
  */
 @Entity
-@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_handle_opinion_id")) })
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "event_handle_opinion_id") ) })
 public class VoiceEventHandleOpinion extends LongIdEntity {
     /** 原系统审批流水号 */
     private Long   rmOpinionId;
@@ -36,6 +36,8 @@ public class VoiceEventHandleOpinion extends LongIdEntity {
     private String handleName;
     /** 创建日期 */
     private Date   createTime;
+    /** 意见类型 */
+    private String approveType;
 
     /**
      * @return the rmOpinionId
@@ -125,6 +127,21 @@ public class VoiceEventHandleOpinion extends LongIdEntity {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    /**
+     * @return the approveType
+     */
+    public String getApproveType() {
+        return approveType;
+    }
+
+    /**
+     * @param approveType
+     *            the approveType to set
+     */
+    public void setApproveType(String approveType) {
+        this.approveType = approveType;
     }
 
 }
