@@ -92,7 +92,7 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     // //@Scheduled(cron = "2 0/2 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
@@ -118,7 +118,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    @Scheduled(cron = "3/5 * * * * ?")
     // //@Scheduled(cron = "8 0/2 * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
@@ -136,10 +136,7 @@ public class MobileCommonDataTaskService {
                         // 同步投诉举报的待办
                         this.commonFordoService.analysisDataChange(item, DataChangeTable.投诉举报待办);
                     } else if (DataChangeTable.公文办结.getKey().equals(item.getChangeTableName())) {
-                        // 如果处理的表为wf_flo_hisno 则将相关公文的公文状态改为办结（不包括通报）
-                        String[] items = item.getChangeScript().split("=");
-                        String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
-                        this.fileService.finishDocFile(json);
+                        this.fileService.finishDocFile(item);
                     } else if (DataChangeTable.组织结构.getKey().equals(item.getChangeTableName())) {
                         // 组织机构发生变更
                         this.departmentService.analysisDataChange(item);

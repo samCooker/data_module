@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.SysDataChange;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -35,6 +37,7 @@ import cn.com.chaochuang.docwork.repository.DocFileRepository;
 import cn.com.chaochuang.docwork.repository.FdFordoRepository;
 import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.FlowNodeOpinionsInfo;
+import cn.com.chaochuang.webservice.server.ITransferOAService;
 
 /**
  * @author Shicx
@@ -68,6 +71,9 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     private FdFordoService              fdFordoService;
     @Autowired
     private FdFordoRepository           fdFordoRepository;
+    /** webservice 函数库 */
+    @Autowired
+    private ITransferOAService          transferOAService;
 
     @Value("${getdata.timeinterval}")
     private String                      timeInterval;
@@ -101,12 +107,10 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
             // 保存意见信息
             flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
             // 保存公文个人办理记录
-            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
-                            fileInfo.getRedactDeptId());
+            flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
         }
         for (FdFordo fordo : fordoData) {
-            List<FdFordo> fordoList = fdFordoRepository.findByRmInstanceIdAndLocalData(fordo.getRmInstanceId(),
-                            LocalData.非本地数据);
+            List<FdFordo> fordoList = fdFordoRepository.findByRmInstanceIdAndLocalData(fordo.getRmInstanceId(), LocalData.非本地数据);
             if (Tools.isNotEmptyList(fordoList)) {
                 for (FdFordo dfordo : fordoList) {
                     dfordo.setLocalData(LocalData.有本地数据);
@@ -140,8 +144,7 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
         // 保存意见信息
         flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
         // 保存公文个人办理记录
-        flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
-                        fileInfo.getRedactDeptId());
+        flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file, fileInfo.getRedactDeptId());
         fordo.setLocalData(LocalData.有本地数据);
         fdFordoRepository.save(fordo);
     }
@@ -191,11 +194,11 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
                 // flowNodeInfoService.getRepository().delete(preFlowNodesList);
                 // 将oa的历史节点信息保存
                 flowNodeInfoService.saveRemoteFlowNodeInfo(fileInfo.getRemoteFlowNodes(), file.getId());
-                // 跟新公文意见记录
+                // 更新公文意见记录
                 flowNodeOpinionsService.saveRemoteFlowNodeOpinions(fileInfo.getRemoteFlowOpinions(), file.getId());
-                // 保存公文个人办理记录
-                flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
-                                fileInfo.getRedactDeptId());
+                // 保存公文个人办理记录 (已修改为从oa直接获取)
+                // flowTransactPersonalService.saveFlowTransactPersonalInfo(fileInfo.getRemoteFlowNodes(), file,
+                // fileInfo.getRedactDeptId());
             }
         }
 
@@ -208,6 +211,23 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     public DocFile findByRmInstanceId(String rmInstanceId) {
 
         return repository.findByRmInstanceId(rmInstanceId);
+    }
+
+    /**
+     * (non-Javadoc)
+     * 
+     * @see cn.com.chaochuang.docwork.service.DocFileService#finishDocFile(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     */
+    @Override
+    public void finishDocFile(SysDataChange item) {
+        String[] items = item.getChangeScript().split("=");
+        DocFile docFile = repository.findByRmInstanceId(items[1]);
+        if (docFile != null) {
+            String json = this.transferOAService.getOAHistoryNodes(new Long(items[1]));
+            if (StringUtils.isNotBlank(json) && !"FALSE".equals(json)) {
+                this.finishDocFile(json);
+            }
+        }
     }
 
 }
