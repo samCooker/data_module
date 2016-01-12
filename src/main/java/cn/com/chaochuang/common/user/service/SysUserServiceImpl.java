@@ -14,7 +14,7 @@ import cn.com.chaochuang.common.user.repository.SysDepartmentRepository;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeSystem;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 
@@ -47,10 +47,10 @@ public class SysUserServiceImpl extends SimpleLongIdCrudRestService<SysUser> imp
     }
 
     /**
-     * @see cn.com.chaochuang.common.user.service.SysUserService#analysisDataChange(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.common.user.service.SysUserService#analysisDataChange(SysDataChangeSystem)
      */
     @Override
-    public void analysisDataChange(SysDataChange dataChange) {
+    public void analysisDataChange(SysDataChangeSystem dataChange) {
         // 分析要修改的类型，若修改类型是update或add，需要通过webservice获取变更数据；若类型为delete则直接删除指定的记录
         if (OperationType.修改.getKey().equals(dataChange.getOperationType())
                         || OperationType.新增.getKey().equals(dataChange.getOperationType())) {

@@ -9,6 +9,8 @@
 package cn.com.chaochuang.common.fdfordo.service;
 
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeOa;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 
 /**
@@ -30,7 +32,7 @@ public interface CommonPendingHandleService {
      * @param dataChange
      * @param changeName
      */
-    public void updateOADataIfExist(SysDataChange dataChange, DataChangeTable changeName);
+    public void updateOADataIfExist(SysDataChangeOa dataChange, DataChangeTable changeName);
 
     /**
      * 同步移动端与行政审批的待办及办理信息，若办理信息存在于移动端数据库，则从原系统获取办理信息并删除旧待办，否则只删除旧待办
@@ -38,5 +40,5 @@ public interface CommonPendingHandleService {
      * @param dataChange
      * @param changeName
      */
-    public void updateSuperviseDataIfExist(SysDataChange dataChange, DataChangeTable changeName);
+    public void updateSuperviseDataIfExist(SysDataChangeApp dataChange, DataChangeTable changeName);
 }

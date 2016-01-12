@@ -28,6 +28,8 @@ import cn.com.chaochuang.casecomplaint.service.FdFordoCaseService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeOa;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -95,11 +97,11 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     }
 
     /**
-     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateOADataIfExist(cn.com.chaochuang.datacenter.domain.SysDataChange,
+     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateOADataIfExist(SysDataChangeOa,
      *      cn.com.chaochuang.datacenter.reference.DataChangeTable)
      */
     @Override
-    public void updateOADataIfExist(SysDataChange dataChange, DataChangeTable changeName) {
+    public void updateOADataIfExist(SysDataChangeOa dataChange, DataChangeTable changeName) {
         if (changeName == null || dataChange == null || StringUtils.isEmpty(dataChange.getChangeScript())) {
             return;
         }
@@ -128,11 +130,11 @@ public class CommonPendingHandleServiceImpl implements CommonPendingHandleServic
     }
 
     /**
-     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateSuperviseDataIfExist(cn.com.chaochuang.datacenter.domain.SysDataChange,
+     * @see cn.com.chaochuang.common.fdfordo.service.CommonPendingHandleService#updateSuperviseDataIfExist(SysDataChangeApp,
      *      cn.com.chaochuang.datacenter.reference.DataChangeTable)
      */
     @Override
-    public void updateSuperviseDataIfExist(SysDataChange dataChange, DataChangeTable changeName) {
+    public void updateSuperviseDataIfExist(SysDataChangeApp dataChange, DataChangeTable changeName) {
         if (changeName == null || dataChange == null || StringUtils.isEmpty(dataChange.getChangeScript())) {
             return;
         }

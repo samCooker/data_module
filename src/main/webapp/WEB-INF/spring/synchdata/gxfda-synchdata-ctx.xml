@@ -141,4 +141,30 @@
             value="${jdbc.maxactive}" />
     </bean>
 
+    <bean
+        id="sysSynchDataSourceService"
+        class="cn.com.chaochuang.synchdata.service.SysSynchDataSourceService" parent="localDataSourceService"
+    >
+        <property
+            name="driver"
+            value="${sys.jdbc.driver}" />
+        <property
+            name="url"
+            value="${sys.jdbc.url}" />
+        <property
+            name="userName"
+            value="${sys.jdbc.username}" />
+        <property
+            name="passwd"
+            value="${sys.jdbc.password}" />
+        <property
+            name="minIdle"
+            value="${sys.jdbc.minidle}" />
+        <property
+            name="maxIdle"
+            value="${sys.jdbc.maxidle}" />
+        <property
+            name="maxActive"
+            value="${sys.jdbc.maxactive}" />
+    </bean>
 </beans>

@@ -26,7 +26,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
@@ -130,10 +130,10 @@ public class AppItemAttachServiceImpl extends SimpleLongIdCrudRestService<AppIte
 
     /**
      * 
-     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#updatePrjMaterial(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.appflow.service.AppItemAttachService#updatePrjMaterial(SysDataChangeApp)
      */
     @Override
-    public void updatePrjMaterial(SysDataChange dataChange) {
+    public void updatePrjMaterial(SysDataChangeApp dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;

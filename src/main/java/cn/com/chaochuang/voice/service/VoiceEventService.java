@@ -11,7 +11,7 @@ package cn.com.chaochuang.voice.service;
 import java.util.List;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeVoice;
 import cn.com.chaochuang.voice.bean.VoiceEventPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceEvent;
 
@@ -39,28 +39,28 @@ public interface VoiceEventService extends CrudRestService<VoiceEvent, Long> {
      *
      * @param dataChange
      */
-    void updateVoiceInfoEvent(SysDataChange dataChange);
+    void updateVoiceInfoEvent(SysDataChangeVoice dataChange);
 
     /**
      * 舆情事件变更
      *
      * @param dataChange
      */
-    void saveVoiceEvent(SysDataChange dataChange);
+    void saveVoiceEvent(SysDataChangeVoice dataChange);
 
     /**
      * 舆情事件审批变更
      *
      * @param dataChange
      */
-    void saveVoiceEventHandleApprove(SysDataChange dataChange);
+    void saveVoiceEventHandleApprove(SysDataChangeVoice dataChange);
 
     /**
      * 舆情事件审批意见变更
      *
      * @param dataChange
      */
-    void saveVoiceEventHandleOpinion(SysDataChange dataChange);
+    void saveVoiceEventHandleOpinion(SysDataChangeVoice dataChange);
 
     /**
      * 更新舆情事件的原系统舆情事件编号
@@ -75,5 +75,5 @@ public interface VoiceEventService extends CrudRestService<VoiceEvent, Long> {
      * 
      * @param item
      */
-    void saveVoiceEventHandleResult(SysDataChange item);
+    void saveVoiceEventHandleResult(SysDataChangeVoice item);
 }

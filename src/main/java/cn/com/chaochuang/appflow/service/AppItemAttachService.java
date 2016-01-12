@@ -13,7 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 
 /**
  * @author LLM
@@ -60,6 +60,6 @@ public interface AppItemAttachService extends CrudRestService<AppItemAttach, Lon
      * 
      * @param item
      */
-    void updatePrjMaterial(SysDataChange item);
+    void updatePrjMaterial(SysDataChangeApp item);
 
 }

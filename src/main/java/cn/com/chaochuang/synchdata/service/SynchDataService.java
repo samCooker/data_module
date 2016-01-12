@@ -38,8 +38,22 @@ public interface SynchDataService {
 
     /**
      * 同步审评查验待办
-     * 
+     *
      * @param task
      */
     void synchAuditFdData(SysSynchdataTask task);
+
+    /**
+     * 同步用户数据
+     *
+     * @param task
+     */
+    void synchSysDataChangeOfUserData(SysSynchdataTask task);
+
+    /**
+     * 同步部门数据
+     * 
+     * @param task
+     */
+    void synchSysDataChangeOfDeptData(SysSynchdataTask task);
 }

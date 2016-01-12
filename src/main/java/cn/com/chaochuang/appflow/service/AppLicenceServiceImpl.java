@@ -29,7 +29,7 @@ import cn.com.chaochuang.common.util.HttpClientHelper;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 
 /**
@@ -60,10 +60,10 @@ public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicenc
     }
 
     /**
-     * @see cn.com.chaochuang.appflow.service.AppLicenceService#saveAppLicence(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.appflow.service.AppLicenceService#saveAppLicence(SysDataChangeApp)
      */
     @Override
-    public void saveAppLicence(SysDataChange dataChange) {
+    public void saveAppLicence(SysDataChangeApp dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;

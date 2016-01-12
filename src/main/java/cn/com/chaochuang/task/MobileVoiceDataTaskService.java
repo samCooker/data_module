@@ -18,10 +18,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
 import cn.com.chaochuang.common.user.domain.SysUser;
@@ -46,6 +43,8 @@ import cn.com.chaochuang.voice.service.VoiceInfoAttachService;
 import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 import cn.com.chaochuang.webservice.server.IVoiceWebService;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -99,7 +98,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情的待办记录 (暂时无用)
      */
     // @Scheduled(cron = "11 0/4 * * * ?")
-    //@Scheduled(cron = "14/14 * * * * ?")
+    // @Scheduled(cron = "14/14 * * * * ?")
     public void getVoiceInfoFordo() {
         if (isGetVoiceInfoPendingRunning) {
             return;
@@ -111,7 +110,9 @@ public class MobileVoiceDataTaskService {
             if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
                 return;
             }
-            String json = this.voiceWebService.selectPendingVoiceInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingId());
+            String json = this.voiceWebService.selectPendingVoiceInfo(
+                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
+                                            : "", info.getRmPendingId());
             // 将舆情记录写入舆情信息表
             if (!Tools.isEmptyString(json)) {
                 try {
@@ -135,7 +136,7 @@ public class MobileVoiceDataTaskService {
      * 获取待办事件
      */
     // @Scheduled(cron = "17 0/4 * * * ?")
-    @Scheduled(cron = "17/17 * * * * ?")
+    // @Scheduled(cron = "17/17 * * * * ?")
     public void getVoiceEventFordo() {
         if (isGetVoiceEventPendingRunning) {
             return;
@@ -147,7 +148,9 @@ public class MobileVoiceDataTaskService {
             if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
                 return;
             }
-            String json = this.voiceWebService.selectVoiceEventPending((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingId());
+            String json = this.voiceWebService.selectVoiceEventPending(
+                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
+                                            : "", info.getRmPendingId());
             // 将舆情记录写入舆情信息表
             if (!Tools.isEmptyString(json)) {
                 try {
@@ -171,7 +174,7 @@ public class MobileVoiceDataTaskService {
      * 提交舆情信息修改数据
      */
     // @Scheduled(cron = "22 0/3 * * * ?")
-    @Scheduled(cron = "19/19 * * * * ?")
+    // @Scheduled(cron = "19/19 * * * * ?")
     public void commitVoiceInfoDataTask() {
         if (isGetVoiceInfoSubmitRunning) {
             return;
@@ -214,7 +217,7 @@ public class MobileVoiceDataTaskService {
      * 提交舆情事件的数据
      */
     // ////@Scheduled(cron = "25 0/2 * * * ?")
-    @Scheduled(cron = "21/21 * * * * ?")
+    // @Scheduled(cron = "21/21 * * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
             return;
@@ -257,7 +260,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情相关变更数据
      */
     // ////@Scheduled(cron = "15 0/2 * * * ?")
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void getDataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -283,7 +286,7 @@ public class MobileVoiceDataTaskService {
      * 获取舆情文件
      */
     // //@Scheduled(cron = "25 0/2 * * * ?")
-    @Scheduled(cron = "25/25 * * * * ?")
+    // @Scheduled(cron = "25/25 * * * * ?")
     public void getVoiceInfoAttachTask() {
         if (isGetVoiceInfoAttachRunning) {
             return;
@@ -350,7 +353,9 @@ public class MobileVoiceDataTaskService {
             if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
                 return;
             }
-            String json = this.voiceWebService.selectVoiceAlarmRecord((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingId());
+            String json = this.voiceWebService.selectVoiceAlarmRecord(
+                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
+                                            : "", info.getRmPendingId());
             // 将舆情提醒记录写入舆情推送信息表
             if (!Tools.isEmptyString(json)) {
                 try {

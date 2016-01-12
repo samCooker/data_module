@@ -10,7 +10,7 @@ package cn.com.chaochuang.commoninfo.service;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.commoninfo.domain.AppEntp;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 
 /**
  * @author LLM
@@ -26,6 +26,6 @@ public interface AppEntpService extends CrudRestService<AppEntp, Long> {
      * 
      * @param item
      */
-    public void insertOrUpdataEntp(SysDataChange item);
+    public void insertOrUpdataEntp(SysDataChangeApp item);
 
 }

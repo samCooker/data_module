@@ -21,10 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.util.JsonMapper;
@@ -44,6 +41,8 @@ import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -97,7 +96,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取待办事宜数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "10/10 * * * * ?")
+    // @Scheduled(cron = "10/10 * * * * ?")
     // //@Scheduled(cron = "10 0/4 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
@@ -112,7 +111,9 @@ public class MobileOADataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo(
+                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
+                                            : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -192,7 +193,7 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     // @Scheduled(cron = "20 0/3 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
@@ -234,7 +235,7 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "20/20 * * * * ?")
+    // @Scheduled(cron = "20/20 * * * * ?")
     // @Scheduled(cron = "3 0/3 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
@@ -291,7 +292,7 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    @Scheduled(cron = "40/40 * * * * ?")
+    // @Scheduled(cron = "40/40 * * * * ?")
     // @Scheduled(cron = "40 0/20 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {

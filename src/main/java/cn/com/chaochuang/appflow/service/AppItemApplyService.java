@@ -13,7 +13,7 @@ import java.util.List;
 import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppItemApply;
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 
 /**
  * @author LLM
@@ -32,6 +32,6 @@ public interface AppItemApplyService extends CrudRestService<AppItemApply, Long>
      * 更新移动端的执业药师数据
      * @param dataChange
      */
-    public void updateOrDelPharmacist(SysDataChange dataChange);
+    public void updateOrDelPharmacist(SysDataChangeApp dataChange);
 
 }

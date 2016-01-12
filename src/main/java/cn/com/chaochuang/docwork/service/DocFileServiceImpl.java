@@ -28,7 +28,7 @@ import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeOa;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.domain.DocFile;
 import cn.com.chaochuang.docwork.domain.FdFordo;
@@ -216,10 +216,10 @@ public class DocFileServiceImpl extends SimpleLongIdCrudRestService<DocFile> imp
     /**
      * (non-Javadoc)
      * 
-     * @see cn.com.chaochuang.docwork.service.DocFileService#finishDocFile(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.docwork.service.DocFileService#finishDocFile(SysDataChangeOa)
      */
     @Override
-    public void finishDocFile(SysDataChange item) {
+    public void finishDocFile(SysDataChangeOa item) {
         String[] items = item.getChangeScript().split("=");
         DocFile docFile = repository.findByRmInstanceId(items[1]);
         if (docFile != null) {

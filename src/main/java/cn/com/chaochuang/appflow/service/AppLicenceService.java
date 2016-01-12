@@ -10,7 +10,7 @@ package cn.com.chaochuang.appflow.service;
 
 import cn.com.chaochuang.appflow.domain.AppLicence;
 import cn.com.chaochuang.common.data.service.CrudRestService;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 
 /**
  * @author LLM
@@ -23,5 +23,5 @@ public interface AppLicenceService extends CrudRestService<AppLicence, Long> {
      * 
      * @param dataChange
      */
-    void saveAppLicence(SysDataChange dataChange);
+    void saveAppLicence(SysDataChangeApp dataChange);
 }

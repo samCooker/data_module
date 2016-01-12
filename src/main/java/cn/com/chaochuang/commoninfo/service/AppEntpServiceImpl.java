@@ -30,7 +30,7 @@ import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.bean.AppEntpUpdataInfo;
 import cn.com.chaochuang.commoninfo.domain.AppEntp;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 import cn.com.chaochuang.task.MobileAppDataTaskService;
 
 /**
@@ -64,10 +64,10 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
     /**
      * (non-Javadoc)
      *
-     * @see cn.com.chaochuang.commoninfo.service.AppEntpService#insertOrUpdataEntp(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.commoninfo.service.AppEntpService#insertOrUpdataEntp(SysDataChangeApp)
      */
     @Override
-    public void insertOrUpdataEntp(SysDataChange dataChange) {
+    public void insertOrUpdataEntp(SysDataChangeApp dataChange) {
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
         }

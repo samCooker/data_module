@@ -14,7 +14,7 @@ import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.common.user.bean.DepTreeBean;
 import cn.com.chaochuang.common.user.domain.SysDepartment;
 import cn.com.chaochuang.common.user.tree.DepartmentTreeNode;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeSystem;
 
 /**
  * @author LaoZhiYong
@@ -32,7 +32,7 @@ public interface SysDepartmentService extends CrudRestService<SysDepartment, Lon
      *
      * @param dataChange
      */
-    void analysisDataChange(SysDataChange dataChange);
+    void analysisDataChange(SysDataChangeSystem dataChange);
 
     /**
      * 根据原系统部门编号查找部门对象

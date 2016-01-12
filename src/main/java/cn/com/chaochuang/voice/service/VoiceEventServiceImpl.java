@@ -34,7 +34,7 @@ import cn.com.chaochuang.common.user.service.SysUserService;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeVoice;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.voice.bean.VoiceEventHandleApproveInfo;
 import cn.com.chaochuang.voice.bean.VoiceEventHandleOpinionInfo;
@@ -210,10 +210,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceEventService#updateVoiceInfoEvent(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#updateVoiceInfoEvent(SysDataChangeVoice)
      */
     @Override
-    public void updateVoiceInfoEvent(SysDataChange dataChange) {
+    public void updateVoiceInfoEvent(SysDataChangeVoice dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
@@ -263,10 +263,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEvent(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEvent(SysDataChangeVoice)
      */
     @Override
-    public void saveVoiceEvent(SysDataChange dataChange) {
+    public void saveVoiceEvent(SysDataChangeVoice dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
@@ -320,10 +320,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleApprove(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleApprove(SysDataChangeVoice)
      */
     @Override
-    public void saveVoiceEventHandleApprove(SysDataChange dataChange) {
+    public void saveVoiceEventHandleApprove(SysDataChangeVoice dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
@@ -392,10 +392,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleOpinion(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleOpinion(SysDataChangeVoice)
      */
     @Override
-    public void saveVoiceEventHandleOpinion(SysDataChange dataChange) {
+    public void saveVoiceEventHandleOpinion(SysDataChangeVoice dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
@@ -446,10 +446,10 @@ public class VoiceEventServiceImpl extends SimpleLongIdCrudRestService<VoiceEven
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleResult(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceEventService#saveVoiceEventHandleResult(SysDataChangeVoice)
      */
     @Override
-    public void saveVoiceEventHandleResult(SysDataChange dataChange) {
+    public void saveVoiceEventHandleResult(SysDataChangeVoice dataChange) {
         // 分解变更内容
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;

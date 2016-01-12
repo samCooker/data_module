@@ -2,7 +2,7 @@ package cn.com.chaochuang.common.user.service;
 
 import cn.com.chaochuang.common.data.service.CrudRestService;
 import cn.com.chaochuang.common.user.domain.SysUser;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeSystem;
 
 public interface SysUserService extends CrudRestService<SysUser, Long> {
 
@@ -19,7 +19,7 @@ public interface SysUserService extends CrudRestService<SysUser, Long> {
      *
      * @param dataChange
      */
-    void analysisDataChange(SysDataChange dataChange);
+    void analysisDataChange(SysDataChangeSystem dataChange);
 
     /**
      * 根据远程OA的用户id查找用户

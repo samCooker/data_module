@@ -32,7 +32,7 @@ import cn.com.chaochuang.common.util.AttachUtils;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.SysDataChange;
+import cn.com.chaochuang.datacenter.domain.SysDataChangeVoice;
 import cn.com.chaochuang.datacenter.reference.OperationType;
 import cn.com.chaochuang.voice.bean.VoiceInfoAffixItem;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
@@ -147,10 +147,10 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     }
 
     /**
-     * @see cn.com.chaochuang.voice.service.VoiceInfoService#updateVoiceInfo(cn.com.chaochuang.datacenter.domain.SysDataChange)
+     * @see cn.com.chaochuang.voice.service.VoiceInfoService#updateVoiceInfo(SysDataChangeVoice)
      */
     @Override
-    public void updateVoiceInfo(SysDataChange dataChange) {
+    public void updateVoiceInfo(SysDataChangeVoice dataChange) {
         if (dataChange == null || Tools.isEmptyString(dataChange.getChangeScript())) {
             return;
         }
