@@ -27,6 +27,7 @@ import cn.com.chaochuang.datacenter.domain.SysDataChangeOa;
 import cn.com.chaochuang.datacenter.domain.SysDataChangeSystem;
 import cn.com.chaochuang.datacenter.domain.SysDataChangeVoice;
 import cn.com.chaochuang.datacenter.reference.DataChangeTable;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.repository.SysDataChangeAppRepository;
 import cn.com.chaochuang.datacenter.repository.SysDataChangeErrRepository;
 import cn.com.chaochuang.datacenter.repository.SysDataChangeOaRepository;
@@ -186,14 +187,17 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public void deleteChangeData(SysDataChange dataChange, String errMsg) {
+        SysDataChangeErr err = new SysDataChangeErr();
         // 有错误信息先写入错误信息表
         if (!Tools.isEmptyString(errMsg)) {
-            SysDataChangeErr err = new SysDataChangeErr();
-            NullBeanUtils.copyProperties(err, dataChange);
-            err.setId(null);
             err.setErrorMsg(errMsg);
-            this.errRepository.save(err);
+            err.setExecuteType(ExecuteFlag.执行错误);
+        } else {
+            err.setExecuteType(ExecuteFlag.执行成功);
         }
+        NullBeanUtils.copyProperties(err, dataChange);
+        err.setId(null);
+        this.errRepository.save(err);
         this.repository.delete(dataChange.getId());
     }
 
@@ -203,14 +207,17 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public void deleteOAChangeData(SysDataChangeOa dataChange, String errMsg) {
+        SysDataChangeErr err = new SysDataChangeErr();
         // 有错误信息先写入错误信息表
         if (!Tools.isEmptyString(errMsg)) {
-            SysDataChangeErr err = new SysDataChangeErr();
-            NullBeanUtils.copyProperties(err, dataChange);
-            err.setId(null);
             err.setErrorMsg(errMsg);
-            this.errRepository.save(err);
+            err.setExecuteType(ExecuteFlag.执行错误);
+        } else {
+            err.setExecuteType(ExecuteFlag.执行成功);
         }
+        NullBeanUtils.copyProperties(err, dataChange);
+        err.setId(null);
+        this.errRepository.save(err);
         this.oaRepository.delete(dataChange.getId());
     }
 
@@ -220,14 +227,17 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public void deleteAppChangeData(SysDataChangeApp dataChange, String errMsg) {
+        SysDataChangeErr err = new SysDataChangeErr();
         // 有错误信息先写入错误信息表
         if (!Tools.isEmptyString(errMsg)) {
-            SysDataChangeErr err = new SysDataChangeErr();
-            NullBeanUtils.copyProperties(err, dataChange);
-            err.setId(null);
             err.setErrorMsg(errMsg);
-            this.errRepository.save(err);
+            err.setExecuteType(ExecuteFlag.执行错误);
+        } else {
+            err.setExecuteType(ExecuteFlag.执行成功);
         }
+        NullBeanUtils.copyProperties(err, dataChange);
+        err.setId(null);
+        this.errRepository.save(err);
         this.appRepository.delete(dataChange.getId());
     }
 
@@ -237,14 +247,17 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public void deleteSystemChangeData(SysDataChangeSystem dataChange, String errMsg) {
+        SysDataChangeErr err = new SysDataChangeErr();
         // 有错误信息先写入错误信息表
         if (!Tools.isEmptyString(errMsg)) {
-            SysDataChangeErr err = new SysDataChangeErr();
-            NullBeanUtils.copyProperties(err, dataChange);
-            err.setId(null);
             err.setErrorMsg(errMsg);
-            this.errRepository.save(err);
+            err.setExecuteType(ExecuteFlag.执行错误);
+        } else {
+            err.setExecuteType(ExecuteFlag.执行成功);
         }
+        NullBeanUtils.copyProperties(err, dataChange);
+        err.setId(null);
+        this.errRepository.save(err);
         this.systemRepository.delete(dataChange.getId());
     }
 
@@ -254,14 +267,17 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public void deleteVoiceChangeData(SysDataChangeVoice dataChange, String errMsg) {
+        SysDataChangeErr err = new SysDataChangeErr();
         // 有错误信息先写入错误信息表
         if (!Tools.isEmptyString(errMsg)) {
-            SysDataChangeErr err = new SysDataChangeErr();
-            NullBeanUtils.copyProperties(err, dataChange);
-            err.setId(null);
             err.setErrorMsg(errMsg);
-            this.errRepository.save(err);
+            err.setExecuteType(ExecuteFlag.执行错误);
+        } else {
+            err.setExecuteType(ExecuteFlag.执行成功);
         }
+        NullBeanUtils.copyProperties(err, dataChange);
+        err.setId(null);
+        this.errRepository.save(err);
         this.voiceRepository.delete(dataChange.getId());
     }
 

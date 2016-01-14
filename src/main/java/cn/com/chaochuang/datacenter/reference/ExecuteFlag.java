@@ -17,7 +17,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  */
 public enum ExecuteFlag implements IDictionary {
 
-    未执行("0"), 执行错误("1");
+    未执行("0"), 执行错误("1"), 执行成功("2");
 
     private String key;
     private String value;

@@ -107,7 +107,7 @@ public class MobileCommonDataTaskService {
      * 获取远程系统修改记录数据
      */
     // @Scheduled(cron = "15/15 * * * * ?")
-    // //@Scheduled(cron = "2 0/2 * * * ?")
+    @Scheduled(cron = "2 0/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -133,7 +133,7 @@ public class MobileCommonDataTaskService {
      * 处理远程系统更改数据
      */
     // @Scheduled(cron = "3/5 * * * * ?")
-    // //@Scheduled(cron = "8 0/2 * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -180,7 +180,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA待办数据的变更
      */
-    // @Scheduled(cron = "8/8 * * * * ?")
+    @Scheduled(cron = "8/8 * * * * ?")
     public void dealOAPendingItemDataChange() {
         if (isDealOAPendingItemDataChangeRunning) {
             return;
@@ -211,7 +211,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理OA办结数据的变更
      */
-    // @Scheduled(cron = "11/11 * * * * ?")
+    @Scheduled(cron = "11/11 * * * * ?")
     public void dealOAHisnoItemDataChange() {
         if (isDealOAHisnoItemDataChangeRunning) {
             return;
@@ -315,7 +315,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理系统管理的变更数据
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealSystemDataChange() {
         if (isDealSystemDataChangeRunning) {
             return;
@@ -354,7 +354,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理舆情事件的变更数据
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
     public void dealVoiceEventDataChange() {
         if (isDealVoiceEventDataChangeRunning) {
             return;

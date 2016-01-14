@@ -13,9 +13,12 @@ import java.util.Date;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
+import cn.com.chaochuang.datacenter.reference.ExecuteFlagConverter;
 
 /**
  * @author LLM
@@ -25,15 +28,40 @@ import cn.com.chaochuang.common.data.domain.LongIdEntity;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "sys_data_change_id")) })
 public class SysDataChangeErr extends LongIdEntity {
     /** 更改表名 */
-    private String changeTableName;
+    private String      changeTableName;
     /** 更改内容描述 */
-    private String changeScript;
+    private String      changeScript;
     /** 记录填写时间 */
-    private Date   changeDate;
+    private Date        changeDate;
     /** 操作类型 */
-    private String operationType;
+    private String      operationType;
+    /** 执行结果 */
+    @Convert(converter = ExecuteFlagConverter.class)
+    private ExecuteFlag executeType;
+    /** 执行时间 */
+    private Date        executeDate;
     /** 错误描述 */
-    private String errorMsg;
+    private String      errorMsg;
+
+    /**
+     * 构造函数
+     */
+    public SysDataChangeErr() {
+        this.executeDate = new Date();
+    }
+
+    /**
+     * 构造函数
+     *
+     * @param executeType
+     * @param executeDate
+     * @param errorMsg
+     */
+    public SysDataChangeErr(ExecuteFlag executeType, String errorMsg) {
+        this.executeType = executeType;
+        this.executeDate = new Date();
+        this.errorMsg = errorMsg;
+    }
 
     /**
      * @return the changeTableName
@@ -108,6 +136,36 @@ public class SysDataChangeErr extends LongIdEntity {
      */
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    /**
+     * @return the executeType
+     */
+    public ExecuteFlag getExecuteType() {
+        return executeType;
+    }
+
+    /**
+     * @param executeType
+     *            the executeType to set
+     */
+    public void setExecuteType(ExecuteFlag executeType) {
+        this.executeType = executeType;
+    }
+
+    /**
+     * @return the executeDate
+     */
+    public Date getExecuteDate() {
+        return executeDate;
+    }
+
+    /**
+     * @param executeDate
+     *            the executeDate to set
+     */
+    public void setExecuteDate(Date executeDate) {
+        this.executeDate = executeDate;
     }
 
 }
