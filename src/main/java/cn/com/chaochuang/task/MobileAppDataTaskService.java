@@ -27,14 +27,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
-import cn.com.chaochuang.appflow.bean.AppFlowShowData;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
-import cn.com.chaochuang.appflow.domain.FdFordoApp;
 import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.FdFordoAppService;
@@ -45,8 +45,6 @@ import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -103,6 +101,7 @@ public class MobileAppDataTaskService {
      * 向行政审批系统获取待办事宜数据
      */
     // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -120,8 +119,7 @@ public class MobileAppDataTaskService {
                 params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
             }
             // 发送请求
-            String json = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+            String json = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params, HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     loginSuperviseSys();
@@ -151,8 +149,7 @@ public class MobileAppDataTaskService {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("account", userName));
             params.add(new BasicNameValuePair("password", pwd));
-            boolean isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+            boolean isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
             System.out.println(isLoging);
         } catch (Exception e) {
             e.printStackTrace();
@@ -162,51 +159,52 @@ public class MobileAppDataTaskService {
     }
 
     /**
-     * 获取行政审批数据
+     * 获取行政审批数据 (已修改为实时获取，该方法暂时无用)
      */
     // @Scheduled(cron = "20/20 * * * * ?")
-    public void getAppItemDataTask() {
-        if (isAppItemDataRunning) {
-            return;
-        }
-        isAppItemDataRunning = true;
-        try {
-            // 获取未下载审批数据的待办事宜，即localData=0的数据
-            List<FdFordoApp> datas = this.fdFordoAppService.selectUnLocalData(new PageRequest(0, 10));
-            if (!Tools.isNotEmptyList(datas)) {
-                isAppItemDataRunning = false;
-                return;
-            }
-            String pendingIds = Tools.changeArrayToString(datas, "rmPendingId", ",", false);
-            // 参数设置
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("pendingIds", pendingIds));
-            // 发送请求
-            String json = HttpClientHelper.doPost(httpClient, baseUrl + getSuperviseDataUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
-            if (StringUtils.isNotBlank(json)) {
-                if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    loginSuperviseSys();
-                } else {
-                    // 将行政审批的待办记录写入待办事宜表
-                    JsonMapper mapper = JsonMapper.getInstance();
-                    JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowShowData.class);
-                    List<AppFlowShowData> appDatas = mapper.readValue(json, javaType);
-                    // 保存并修改待办事宜 localData=1
-                    this.appItemApplyService.saveAppItemApplyDatas(appDatas);
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isAppItemDataRunning = false;
-        }
-    }
+    // public void getAppItemDataTask() {
+    // if (isAppItemDataRunning) {
+    // return;
+    // }
+    // isAppItemDataRunning = true;
+    // try {
+    // // 获取未下载审批数据的待办事宜，即localData=0的数据
+    // List<FdFordoApp> datas = this.fdFordoAppService.selectUnLocalData(new PageRequest(0, 10));
+    // if (!Tools.isNotEmptyList(datas)) {
+    // isAppItemDataRunning = false;
+    // return;
+    // }
+    // String pendingIds = Tools.changeArrayToString(datas, "rmPendingId", ",", false);
+    // // 参数设置
+    // List<NameValuePair> params = new ArrayList<NameValuePair>();
+    // params.add(new BasicNameValuePair("pendingIds", pendingIds));
+    // // 发送请求
+    // String json = HttpClientHelper.doPost(httpClient, baseUrl + getSuperviseDataUrl, params,
+    // HttpClientHelper.ENCODE_GBK);
+    // if (StringUtils.isNotBlank(json)) {
+    // if (HttpClientHelper.RE_LOGIN.equals(json)) {
+    // loginSuperviseSys();
+    // } else {
+    // // 将行政审批的待办记录写入待办事宜表
+    // JsonMapper mapper = JsonMapper.getInstance();
+    // JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowShowData.class);
+    // List<AppFlowShowData> appDatas = mapper.readValue(json, javaType);
+    // // 保存并修改待办事宜 localData=1
+    // this.appItemApplyService.saveAppItemApplyDatas(appDatas);
+    // }
+    // }
+    // } catch (Exception ex) {
+    // ex.printStackTrace();
+    // } finally {
+    // isAppItemDataRunning = false;
+    // }
+    // }
 
     /**
      * 提交审批项数据
      */
     // @Scheduled(cron = "20/15 * * * * ?")
+    @Scheduled(cron = "25 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -263,6 +261,7 @@ public class MobileAppDataTaskService {
      * 获取公文的附件，拉到本地存储
      */
     // @Scheduled(cron = "15/20 * * * * ?")
+    @Scheduled(cron = "5 0/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

@@ -20,9 +20,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.util.JsonMapper;
@@ -33,17 +34,13 @@ import cn.com.chaochuang.datacenter.reference.ExecuteFlag;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.docwork.domain.DocFileAttach;
-import cn.com.chaochuang.docwork.domain.FdFordo;
 import cn.com.chaochuang.docwork.reference.FordoSource;
 import cn.com.chaochuang.docwork.service.DocFileAttachService;
 import cn.com.chaochuang.docwork.service.DocFileService;
 import cn.com.chaochuang.docwork.service.FdFordoService;
-import cn.com.chaochuang.task.bean.DocFileInfo;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -112,9 +109,7 @@ public class MobileOADataTaskService {
                 return;
             }
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
-            String json = this.transferOAService.selectPendingItemInfo(
-                            (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
-                                            : "", info.getRmPendingItemId());
+            String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
             this.saveFdFordo(json, FordoSource.公文);
         } catch (Exception ex) {
@@ -149,47 +144,47 @@ public class MobileOADataTaskService {
      * 向OA获取公文数据 每1分钟进行一次数据获取(修改策略暂时无用)
      */
     // @Scheduled(cron = "8 0/3 * * * ?")
-    public void getDocFileDataTask() {
-        if (isGetDocFileRunning) {
-            return;
-        }
-        isGetDocFileRunning = true;
-        try {
-            // 获取未下载审批数据的待办事宜，即localData=0的数据
-            List<FdFordo> fordoData = this.fdFordoService.selectUnLocalData(new PageRequest(0, 2));
-            StringBuilder instIds = new StringBuilder();
-            for (FdFordo fordo : fordoData) {
-                instIds.append(fordo.getRmInstanceId() + ",");
-            }
-            if (instIds.length() > 0) {
-                instIds.deleteCharAt(instIds.length() - 1);
-            } else {
-                return;
-            }
-            String json = this.transferOAService.getDocTransactInfo(instIds.toString());
-            if (Tools.isEmptyString(json)) {
-                isGetDocFileRunning = false;
-                return;
-            }
-            try {
-                JsonMapper mapper = JsonMapper.getInstance();
-                JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
-                List<DocFileInfo> datas = mapper.readValue(json, javaType);
-                fileService.saveDocFilesDatas(datas, fordoData);
-            } catch (Exception ex) {
-                for (FdFordo fordo : fordoData) {
-                    fordo.setLocalData(LocalData.获取数据错误);
-                    fdFordoService.getRepository().save(fordo);
-                }
-                ex.printStackTrace();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isGetDocFileRunning = false;
-        }
-
-    }
+    // public void getDocFileDataTask() {
+    // if (isGetDocFileRunning) {
+    // return;
+    // }
+    // isGetDocFileRunning = true;
+    // try {
+    // // 获取未下载审批数据的待办事宜，即localData=0的数据
+    // List<FdFordo> fordoData = this.fdFordoService.selectUnLocalData(new PageRequest(0, 2));
+    // StringBuilder instIds = new StringBuilder();
+    // for (FdFordo fordo : fordoData) {
+    // instIds.append(fordo.getRmInstanceId() + ",");
+    // }
+    // if (instIds.length() > 0) {
+    // instIds.deleteCharAt(instIds.length() - 1);
+    // } else {
+    // return;
+    // }
+    // String json = this.transferOAService.getDocTransactInfo(instIds.toString());
+    // if (Tools.isEmptyString(json)) {
+    // isGetDocFileRunning = false;
+    // return;
+    // }
+    // try {
+    // JsonMapper mapper = JsonMapper.getInstance();
+    // JavaType javaType = mapper.constructParametricType(ArrayList.class, DocFileInfo.class);
+    // List<DocFileInfo> datas = mapper.readValue(json, javaType);
+    // fileService.saveDocFilesDatas(datas, fordoData);
+    // } catch (Exception ex) {
+    // for (FdFordo fordo : fordoData) {
+    // fordo.setLocalData(LocalData.获取数据错误);
+    // fdFordoService.getRepository().save(fordo);
+    // }
+    // ex.printStackTrace();
+    // }
+    // } catch (Exception ex) {
+    // ex.printStackTrace();
+    // } finally {
+    // isGetDocFileRunning = false;
+    // }
+    //
+    // }
 
     /**
      * 提交公文修改数据
