@@ -298,38 +298,38 @@ public class SynchDataServiceImpl implements SynchDataService {
                         pinsertstat.setObject(entpInsertSQLItem.get("entp_id"), seqResult.getLong(1));
                         pinsertstat.addBatch();
 
-                        plicencestat.setObject(1, curId);
-                        licenceResult = plicencestat.executeQuery();
-                        while (licenceResult.next()) {
-                            seqResult = pseqstat.executeQuery();
-                            seqResult.next();
-                            if (this.licenceRepository.findByRmLicenceId(Long.valueOf(licenceResult.getObject(
-                                            "rm_licence_id").toString())) != null) {
-                                continue;
-                            }
-                            try {
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"),
-                                                seqResult.getLong(1));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
-                                                licenceResult.getObject("rm_licence_id"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"),
-                                                licenceResult.getObject("rm_entp_id"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"),
-                                                licenceResult.getObject("entp_type_name"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
-                                                licenceResult.getObject("licence_no"));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
-                                                this.changeDataType(licenceResult.getObject("from_date"), true));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
-                                                this.changeDataType(licenceResult.getObject("to_date"), true));
-                                plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
-                                                this.changeDataType(licenceResult.getObject("licence_time"), true));
-                                plicenceinsertstat.addBatch();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                continue;
-                            }
-                        }
+                        // plicencestat.setObject(1, curId);
+                        // licenceResult = plicencestat.executeQuery();
+                        // while (licenceResult.next()) {
+                        // seqResult = pseqstat.executeQuery();
+                        // seqResult.next();
+                        // if (this.licenceRepository.findByRmLicenceId(Long.valueOf(licenceResult.getObject(
+                        // "rm_licence_id").toString())) != null) {
+                        // continue;
+                        // }
+                        // try {
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"),
+                        // seqResult.getLong(1));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
+                        // licenceResult.getObject("rm_licence_id"));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"),
+                        // licenceResult.getObject("rm_entp_id"));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"),
+                        // licenceResult.getObject("entp_type_name"));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
+                        // licenceResult.getObject("licence_no"));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
+                        // this.changeDataType(licenceResult.getObject("from_date"), true));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
+                        // this.changeDataType(licenceResult.getObject("to_date"), true));
+                        // plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
+                        // this.changeDataType(licenceResult.getObject("licence_time"), true));
+                        // plicenceinsertstat.addBatch();
+                        // } catch (Exception ex) {
+                        // ex.printStackTrace();
+                        // continue;
+                        // }
+                        // }
                     }
                 }
                 System.out.println("insert entp data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
@@ -345,13 +345,13 @@ public class SynchDataServiceImpl implements SynchDataService {
                 pupdatestat.close();
 
                 System.out.println("insert licence data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
-                plicenceinsertstat.executeBatch();
+                // plicenceinsertstat.executeBatch();
                 System.out.println("insert licence data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
-                plicenceinsertstat.clearBatch();
-                plicenceinsertstat.close();
+                // plicenceinsertstat.clearBatch();
+                // plicenceinsertstat.close();
                 pinsertstat = localConn.prepareStatement(this.entpInsertSQL);
                 pupdatestat = localConn.prepareStatement(this.entpUpdateSQL);
-                plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
+                // plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
 
                 task.setFinishSynch(Long.valueOf(idx));
                 this.updateTaskInfo(task, ptaskstat);
@@ -478,13 +478,21 @@ public class SynchDataServiceImpl implements SynchDataService {
                         || source.getClass().getName().toLowerCase().indexOf("date") >= 0) {
             if (toString) {
                 try {
-                    return Tools.DATE_TIME_FORMAT.format(new Timestamp(((Date) source).getTime()));
+                    String formatDate = Tools.DATE_TIME_FORMAT.format(new Timestamp(((Date) source).getTime()));
+                    if (Tools.isEmptyString(formatDate) || formatDate.length() != 19) {
+                        return null;
+                    }
+                    if (Integer.valueOf(formatDate.substring(0, 4)) >= 2050) {
+                        return null;
+                    }
+                    return formatDate;
                 } catch (Exception ex) {
-                    return source;
+                    return null;
                 }
             }
             return new Timestamp(((Date) source).getTime());
         }
+        System.out.println("date type:" + source.getClass().getName() + "  datevalue=" + source);
         return source;
     }
 
