@@ -129,6 +129,8 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     entpLicenceSQL;
     @Value("${app.entp.licenceinsertsql}")
     private String                     entpLicenceInsertSQL;
+    @Value("${app.entp.getmaxsql}")
+    private String                     entpMaxIdSQL;
     @Value("${sequencesql}")
     private String                     sequenceSQL;
     @Value("${synchtasksql}")
@@ -162,9 +164,20 @@ public class SynchDataServiceImpl implements SynchDataService {
      */
     @Override
     public void synchAppEntpData(SysSynchdataTask task) {
+        this.synchAppEntpDataCommon(task, false);
+    }
+
+    /**
+     * 通用企业数据同步服务
+     *
+     * @param task
+     * @param travers
+     */
+    private void synchAppEntpDataCommon(SysSynchdataTask task, boolean travers) {
         Connection entpConn = null;
         Connection localConn = null;
-        Statement stat = null;
+        Statement maxstat = null;
+        PreparedStatement stat = null;
         PreparedStatement pentpstat = null;
         PreparedStatement pbusstat = null;
         PreparedStatement paddrstat = null;
@@ -172,17 +185,14 @@ public class SynchDataServiceImpl implements SynchDataService {
         PreparedStatement pupdatestat = null;
         PreparedStatement pseqstat = null;
         PreparedStatement ptaskstat = null;
-        PreparedStatement plicencestat = null;
-        PreparedStatement plicenceinsertstat = null;
 
         ResultSet result = null;
         ResultSet busResult = null;
         ResultSet addrResult = null;
         ResultSet seqResult = null;
-        ResultSet licenceResult = null;
 
         Map<String, Integer> entpInsertSQLItem = this.buildInsertFieldMap(this.entpInsertSQL);
-        Map<String, Integer> entpLicenceInsertSQLItem = this.buildInsertFieldMap(this.entpLicenceInsertSQL);
+        // Map<String, Integer> entpLicenceInsertSQLItem = this.buildInsertFieldMap(this.entpLicenceInsertSQL);
         // 获取相对人库的企业数据
         try {
             entpConn = this.appSynchDataSourceService.getConnection();
@@ -193,9 +203,20 @@ public class SynchDataServiceImpl implements SynchDataService {
                 this.taskRepository.save(task);
                 return;
             }
-            stat = entpConn.createStatement();
+            Long startEntpId = Long.valueOf(0);
+            stat = entpConn.prepareStatement(this.entpCountSQL);
+            // 若要递增式同步数据则查询当前最大企业编号，从最大编号后同步
+            if (!travers) {
+                maxstat = localConn.createStatement();
+                result = maxstat.executeQuery(this.entpMaxIdSQL);
+                while (result.next()) {
+                    startEntpId = result.getLong(1);
+                }
+            }
+            result.close();
             // 获取本次同步任务需要同步的数据量
-            result = stat.executeQuery(this.entpCountSQL);
+            stat.setLong(1, startEntpId);
+            result = stat.executeQuery();
             result.next();
             // 需要同步的记录数
             Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
@@ -211,11 +232,11 @@ public class SynchDataServiceImpl implements SynchDataService {
             pentpstat = entpConn.prepareStatement(this.entpDataSQL);
             pbusstat = entpConn.prepareStatement(this.entpBusSQL);
             paddrstat = entpConn.prepareStatement(this.entpAddrSQL);
-            plicencestat = entpConn.prepareStatement(this.entpLicenceSQL);
+            // plicencestat = entpConn.prepareStatement(this.entpLicenceSQL);
             // 插入和更新SQL
             pinsertstat = localConn.prepareStatement(this.entpInsertSQL);
             pupdatestat = localConn.prepareStatement(this.entpUpdateSQL);
-            plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
+            // plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
             pseqstat = localConn.prepareStatement(this.sequenceSQL);
             ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
 
@@ -382,9 +403,6 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (addrResult != null) {
                     addrResult.close();
                 }
-                if (licenceResult != null) {
-                    licenceResult.close();
-                }
                 if (stat != null) {
                     stat.close();
                 }
@@ -409,11 +427,8 @@ public class SynchDataServiceImpl implements SynchDataService {
                 if (ptaskstat != null) {
                     ptaskstat.close();
                 }
-                if (plicencestat != null) {
-                    plicencestat.close();
-                }
-                if (plicenceinsertstat != null) {
-                    plicenceinsertstat.close();
+                if (maxstat != null) {
+                    maxstat.close();
                 }
                 if (localConn != null) {
                     localConn.close();
