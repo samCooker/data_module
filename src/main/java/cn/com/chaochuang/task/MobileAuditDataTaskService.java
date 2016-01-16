@@ -9,6 +9,7 @@
 package cn.com.chaochuang.task;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -33,6 +34,7 @@ import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.AuditSubmitData;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 /**
  * @author LLM
@@ -57,7 +59,8 @@ public class MobileAuditDataTaskService {
     private FdFordoAuditService      fdFordoAuditService;
     @Autowired
     private DataUpdateService        dataUpdateService;
-
+    @Autowired
+    private SuperviseWebService      superviseWebService;
     @Resource
     private MobileAppDataTaskService mobileAppDataTaskService;
 
@@ -75,7 +78,8 @@ public class MobileAuditDataTaskService {
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -84,27 +88,50 @@ public class MobileAuditDataTaskService {
         try {
             // 获取当前待办表中公文待办中最大的id，若无法获取时间值则获取距离当前时间一个月的时间值
             AuditPendingHandleInfo info = this.fdFordoAuditService.selectMaxInputDate();
-            // 参数设置
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            if (info.getLastSendTime() != null) {
-                params.add(new BasicNameValuePair("lastOutputTime", Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())));
+            if (info.getLastSendTime() == null && StringUtils.isBlank(info.getRmPendingId())) {
+                return;
             }
-            if (info.getRmPendingId() != null) {
-                params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId()));
+            // 使用xfire方式获取数据，由于不能传null值，所以对null值进行处理
+            if (info.getLastSendTime() == null) {
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.YEAR, 2000);
+                info.setLastSendTime(c.getTime());
             }
-            // 发送请求
-            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params, HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isBlank(info.getRmPendingId())) {
+                info.setRmPendingId("0");
+            }
+            String json = superviseWebService.selectAuditPendingHandleList(info.getLastSendTime(), new Long(info.getRmPendingId()));
             if (StringUtils.isNotBlank(json)) {
-                if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    mobileAppDataTaskService.loginSuperviseSys();
-                } else if (!HttpClientHelper.RE_LOGIN.equals(json) && !"FALSE".equals(json)) {
-                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-                    JsonMapper mapper = JsonMapper.getInstance();
-                    JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
-                    List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
-                    this.fdFordoAuditService.insertFdFordos(datas);
-                }
+                // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
+                List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
+                this.fdFordoAuditService.insertFdFordos(datas);
             }
+
+            // 参数设置
+            // List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // if (info.getLastSendTime() != null) {
+            // params.add(new BasicNameValuePair("lastOutputTime",
+            // Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())));
+            // }
+            // if (info.getRmPendingId() != null) {
+            // params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId()));
+            // }
+            // // 发送请求
+            // String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params,
+            // HttpClientHelper.ENCODE_GBK);
+            // if (StringUtils.isNotBlank(json)) {
+            // if (HttpClientHelper.RE_LOGIN.equals(json)) {
+            // mobileAppDataTaskService.loginSuperviseSys();
+            // } else if (!HttpClientHelper.RE_LOGIN.equals(json) && !"FALSE".equals(json)) {
+            // // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+            // JsonMapper mapper = JsonMapper.getInstance();
+            // JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
+            // List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
+            // this.fdFordoAuditService.insertFdFordos(datas);
+            // }
+            // }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -115,7 +142,8 @@ public class MobileAuditDataTaskService {
     /**
      * 提交审批项数据
      */
-    @Scheduled(cron = "10/15 * * * * ?")
+    // @Scheduled(cron = "10/15 * * * * ?")
+    // @Scheduled(cron = "25 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;

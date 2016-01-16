@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +36,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
 import cn.com.chaochuang.appflow.domain.AppItemAttach;
-import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.AppItemAttachService;
 import cn.com.chaochuang.appflow.service.FdFordoAppService;
 import cn.com.chaochuang.common.util.HttpClientHelper;
@@ -45,6 +45,7 @@ import cn.com.chaochuang.datacenter.domain.DataUpdate;
 import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 /**
  * @author LLM
@@ -79,7 +80,7 @@ public class MobileAppDataTaskService {
     @Autowired
     private FdFordoAppService          fdFordoAppService;
     @Autowired
-    private AppItemApplyService        appItemApplyService;
+    private SuperviseWebService        superviseWebService;
     @Autowired
     private DataUpdateService          dataUpdateService;
     @Autowired
@@ -88,8 +89,6 @@ public class MobileAppDataTaskService {
     private static CloseableHttpClient httpClient              = HttpClientHelper.initHttpClient();
     /** 获取公文阻塞标识 */
     private static boolean             isFordoRunning          = false;
-    /** 获取行政审批数据标识 */
-    private static boolean             isAppItemDataRunning    = false;
     /** 提交行政审批数据标识 */
     private static boolean             isSubmitDataRunning     = false;
     /** 下载公文附件阻塞标识 */
@@ -110,27 +109,48 @@ public class MobileAppDataTaskService {
         try {
             // 获取当前待办表中公文待办中最大的id，若无法获取时间值则获取距离当前时间一个月的时间值
             AppFlowPendingHandleInfo info = this.fdFordoAppService.selectMaxInputDate();
-            // 参数设置
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            if (info.getLastSendTime() != null) {
-                params.add(new BasicNameValuePair("lastOutputTime", info.getLastSendTime().getTime() + ""));
+            if (info.getLastSendTime() == null && StringUtils.isBlank(info.getRmPendingId())) {
+                return;
             }
-            if (info.getRmPendingId() != null) {
-                params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
+            // 使用xfire方式获取数据，由于不能传null值，所以对null值进行处理
+            if (info.getLastSendTime() == null) {
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.YEAR, 2000);
+                info.setLastSendTime(c.getTime());
             }
-            // 发送请求
-            String json = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params, HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isBlank(info.getRmPendingId())) {
+                info.setRmPendingId("0");
+            }
+            String json = superviseWebService.selectPendingHandleList(info.getLastSendTime(), new Long(info.getRmPendingId()));
             if (StringUtils.isNotBlank(json)) {
-                if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    loginSuperviseSys();
-                } else {
-                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-                    JsonMapper mapper = JsonMapper.getInstance();
-                    JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
-                    List<AppFlowPendingHandleInfo> datas = mapper.readValue(json, javaType);
-                    this.fdFordoAppService.insertFdFordos(datas);
-                }
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+                List<AppFlowPendingHandleInfo> datas = mapper.readValue(json, javaType);
+                this.fdFordoAppService.insertFdFordos(datas);
             }
+            // 参数设置
+            // List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // if (info.getLastSendTime() != null) {
+            // params.add(new BasicNameValuePair("lastOutputTime", info.getLastSendTime().getTime() + ""));
+            // }
+            // if (info.getRmPendingId() != null) {
+            // params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId() + ""));
+            // }
+            // // 发送请求
+            // String json = HttpClientHelper.doPost(httpClient, baseUrl + getFordoDataUrl, params,
+            // HttpClientHelper.ENCODE_GBK);
+            // if (StringUtils.isNotBlank(json)) {
+            // if (HttpClientHelper.RE_LOGIN.equals(json)) {
+            // loginSuperviseSys();
+            // } else {
+            // // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+            // JsonMapper mapper = JsonMapper.getInstance();
+            // JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
+            // List<AppFlowPendingHandleInfo> datas = mapper.readValue(json, javaType);
+            // this.fdFordoAppService.insertFdFordos(datas);
+            // }
+            // }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

@@ -8,22 +8,16 @@
 
 package cn.com.chaochuang.commoninfo.service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
-import cn.com.chaochuang.common.util.HttpClientHelper;
 import cn.com.chaochuang.common.util.JsonMapper;
 import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
@@ -31,7 +25,7 @@ import cn.com.chaochuang.commoninfo.bean.AppEntpUpdataInfo;
 import cn.com.chaochuang.commoninfo.domain.AppEntp;
 import cn.com.chaochuang.commoninfo.repository.AppEntpRepository;
 import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
-import cn.com.chaochuang.task.MobileAppDataTaskService;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 /**
  * @author LLM
@@ -41,11 +35,13 @@ import cn.com.chaochuang.task.MobileAppDataTaskService;
 @Transactional
 public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> implements AppEntpService {
     @Autowired
-    private AppEntpRepository repository;
+    private AppEntpRepository   repository;
+    @Autowired
+    private SuperviseWebService superviseWebService;
     @Value("${supervise.baseUrl}")
-    private String            baseUrl;
+    private String              baseUrl;
     @Value("${supervise.entpChangeInfoUrl}")
-    private String            entpChangeInfoUrl;
+    private String              entpChangeInfoUrl;
 
     @Override
     public SimpleDomainRepository<AppEntp, Long> getRepository() {
@@ -78,14 +74,15 @@ public class AppEntpServiceImpl extends SimpleLongIdCrudRestService<AppEntp> imp
         }
         JsonMapper mapper = JsonMapper.getInstance();
         // 参数设置
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("entpId", items[1]));
-        // 获取与行政审批相同的httpClient
-        String updataInfo = HttpClientHelper.doPost(MobileAppDataTaskService.getHttpClient(), baseUrl
-                        + entpChangeInfoUrl, params, HttpClientHelper.ENCODE_GBK);
-        if (StringUtils.isBlank(updataInfo) || HttpClientHelper.RE_LOGIN.equals(updataInfo)) {
-            return;// 获取失败或者需要用户登录才能获取信息（此处不进行登录，登录的设置在MobileAppDataTaskService.java中）
-        }
+        // List<NameValuePair> params = new ArrayList<NameValuePair>();
+        // params.add(new BasicNameValuePair("entpId", items[1]));
+        // // 获取与行政审批相同的httpClient
+        // String updataInfo = HttpClientHelper.doPost(MobileAppDataTaskService.getHttpClient(), baseUrl
+        // + entpChangeInfoUrl, params, HttpClientHelper.ENCODE_GBK);
+        // if (StringUtils.isBlank(updataInfo) || HttpClientHelper.RE_LOGIN.equals(updataInfo)) {
+        // return;// 获取失败或者需要用户登录才能获取信息（此处不进行登录，登录的设置在MobileAppDataTaskService.java中）
+        // }
+        String updataInfo = superviseWebService.getChangeEntpInfo(new Long(items[1]));
         AppEntpUpdataInfo updataEntp = mapper.readValue(updataInfo, AppEntpUpdataInfo.class);
         AppEntp entp = findByRmEntpId(new Long(items[1]));
         if (entp == null) {

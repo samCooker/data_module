@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import cn.com.chaochuang.aipcase.service.AipPunishEntpService;
 import cn.com.chaochuang.appflow.service.AppItemApplyService;
 import cn.com.chaochuang.appflow.service.AppItemAttachService;
@@ -40,8 +42,6 @@ import cn.com.chaochuang.examine.service.ExamineEntpObjectService;
 import cn.com.chaochuang.voice.service.VoiceEventService;
 import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -242,7 +242,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理审批待办数据的变更
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealSuperviseFordoDataChange() {
         if (isDealSuperviseFordoDataChangeRunning) {
             return;
@@ -273,7 +273,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理其他行政审批变更数据
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealAppDataChange() {
         if (isDealAppDataChangeRunning) {
             return;
