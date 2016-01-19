@@ -17,7 +17,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  */
 public enum SynchDataFlag implements IDictionary {
     企业数据("AppEntp"), 执业药师数据("AppPharmacist"), 舆情基本信息("VoiceInfo"), 行政审批待办("FdFordoApp"), 审评查验待办("FdFordoAudit"), 用户变更数据(
-                    "dataChangeUser"), 部门变更数据("dataChangeDept");
+                    "dataChangeUser"), 部门变更数据("dataChangeDept"), 企业许可数据("AppLicence");
 
     private String key;
     private String value;

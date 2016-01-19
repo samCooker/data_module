@@ -20,10 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
 import cn.com.chaochuang.audit.service.FdFordoAuditService;
@@ -35,6 +32,8 @@ import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.AuditSubmitData;
 import cn.com.chaochuang.webservice.server.SuperviseWebService;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -79,7 +78,7 @@ public class MobileAuditDataTaskService {
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
     // @Scheduled(cron = "15/15 * * * * ?")
-    @Scheduled(cron = "15 0/2 * * * ?")
+    // @Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -100,7 +99,8 @@ public class MobileAuditDataTaskService {
             if (StringUtils.isBlank(info.getRmPendingId())) {
                 info.setRmPendingId("0");
             }
-            String json = superviseWebService.selectAuditPendingHandleList(info.getLastSendTime(), new Long(info.getRmPendingId()));
+            String json = superviseWebService.selectAuditPendingHandleList(info.getLastSendTime(),
+                            new Long(info.getRmPendingId()));
             if (StringUtils.isNotBlank(json)) {
                 // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                 JsonMapper mapper = JsonMapper.getInstance();
@@ -182,7 +182,8 @@ public class MobileAuditDataTaskService {
                     params.add(new BasicNameValuePair("auditRecord", nodeInfo.getAuditRecords()[i]));
                 }
             }
-            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
+            String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params,
+                            HttpClientHelper.ENCODE_GBK);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     mobileAppDataTaskService.loginSuperviseSys();
@@ -207,7 +208,7 @@ public class MobileAuditDataTaskService {
 
     /**
      * 获取与行政审批相同的httpClient
-     * 
+     *
      * @return
      */
     private CloseableHttpClient getHttpClient() {

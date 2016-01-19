@@ -28,10 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.appflow.bean.AppFlowPendingHandleInfo;
@@ -46,6 +43,8 @@ import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.task.bean.WebServiceNodeInfo;
 import cn.com.chaochuang.webservice.server.SuperviseWebService;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 /**
  * @author LLM
@@ -100,7 +99,7 @@ public class MobileAppDataTaskService {
      * 向行政审批系统获取待办事宜数据
      */
     // @Scheduled(cron = "15/15 * * * * ?")
-    @Scheduled(cron = "15 0/2 * * * ?")
+    // @Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -121,7 +120,8 @@ public class MobileAppDataTaskService {
             if (StringUtils.isBlank(info.getRmPendingId())) {
                 info.setRmPendingId("0");
             }
-            String json = superviseWebService.selectPendingHandleList(info.getLastSendTime(), new Long(info.getRmPendingId()));
+            String json = superviseWebService.selectPendingHandleList(info.getLastSendTime(),
+                            new Long(info.getRmPendingId()));
             if (StringUtils.isNotBlank(json)) {
                 JsonMapper mapper = JsonMapper.getInstance();
                 JavaType javaType = mapper.constructParametricType(ArrayList.class, AppFlowPendingHandleInfo.class);
@@ -169,7 +169,8 @@ public class MobileAppDataTaskService {
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("account", userName));
             params.add(new BasicNameValuePair("password", pwd));
-            boolean isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params, HttpClientHelper.ENCODE_GBK);
+            boolean isLoging = HttpClientHelper.loginSys(httpClient, baseUrl + loginUrl, params,
+                            HttpClientHelper.ENCODE_GBK);
             System.out.println(isLoging);
         } catch (Exception e) {
             e.printStackTrace();
@@ -224,7 +225,7 @@ public class MobileAppDataTaskService {
      * 提交审批项数据
      */
     // @Scheduled(cron = "20/15 * * * * ?")
-    @Scheduled(cron = "25 0/2 * * * ?")
+    // @Scheduled(cron = "25 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -281,7 +282,7 @@ public class MobileAppDataTaskService {
      * 获取公文的附件，拉到本地存储
      */
     // @Scheduled(cron = "15/20 * * * * ?")
-    @Scheduled(cron = "5 0/1 * * * ?")
+    // @Scheduled(cron = "5 0/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;

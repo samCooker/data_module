@@ -63,6 +63,8 @@ public class SynchdataTask {
                 this.synchDataService.synchSysDataChangeOfUserData(task);
             } else if (task.getSynchDataFlag().equals(SynchDataFlag.部门变更数据)) {
                 this.synchDataService.synchSysDataChangeOfDeptData(task);
+            } else if (task.getSynchDataFlag().equals(SynchDataFlag.企业许可数据)) {
+                this.synchDataService.synchLicenceDataChange(task);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

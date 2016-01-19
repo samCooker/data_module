@@ -125,12 +125,16 @@ public class SynchDataServiceImpl implements SynchDataService {
     private String                     entpInsertSQL;
     @Value("${app.entp.updatesql}")
     private String                     entpUpdateSQL;
+    @Value("${app.entp.licencecountsql}")
+    private String                     entpLicenceCountSQL;
     @Value("${app.entp.licencesql}")
     private String                     entpLicenceSQL;
     @Value("${app.entp.licenceinsertsql}")
     private String                     entpLicenceInsertSQL;
     @Value("${app.entp.getmaxsql}")
     private String                     entpMaxIdSQL;
+    @Value("${app.entp.getmaxlicencesql}")
+    private String                     licenceMaxIdSQL;
     @Value("${sequencesql}")
     private String                     sequenceSQL;
     @Value("${synchtasksql}")
@@ -256,7 +260,7 @@ public class SynchDataServiceImpl implements SynchDataService {
             // rm_entp_id, licence_date_script, bus_name, longitude, latitude, input_date
             while (curId < maxId) {
                 pentpstat.setObject(1, minId);
-                pentpstat.setObject(2, minId + (this.dataBlock - 1));
+                pentpstat.setObject(2, minId + this.dataBlock);
                 System.out.println("get entp data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
                 result = pentpstat.executeQuery();
                 System.out.println("get entp data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
@@ -420,6 +424,168 @@ public class SynchDataServiceImpl implements SynchDataService {
                 }
                 if (pupdatestat != null) {
                     pupdatestat.close();
+                }
+                if (pseqstat != null) {
+                    pseqstat.close();
+                }
+                if (ptaskstat != null) {
+                    ptaskstat.close();
+                }
+                if (maxstat != null) {
+                    maxstat.close();
+                }
+                if (localConn != null) {
+                    localConn.close();
+                }
+                if (entpConn != null) {
+                    entpConn.close();
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+        }
+    }
+
+    /**
+     * @see cn.com.chaochuang.synchdata.service.SynchDataService#synchLicenceDataChange(cn.com.chaochuang.synchdata.domain.SysSynchdataTask)
+     */
+    @Override
+    public void synchLicenceDataChange(SysSynchdataTask task) {
+        Connection entpConn = null;
+        Connection localConn = null;
+        Statement maxstat = null;
+        PreparedStatement stat = null;
+        PreparedStatement plicencestat = null;
+        PreparedStatement plicenceinsertstat = null;
+        PreparedStatement pseqstat = null;
+        PreparedStatement ptaskstat = null;
+
+        ResultSet result = null;
+        ResultSet licenceResult = null;
+        ResultSet seqResult = null;
+        Map<String, Integer> entpLicenceInsertSQLItem = this.buildInsertFieldMap(this.entpLicenceInsertSQL);
+        // 获取相对人库的企业数据
+        try {
+            entpConn = this.appSynchDataSourceService.getConnection();
+            localConn = this.localDataSourceService.getConnection();
+            pseqstat = localConn.prepareStatement(this.sequenceSQL);
+            if (entpConn == null) {
+                task.setMemo("无法连接目的服务器同步失败！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            Long startLicenceId = Long.valueOf(0);
+            stat = entpConn.prepareStatement(this.entpLicenceCountSQL);
+            // 若要递增式同步数据则查询当前最大企业编号，从最大编号后同步
+            maxstat = localConn.createStatement();
+            result = maxstat.executeQuery(this.licenceMaxIdSQL);
+            while (result.next()) {
+                startLicenceId = result.getLong(1);
+            }
+            result.close();
+            // 获取本次同步任务需要同步的数据量
+            stat.setLong(1, startLicenceId);
+            result = stat.executeQuery();
+            result.next();
+            // 需要同步的记录数
+            Long count = result.getLong(1), minId = result.getLong(2), curId = result.getLong(2), maxId = result
+                            .getLong(3);
+            ptaskstat = localConn.prepareStatement(this.taskUpdateSQL.replaceAll("@ID", task.getId().toString()));
+            if (count <= 0) {
+                task.setMemo("本次需同步数据记录数为0！");
+                task.setStatus(SynchDataStatus.同步完成);
+                this.taskRepository.save(task);
+                return;
+            }
+            localConn.setAutoCommit(true);
+            // 获取SQL数据
+            plicencestat = entpConn.prepareStatement(this.entpLicenceSQL);
+            // 插入和更新SQL
+            plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
+
+            plicenceinsertstat.setMaxRows(this.dataBlock);
+            plicenceinsertstat.setFetchSize(this.dataBlock);
+            // 重置任务的信息
+            task.setNeedSynch(Long.valueOf(count));
+            task.setStatus(SynchDataStatus.同步中);
+            task.setBeginTime(new Date());
+            this.updateTaskInfo(task, ptaskstat);
+            int idx = 0;
+
+            while (curId < maxId) {
+                plicencestat.setObject(1, minId);
+                plicencestat.setObject(2, minId + this.dataBlock);
+                System.out.println("get licence data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
+                licenceResult = plicencestat.executeQuery();
+                System.out.println("get licence data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
+                while (licenceResult.next()) {
+                    idx++;
+                    curId = licenceResult.getLong("rm_licence_id");
+                    if (this.licenceRepository.findByRmLicenceId(curId) != null) {
+                        continue;
+                    }
+                    seqResult = pseqstat.executeQuery();
+                    seqResult.next();
+                    try {
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_id"), seqResult.getLong(1));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_licence_id"),
+                                        licenceResult.getObject("rm_licence_id"));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("rm_entp_id"),
+                                        licenceResult.getObject("rm_entp_id"));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("entp_type_name"),
+                                        licenceResult.getObject("entp_type_name"));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_no"),
+                                        licenceResult.getObject("licence_no"));
+                        System.out.println("from_date="
+                                        + this.changeDataType(licenceResult.getObject("from_date"), true));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("from_date"),
+                                        this.changeDataType(licenceResult.getObject("from_date"), true));
+                        System.out.println("to_date=" + this.changeDataType(licenceResult.getObject("to_date"), true));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("to_date"),
+                                        this.changeDataType(licenceResult.getObject("to_date"), true));
+                        System.out.println("licence_time="
+                                        + this.changeDataType(licenceResult.getObject("licence_time"), true));
+                        plicenceinsertstat.setObject(entpLicenceInsertSQLItem.get("licence_time"),
+                                        this.changeDataType(licenceResult.getObject("licence_time"), true));
+                        plicenceinsertstat.addBatch();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        continue;
+                    }
+                }
+                System.out.println("insert licence data before: " + Tools.DATE_TIME_FORMAT.format(new Date()));
+                plicenceinsertstat.executeBatch();
+                System.out.println("insert licence data after: " + Tools.DATE_TIME_FORMAT.format(new Date()));
+                plicenceinsertstat.clearBatch();
+                plicenceinsertstat.close();
+                plicenceinsertstat = localConn.prepareStatement(this.entpLicenceInsertSQL);
+
+                task.setFinishSynch(Long.valueOf(idx));
+                this.updateTaskInfo(task, ptaskstat);
+                minId += this.dataBlock;
+            }
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("完成数据同步！");
+            this.updateTaskInfo(task, ptaskstat);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            task.setStatus(SynchDataStatus.同步完成);
+            task.setFinishTime(new Date());
+            task.setMemo("数据同步失败：" + ex.getMessage());
+            // 备注内容最大是500汉字
+            if (task.getMemo().length() > 500) {
+                task.setMemo(task.getMemo().substring(0, 500));
+            }
+            this.updateTaskInfo(task, ptaskstat);
+        } finally {
+            try {
+                if (result != null) {
+                    result.close();
+                }
+                if (stat != null) {
+                    stat.close();
                 }
                 if (pseqstat != null) {
                     pseqstat.close();

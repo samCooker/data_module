@@ -52,8 +52,15 @@ public interface SynchDataService {
 
     /**
      * 同步部门数据
-     * 
+     *
      * @param task
      */
     void synchSysDataChangeOfDeptData(SysSynchdataTask task);
+
+    /**
+     * 同步证照号数据
+     * 
+     * @param task
+     */
+    void synchLicenceDataChange(SysSynchdataTask task);
 }
