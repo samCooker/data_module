@@ -20,8 +20,8 @@ import cn.jpush.api.push.model.notification.Notification;
  *
  */
 public class JPushUtils {
-    private static final String masterSecret = "37150a442ab0c32e5e4495b7";
-    private static final String appKey       = "d3e2f212cb564f988a673bfd";
+    private static final String masterSecret = "004f0567fe10a2f064b87572";
+    private static final String appKey       = "ba6b55aa4fc772b5f2e9ce92";
 
     /**
      * 直接消息推送
