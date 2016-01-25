@@ -68,7 +68,7 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
     private Date                              eventHandleCreateTime;
 
     /** 舆情信息记录 */
-    private List<VoiceInfoPendingInfo>        voiceInfos;
+    // private List<VoiceInfoPendingInfo> voiceInfos;
     /** 舆情审批记录 */
     private List<VoiceEventHandleApproveInfo> voiceEventHandleApproves;
 
@@ -400,21 +400,6 @@ public class VoiceEventPendingInfo extends CommonPendingHandleInfo {
      */
     public void setEventHandleCreateTime(Date eventHandleCreateTime) {
         this.eventHandleCreateTime = eventHandleCreateTime;
-    }
-
-    /**
-     * @return the voiceInfos
-     */
-    public List<VoiceInfoPendingInfo> getVoiceInfos() {
-        return voiceInfos;
-    }
-
-    /**
-     * @param voiceInfos
-     *            the voiceInfos to set
-     */
-    public void setVoiceInfos(List<VoiceInfoPendingInfo> voiceInfos) {
-        this.voiceInfos = voiceInfos;
     }
 
     /**
