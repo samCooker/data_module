@@ -22,13 +22,6 @@ import cn.com.chaochuang.voice.domain.VoiceInfo;
 public interface VoiceInfoService extends CrudRestService<VoiceInfo, Long> {
 
     /**
-     * 获取最大的数据导入时间
-     *
-     * @return
-     */
-    VoiceInfoPendingInfo selectMaxInputDate();
-
-    /**
      * 批量保存舆情信息
      *
      * @param pendingItems

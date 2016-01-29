@@ -608,13 +608,13 @@ public abstract class Tools {
     }
 
     /**
-     * 分解字符串例如：oa_address_info_id=1152
+     * 分解字符串例如：test1=2,test2=2
      *
      * @param source
      * @return
      */
     public static Map<String, String> splitData(String source) {
-        Map<String, String> result = new HashMap();
+        Map<String, String> result = new HashMap<String, String>();
         if (Tools.isEmptyString(source)) {
             return result;
         }

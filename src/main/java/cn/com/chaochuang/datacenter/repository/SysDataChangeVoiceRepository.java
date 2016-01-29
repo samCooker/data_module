@@ -29,7 +29,7 @@ public interface SysDataChangeVoiceRepository extends SimpleDomainRepository<Sys
      * @param page
      * @return
      */
-    public List<SysDataChangeVoice> findByChangeTableNameIn(List<String> changeTableNames, Pageable page);
+    public List<SysDataChangeVoice> findByChangeTableNameInOrderByIdAsc(String[] changeTableNames, Pageable page);
 
     /**
      * 查询指定内容的变更数据

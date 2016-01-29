@@ -100,6 +100,16 @@ public interface IVoiceWebService {
     String getVoiceEventHandleInfo(Long handleManId);
 
     /**
+     * 更新舆情事件待办信息
+     * 
+     * @param handleManId
+     * @return
+     */
+    @WebResult(name = "out", targetNamespace = "http://webservice.mobile.spower.com")
+    @WebMethod
+    String updateVoiceEventFordo(Long handleManId);
+
+    /**
      * 获取舆情审批意见数据，将其转成json字符串格式
      *
      * @param handleApproveId

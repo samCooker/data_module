@@ -8,13 +8,11 @@
 
 package cn.com.chaochuang.aipcase.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +40,7 @@ import cn.com.chaochuang.task.bean.AipCasePendingInfo;
  */
 @Service
 @Transactional
-public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoAipcase> implements
-                FdFordoAipcaseService {
+public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoAipcase> implements FdFordoAipcaseService {
     @PersistenceContext
     private EntityManager              entityManager;
     @Autowired
@@ -66,22 +63,14 @@ public class FdFordoAipcaseServiceImpl extends SimpleLongIdCrudRestService<FdFor
     @Override
     public AipCasePendingHandleInfo selectMaxInputDate() {
         AipCasePendingHandleInfo result = new AipCasePendingHandleInfo();
-        StringBuffer sql = new StringBuffer(" select Max(rmPendingId) from ").append(FdFordoAipcase.class.getName());
-        Query query = this.entityManager.createQuery(sql.toString());
-        List datas = (ArrayList) query.getResultList();
-        if (Tools.isNotEmptyList(datas)) {
-            for (Object o : datas) {
-                if (o != null) {
-                    result.setRmPendingId(o.toString());
-                    result.setLastSendTime(null);
-                    break;
-                }
-            }
-        }
-        if (result.getRmPendingId() == null) {
+        String pendingId = repository.findMaxRmPendingId();
+        if (Tools.isEmptyString(pendingId)) {
             Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
             result.setLastSendTime(sendTime);
             result.setRmPendingId("");
+        } else {
+            result.setRmPendingId(pendingId);
+            result.setLastSendTime(null);
         }
         return result;
     }

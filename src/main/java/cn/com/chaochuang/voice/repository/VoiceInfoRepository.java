@@ -25,4 +25,5 @@ public interface VoiceInfoRepository extends SimpleDomainRepository<VoiceInfo, L
      * @return 舆情记录
      */
     VoiceInfo findByRmInfoId(Long rmInfoId);
+
 }

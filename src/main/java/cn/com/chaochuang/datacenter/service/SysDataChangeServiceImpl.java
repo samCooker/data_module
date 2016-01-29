@@ -166,11 +166,11 @@ public class SysDataChangeServiceImpl extends SimpleLongIdCrudRestService<SysDat
      */
     @Override
     public List<SysDataChangeVoice> selectVoiceItem(Pageable page) {
-        List tableNames = Tools.getListFromArray(new String[] { DataChangeTable.舆情事件.getKey(),
+        String[] tableNames = new String[] { DataChangeTable.舆情事件.getKey(),
                         DataChangeTable.舆情事件内容.getKey(), DataChangeTable.舆情事件办理.getKey(),
                         DataChangeTable.舆情事件办理意见.getKey(), DataChangeTable.舆情事件处理意见.getKey(),
-                        DataChangeTable.舆情事件办理意见.getKey() });
-        return this.voiceRepository.findByChangeTableNameIn(tableNames, page);
+                        DataChangeTable.舆情事件办理意见.getKey() };
+        return this.voiceRepository.findByChangeTableNameInOrderByIdAsc(tableNames, page);
     }
 
     /**

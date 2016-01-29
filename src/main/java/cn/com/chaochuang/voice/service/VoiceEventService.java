@@ -20,12 +20,6 @@ import cn.com.chaochuang.voice.domain.VoiceEvent;
  *
  */
 public interface VoiceEventService extends CrudRestService<VoiceEvent, Long> {
-    /**
-     * 获取最大的数据导入时间
-     *
-     * @return
-     */
-    VoiceEventPendingInfo selectMaxInputDate();
 
     /**
      * 保存舆情事件

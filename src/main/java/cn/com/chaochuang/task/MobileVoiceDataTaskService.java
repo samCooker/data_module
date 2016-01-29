@@ -36,14 +36,12 @@ import cn.com.chaochuang.datacenter.reference.WorkType;
 import cn.com.chaochuang.datacenter.service.DataUpdateService;
 import cn.com.chaochuang.datacenter.service.SysDataChangeService;
 import cn.com.chaochuang.voice.bean.VoiceAlarmRecordInfo;
-import cn.com.chaochuang.voice.bean.VoiceEventPendingInfo;
 import cn.com.chaochuang.voice.bean.VoiceInfoPendingInfo;
 import cn.com.chaochuang.voice.domain.VoiceAlarmRecord;
 import cn.com.chaochuang.voice.domain.VoiceInfoAttach;
 import cn.com.chaochuang.voice.service.VoiceAlarmRecordService;
-import cn.com.chaochuang.voice.service.VoiceEventService;
+import cn.com.chaochuang.voice.service.VoiceEventFordoService;
 import cn.com.chaochuang.voice.service.VoiceInfoAttachService;
-import cn.com.chaochuang.voice.service.VoiceInfoService;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
 import cn.com.chaochuang.webservice.server.IVoiceWebService;
 
@@ -54,11 +52,9 @@ import cn.com.chaochuang.webservice.server.IVoiceWebService;
 @Component
 public class MobileVoiceDataTaskService {
     @Autowired
-    private VoiceInfoService        voiceInfoService;
-    @Autowired
     private IVoiceWebService        voiceWebService;
     @Autowired
-    private VoiceEventService       voiceEventService;
+    private VoiceEventFordoService  voiceEventFordoService;
     @Autowired
     private DataUpdateService       dataUpdateService;
     @Autowired
@@ -71,21 +67,17 @@ public class MobileVoiceDataTaskService {
     private SysUserService          userService;
 
     /** 舆情信息阻塞标识 */
-    private static boolean          isGetVoiceInfoPendingRunning  = false;
-    /** 舆情事件阻塞标识 */
-    private static boolean          isGetVoiceEventPendingRunning = false;
+    private static boolean          isGetVoiceInfoPendingRunning = false;
     /** 舆情事件数据提交阻塞标识 */
-    private static boolean          isGetVoiceEventSubmitRunning  = false;
-    /** 舆情信息数据提交阻塞标识 */
-    private static boolean          isGetVoiceInfoSubmitRunning   = false;
+    private static boolean          isGetVoiceEventSubmitRunning = false;
     /** 变更数据获取阻塞标识 */
-    private static boolean          isGetSysDataChangeRunning     = false;
+    private static boolean          isGetSysDataChangeRunning    = false;
     /** 舆情信息附件阻塞标识 */
-    private static boolean          isGetVoiceInfoAttachRunning   = false;
+    private static boolean          isGetVoiceInfoAttachRunning  = false;
     /** 舆情信息提醒阻塞标识 */
-    private static boolean          isGetVoiceAlarmRunning        = false;
+    private static boolean          isGetVoiceAlarmRunning       = false;
     /** 舆情信息推送阻塞标识 */
-    private static boolean          isGetPushAlarmRunning         = false;
+    private static boolean          isGetPushAlarmRunning        = false;
 
     /** 附件存放根路径 */
     @Value("${upload.rootpath}")
@@ -96,32 +88,31 @@ public class MobileVoiceDataTaskService {
     private String                  voiceInfoAttachPath;
 
     /**
-     * 获取舆情的待办记录 (暂时无用)
+     * 获取舆情的待办记录（已不需要，改为由舆情事件经办记录触发器获取）
      */
-    // //@Scheduled(cron = "14/14 * * * * ?")
-    // //@Scheduled(cron = "11 0/4 * * * ?")
-    // public void getVoiceInfoFordo() {
+    // @Scheduled(cron = "14/14 * * * * ?")
+    // @Scheduled(cron = "11 0/4 * * * ?")
+    // public void getVoiceEventFordo() {
     // if (isGetVoiceInfoPendingRunning) {
     // return;
     // }
     // isGetVoiceInfoPendingRunning = true;
     // try {
-    // VoiceInfoPendingInfo info = this.voiceInfoService.selectMaxInputDate();
+    // AipCasePendingHandleInfo info = voiceEventFordoService.selectMaxInputDate();
     // // 若lastOutputTime无效则不做下一步
     // if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
     // return;
     // }
-    // String json = this.voiceWebService.selectPendingVoiceInfo(
-    // (info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())
-    // : "", info.getRmPendingId());
+    // String json = this.voiceWebService.selectVoiceEventPending((info.getLastSendTime() != null) ?
+    // Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingId());
     // // 将舆情记录写入舆情信息表
     // if (!Tools.isEmptyString(json)) {
     // try {
     // // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
     // JsonMapper mapper = JsonMapper.getInstance();
-    // JavaType javaType = mapper.constructParametricType(ArrayList.class, VoiceInfoPendingInfo.class);
-    // List<VoiceInfoPendingInfo> datas = mapper.readValue(json, javaType);
-    // this.voiceInfoService.insertVoiceInfo(datas);
+    // JavaType javaType = mapper.constructParametricType(ArrayList.class, VoiceEventFordoData.class);
+    // List<VoiceEventFordoData> data = mapper.readValue(json, javaType);
+    // this.voiceEventFordoService.saveVoiceEventFordos(data);
     // } catch (Exception ex) {
     // ex.printStackTrace();
     // }
@@ -134,88 +125,9 @@ public class MobileVoiceDataTaskService {
     // }
 
     /**
-     * 获取待办事件
-     */
-    //@Scheduled(cron = "17/17 * * * * ?")
-    // //@Scheduled(cron = "17 0/4 * * * ?")
-    public void getVoiceEventFordo() {
-        if (isGetVoiceEventPendingRunning) {
-            return;
-        }
-        isGetVoiceEventPendingRunning = true;
-        try {
-            VoiceEventPendingInfo info = this.voiceEventService.selectMaxInputDate();
-            // 若lastOutputTime无效则不做下一步
-            if (info.getLastSendTime() == null && info.getRmPendingId() == null) {
-                return;
-            }
-            String json = this.voiceWebService.selectVoiceEventPending((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingId());
-            // 将舆情记录写入舆情信息表
-            if (!Tools.isEmptyString(json)) {
-                try {
-                    // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-                    JsonMapper mapper = JsonMapper.getInstance();
-                    JavaType javaType = mapper.constructParametricType(ArrayList.class, VoiceEventPendingInfo.class);
-                    List<VoiceEventPendingInfo> datas = mapper.readValue(json, javaType);
-                    this.voiceEventService.insertVoiceEvent(datas);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isGetVoiceEventPendingRunning = false;
-        }
-    }
-
-    /**
-     * 提交舆情信息修改数据
-     */
-    //@Scheduled(cron = "19/19 * * * * ?")
-    //@Scheduled(cron = "22 0/3 * * * ?")
-    public void commitVoiceInfoDataTask() {
-        if (isGetVoiceInfoSubmitRunning) {
-            return;
-        }
-        isGetVoiceInfoSubmitRunning = true;
-        DataUpdate dataUpdate = null;
-        try {
-            // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
-            List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.舆情信息提交);
-            // 每次仅处理列表的第一条记录
-            if (!Tools.isNotEmptyList(datas)) {
-                return;
-            }
-            dataUpdate = datas.get(0);
-            if (dataUpdate == null) {
-                return;
-            }
-            // 获取要提交的json字符串
-            String dataBack = this.voiceWebService.saveVoiceInfoEvent(dataUpdate.getContent());
-            if (!ITransferOAService.TRANS_RESULT.equals(dataBack.toLowerCase())) {
-                dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-                dataUpdate.setErrorInfo(dataBack);
-            } else {
-                // 成功则删除
-                dataUpdateService.delete(dataUpdate);
-            }
-        } catch (Exception ex) {
-            dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-            dataUpdate.setErrorInfo(ex.getMessage());
-            ex.printStackTrace();
-        } finally {
-            if (dataUpdate != null && ExecuteFlag.执行错误.equals(dataUpdate.getExecuteFlag())) {
-                this.dataUpdateService.getRepository().save(dataUpdate);
-            }
-            isGetVoiceInfoSubmitRunning = false;
-        }
-    }
-
-    /**
      * 提交舆情事件的数据
      */
-    // @Scheduled(cron = "21/21 * * * * ?")
+    @Scheduled(cron = "21/21 * * * * ?")
     // @Scheduled(cron = "25 0/2 * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
@@ -258,7 +170,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情相关变更数据
      */
-    //@Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     // @Scheduled(cron = "15 0/2 * * * ?")
     public void getDataChange() {
         if (isGetSysDataChangeRunning) {
@@ -266,6 +178,7 @@ public class MobileVoiceDataTaskService {
         }
         isGetSysDataChangeRunning = true;
         try {
+            // 从舆情系统中获取变更的数据，需按id升序排序
             String json = this.voiceWebService.getDataChange();
             if (Tools.isEmptyString(json)) {
                 return;
@@ -284,7 +197,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情文件
      */
-    //@Scheduled(cron = "25/25 * * * * ?")
+    @Scheduled(cron = "25/25 * * * * ?")
     // @Scheduled(cron = "25 0/2 * * * ?")
     public void getVoiceInfoAttachTask() {
         if (isGetVoiceInfoAttachRunning) {
@@ -375,7 +288,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 推送舆情提醒
      */
-    // //////@Scheduled(cron = "5 0/5 * * * ?")
+    // @Scheduled(cron = "5 0/5 * * * ?")
     public void pushVoiceAlarm() {
         if (isGetPushAlarmRunning) {
             return;
@@ -391,4 +304,48 @@ public class MobileVoiceDataTaskService {
         }
         isGetPushAlarmRunning = false;
     }
+
+    /**
+     * 提交舆情信息修改数据(舆情信息模块已去除，暂时无用)
+     */
+    // @Scheduled(cron = "19/19 * * * * ?")
+    // @Scheduled(cron = "22 0/3 * * * ?")
+    // public void commitVoiceInfoDataTask() {
+    // if (isGetVoiceInfoSubmitRunning) {
+    // return;
+    // }
+    // isGetVoiceInfoSubmitRunning = true;
+    // DataUpdate dataUpdate = null;
+    // try {
+    // // 扫描DataUpdate数据列表，条件：workType=00;operationType=update
+    // List<DataUpdate> datas = this.dataUpdateService.selectDocFileDataUpdate(WorkType.舆情信息提交);
+    // // 每次仅处理列表的第一条记录
+    // if (!Tools.isNotEmptyList(datas)) {
+    // return;
+    // }
+    // dataUpdate = datas.get(0);
+    // if (dataUpdate == null) {
+    // return;
+    // }
+    // // 获取要提交的json字符串
+    // String dataBack = this.voiceWebService.saveVoiceInfoEvent(dataUpdate.getContent());
+    // if (!ITransferOAService.TRANS_RESULT.equals(dataBack.toLowerCase())) {
+    // dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+    // dataUpdate.setErrorInfo(dataBack);
+    // } else {
+    // // 成功则删除
+    // dataUpdateService.delete(dataUpdate);
+    // }
+    // } catch (Exception ex) {
+    // dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
+    // dataUpdate.setErrorInfo(ex.getMessage());
+    // ex.printStackTrace();
+    // } finally {
+    // if (dataUpdate != null && ExecuteFlag.执行错误.equals(dataUpdate.getExecuteFlag())) {
+    // this.dataUpdateService.getRepository().save(dataUpdate);
+    // }
+    // isGetVoiceInfoSubmitRunning = false;
+    // }
+    // }
+
 }

@@ -10,6 +10,8 @@ package cn.com.chaochuang.voice.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.voice.domain.VoiceEventFordo;
 
@@ -30,6 +32,8 @@ public interface VoiceEventFordoRepository extends SimpleDomainRepository<VoiceE
      */
     List<VoiceEventFordo> findByRmEventIdAndUserIdOrderByRmHandleApproveIdDesc(Long rmEventId, Long userId);
 
+    List<VoiceEventFordo> findByRmEventIdAndUserId(Long rmEventId, Long userId);
+
     /**
      * 根据办理环节id查找待办
      * 
@@ -37,4 +41,17 @@ public interface VoiceEventFordoRepository extends SimpleDomainRepository<VoiceE
      * @return
      */
     List<VoiceEventFordo> RmHandleApproveId(Long rmHandleApproveId);
+
+    /**
+     * @return
+     */
+    @Query(value = "select max(to_number(rm_event_id)) from voice_event_fordo", nativeQuery = true)
+    String findMaxRmPendingId();
+
+    /**
+     * 正常情况下，返回的结果唯一
+     * 
+     * @param rmHandleApproveId
+     */
+    VoiceEventFordo findByRmHandleApproveId(Long rmHandleApproveId);
 }

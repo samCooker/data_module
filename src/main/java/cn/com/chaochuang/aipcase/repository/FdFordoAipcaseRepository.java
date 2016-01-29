@@ -11,6 +11,7 @@ package cn.com.chaochuang.aipcase.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import cn.com.chaochuang.aipcase.domain.FdFordoAipcase;
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -56,4 +57,10 @@ public interface FdFordoAipcaseRepository extends SimpleDomainRepository<FdFordo
      * @return
      */
     FdFordoAipcase findByRmPendingId(String rmPendingId);
+
+    /**
+     * @return
+     */
+    @Query(value = "select max(to_number(rm_pending_id)) from fd_fordo_aipcase", nativeQuery = true)
+    String findMaxRmPendingId();
 }

@@ -8,19 +8,15 @@
 
 package cn.com.chaochuang.voice.service;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import cn.com.chaochuang.aipcase.reference.LocalData;
@@ -64,40 +60,10 @@ public class VoiceInfoServiceImpl extends SimpleLongIdCrudRestService<VoiceInfo>
     private VoiceInfoEventRepository  voiceInfoEventRepository;
     @Autowired
     private SysUserService            userService;
-    @Value("${getvoiceinfodata.timeinterval}")
-    private String                    timeInterval;
 
     @Override
     public SimpleDomainRepository<VoiceInfo, Long> getRepository() {
         return repository;
-    }
-
-    /**
-     * @see cn.com.chaochuang.voice.service.VoiceInfoService#selectMaxInputDate()
-     */
-    @Override
-    public VoiceInfoPendingInfo selectMaxInputDate() {
-        VoiceInfoPendingInfo result = new VoiceInfoPendingInfo();
-        // StringBuffer sql = new StringBuffer(" select Max(rmInfoId) from ").append(VoiceInfo.class.getName());
-        StringBuffer sql = new StringBuffer(" select Max(rmInfoId) from ").append(VoiceInfo.class.getName())
-                        .append(" where voiceInfoStatus='").append(VoiceInfoStatus.待办).append("'");
-        Query query = this.entityManager.createQuery(sql.toString());
-        List datas = (ArrayList) query.getResultList();
-        if (Tools.isNotEmptyList(datas)) {
-            for (Object o : datas) {
-                if (o != null) {
-                    result.setRmPendingId(o.toString());
-                    result.setLastSendTime(null);
-                    break;
-                }
-            }
-        }
-        if (Tools.isEmptyString(result.getRmPendingId())) {
-            Date sendTime = Tools.diffDate(new Date(), new Integer(timeInterval));
-            result.setLastSendTime(sendTime);
-            result.setRmPendingId("");
-        }
-        return result;
     }
 
     /**

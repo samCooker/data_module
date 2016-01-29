@@ -33,5 +33,5 @@ public interface VoiceEventHandleRepository extends SimpleDomainRepository<Voice
      * @param rmEventHandleId
      * @return
      */
-    VoiceEventHandle findByRmEventHandleId(Long rmEventHandleId);
+    List<VoiceEventHandle> findByRmEventHandleId(Long rmEventHandleId);
 }

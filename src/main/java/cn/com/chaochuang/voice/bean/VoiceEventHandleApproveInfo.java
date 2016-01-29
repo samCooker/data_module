@@ -44,6 +44,9 @@ public class VoiceEventHandleApproveInfo {
     /** 环节对应的审批意见记录 */
     private List<VoiceEventHandleOpinionInfo> opinions = new ArrayList();
 
+    /** 交办记录id */
+    private Long                              eventHandleId;
+
     /**
      * @return the rmHandleApproveId
      */
@@ -237,6 +240,21 @@ public class VoiceEventHandleApproveInfo {
      */
     public void setOpinions(List<VoiceEventHandleOpinionInfo> opinions) {
         this.opinions = opinions;
+    }
+
+    /**
+     * @return the eventHandleId
+     */
+    public Long getEventHandleId() {
+        return eventHandleId;
+    }
+
+    /**
+     * @param eventHandleId
+     *            the eventHandleId to set
+     */
+    public void setEventHandleId(Long eventHandleId) {
+        this.eventHandleId = eventHandleId;
     }
 
 }

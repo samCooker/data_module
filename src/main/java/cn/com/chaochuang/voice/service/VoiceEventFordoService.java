@@ -8,7 +8,11 @@
 
 package cn.com.chaochuang.voice.service;
 
+import java.util.List;
+
+import cn.com.chaochuang.aipcase.bean.AipCasePendingHandleInfo;
 import cn.com.chaochuang.common.data.service.CrudRestService;
+import cn.com.chaochuang.voice.bean.VoiceEventFordoData;
 import cn.com.chaochuang.voice.domain.VoiceEvent;
 import cn.com.chaochuang.voice.domain.VoiceEventFordo;
 import cn.com.chaochuang.voice.domain.VoiceEventHandleApprove;
@@ -32,5 +36,33 @@ public interface VoiceEventFordoService extends CrudRestService<VoiceEventFordo,
      * 
      * @param rmEventHandleId
      */
-    void updateEventFordo(Long rmEventHandleId);
+    // void updateEventFordo(Long rmEventHandleId);
+
+    /**
+     * 获取最大的待办事件id,若无则返回一个获取待办的起始时间
+     * 
+     * @return
+     */
+    AipCasePendingHandleInfo selectMaxInputDate();
+
+    /**
+     * 保存舆情待办事件
+     * 
+     * @param data
+     */
+    void saveVoiceEventFordos(List<VoiceEventFordoData> data);
+
+    /**
+     * 保存舆情待办事件
+     * 
+     * @param fordoData
+     */
+    void saveVoiceEventFordo(VoiceEventFordoData fordoData);
+
+    /**
+     * 更新待办
+     * 
+     * @param handleApproveId
+     */
+    void updateVoiceEventFordo(Long handleApproveId);
 }
