@@ -106,8 +106,8 @@ public class MobileCommonDataTaskService {
     /**
      * 获取远程系统修改记录数据
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
-    @Scheduled(cron = "2 0/1 * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
+    // //@Scheduled(cron = "2 0/1 * * * ?")
     public void getOADataChange() {
         if (isGetSysDataChangeRunning) {
             return;
@@ -132,8 +132,8 @@ public class MobileCommonDataTaskService {
     /**
      * 处理远程系统更改数据
      */
-    // @Scheduled(cron = "3/5 * * * * ?")
-    @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "3/5 * * * * ?")
+    // //@Scheduled(cron = "15/15 * * * * ?")
     public void dealDataChange() {
         if (isDealSysDataChangeRunning) {
             return;
@@ -315,7 +315,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理系统管理的变更数据
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+     @Scheduled(cron = "15/15 * * * * ?")
     public void dealSystemDataChange() {
         if (isDealSystemDataChangeRunning) {
             return;
@@ -354,7 +354,7 @@ public class MobileCommonDataTaskService {
     /**
      * 处理舆情事件的变更数据
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
     public void dealVoiceEventDataChange() {
         if (isDealVoiceEventDataChangeRunning) {
             return;
@@ -365,14 +365,18 @@ public class MobileCommonDataTaskService {
             for (SysDataChangeVoice item : datas) {
                 try {
                     if (DataChangeTable.舆情事件内容.getKey().equals(item.getChangeTableName())) {
-                        this.voiceEventService.updateVoiceInfoEvent(item);
+                        // this.voiceEventService.updateVoiceInfoEvent(item);
                     } else if (DataChangeTable.舆情事件.getKey().equals(item.getChangeTableName())) {
+                        // 修改
                         this.voiceEventService.saveVoiceEvent(item);
                     } else if (DataChangeTable.舆情事件办理.getKey().equals(item.getChangeTableName())) {
+                        // 新增或 修改？
                         this.voiceEventService.saveVoiceEventHandleApprove(item);
                     } else if (DataChangeTable.舆情事件处理意见.getKey().equals(item.getChangeTableName())) {
+                        // 新增
                         this.voiceEventService.saveVoiceEventHandleResult(item);
                     } else if (DataChangeTable.舆情事件办理意见.getKey().equals(item.getChangeTableName())) {
+                        // 新增
                         this.voiceEventService.saveVoiceEventHandleOpinion(item);
                     }
                     // 删除变更数据
@@ -392,33 +396,33 @@ public class MobileCommonDataTaskService {
     }
 
     /**
-     * 处理舆情信息数据的变更
+     * 处理舆情信息数据的变更（舆情信息已不需要）
      */
     // @Scheduled(cron = "15/15 * * * * ?")
-    public void dealVoiceInfoDataChange() {
-        if (isDealVoiceInfoDataChangeRunning) {
-            return;
-        }
-        isDealVoiceInfoDataChangeRunning = true;
-        try {
-            List<SysDataChangeVoice> datas = this.dataChangeService.selectVoiceInfoItem(new PageRequest(0, 10));
-            for (SysDataChangeVoice item : datas) {
-                try {
-                    // 同步审批系统的待办
-                    this.voiceInfoService.updateVoiceInfo(item);
-                    // 删除变更数据
-                    this.dataChangeService.deleteVoiceChangeData(item, null);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    this.dataChangeService.deleteVoiceChangeData(item, ex.getMessage());
-                    // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
-                    continue;
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            isDealVoiceInfoDataChangeRunning = false;
-        }
-    }
+    // public void dealVoiceInfoDataChange() {
+    // if (isDealVoiceInfoDataChangeRunning) {
+    // return;
+    // }
+    // isDealVoiceInfoDataChangeRunning = true;
+    // try {
+    // List<SysDataChangeVoice> datas = this.dataChangeService.selectVoiceInfoItem(new PageRequest(0, 10));
+    // for (SysDataChangeVoice item : datas) {
+    // try {
+    // // 同步审批系统的待办
+    // this.voiceInfoService.updateVoiceInfo(item);
+    // // 删除变更数据
+    // this.dataChangeService.deleteVoiceChangeData(item, null);
+    // } catch (Exception ex) {
+    // ex.printStackTrace();
+    // this.dataChangeService.deleteVoiceChangeData(item, ex.getMessage());
+    // // 抛出异常则记录该记录的异常信息，并继续循环，不影响其他数据
+    // continue;
+    // }
+    // }
+    // } catch (Exception ex) {
+    // ex.printStackTrace();
+    // } finally {
+    // isDealVoiceInfoDataChangeRunning = false;
+    // }
+    // }
 }
