@@ -33,20 +33,6 @@ public interface SuperviseWebService {
     String selectPendingHandleList(Date lastOutputTime, Long pendingHandleId);
 
     /**
-     * 获取用户的经办记录
-     *
-     * @param userId
-     * @param title
-     * @param pageNo
-     * @param pageSize
-     * @param prjSortId
-     * @return
-     */
-    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
-    @WebMethod
-    String selectHistoryHandleList(String userId, String title, Integer pageNo, Integer pageSize, String prjSortId);
-
-    /**
      * 根据审批事项id查询审批数据
      *
      * @param itemApplyId
