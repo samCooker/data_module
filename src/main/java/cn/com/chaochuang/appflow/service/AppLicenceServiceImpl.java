@@ -31,6 +31,7 @@ import cn.com.chaochuang.common.util.NullBeanUtils;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.datacenter.domain.SysDataChangeApp;
 import cn.com.chaochuang.datacenter.reference.OperationType;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
 
 /**
  * @author LLM
@@ -49,6 +50,8 @@ public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicenc
     private String                     loginUrl;
     @Value("${licence.licenceDataUrl}")
     private String                     licenceDataUrl;
+    @Autowired
+    private SuperviseWebService        superviseWebService;
     /** 创建httpClient对象 */
     private static CloseableHttpClient httpClient = HttpClientHelper.initHttpClient();
     @Autowired
@@ -77,15 +80,13 @@ public class AppLicenceServiceImpl extends SimpleLongIdCrudRestService<AppLicenc
         try {
             AppLicence licence = this.repository.findByRmLicenceId(licenceId);
             // 参数设置
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("licenceId", licenceId.toString()));
-            String json = HttpClientHelper.doPost(httpClient, baseUrl + this.licenceDataUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
-            if (StringUtils.isNotBlank(json)) {
-                if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    loginSuperviseSys();
-                    throw new RuntimeException("连接失败！");
-                }
+            String json = superviseWebService.selectAppLicence(licenceId);
+            // List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // params.add(new BasicNameValuePair("licenceId", licenceId.toString()));
+            // String json = HttpClientHelper.doPost(httpClient, baseUrl + this.licenceDataUrl, params,
+            // HttpClientHelper.ENCODE_GBK);
+            if (StringUtils.isBlank(json)) {
+                return;
             }
             JsonMapper mapper = JsonMapper.getInstance();
             if (OperationType.新增.getKey().equals(dataChange.getOperationType())) {
