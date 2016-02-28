@@ -72,7 +72,9 @@ public interface SuperviseWebService {
      * @param reads
      * @return
      */
-    // byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
+    @WebResult(name = "out", targetNamespace = "http://server.webservice.supervise.mobile.sbt.com")
+    @WebMethod
+    byte[] uploadStreamAttachFile(String fileName, Long offset, Integer reads);
 
     /**
      * 获取行政审批按钮和选人信息
