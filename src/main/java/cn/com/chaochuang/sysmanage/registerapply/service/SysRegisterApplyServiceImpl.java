@@ -31,8 +31,8 @@ import cn.com.chaochuang.sysmanage.registerapply.repository.SysRegisterApplyRepo
  */
 @Service
 @Transactional
-public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply> implements
-                SysRegisterApplyService {
+public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<SysRegisterApply>
+                implements SysRegisterApplyService {
 
     @Autowired
     private SysRegisterApplyRepository repository;
@@ -90,7 +90,7 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
             return false;
         }
         for (Long id : ids) {
-            changeApplicationStatus(id, status);
+            this.changeApplicationStatus(id, status);
         }
         return true;
     }
@@ -106,7 +106,7 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
             return false;
         }
         for (Long id : ids) {
-            deleteApplication(id);
+            this.deleteApplication(id);
         }
         return true;
     }
@@ -126,9 +126,11 @@ public class SysRegisterApplyServiceImpl extends SimpleLongIdCrudRestService<Sys
         if (registerApply != null) {
             // 设置申请状态
             registerApply.setStatus(status);
+            registerApply.setApplyTime(new Date());
+            registerApply.setMemo("管理员手动审批。非短信验证。");
             repository.save(registerApply);
-            // 保存申请信息到用户表
-            saveRegisterInfoInUser(registerApply, status);
+            // 保存申请信息到用户表(旧的非短信验证方式，可在旧app都升级后删除)
+            this.saveRegisterInfoInUser(registerApply, status);
             return true;
         }
         return false;

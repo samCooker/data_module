@@ -36,8 +36,9 @@ function getCheckedId(){
 
 function operate(status){
     var ids = getCheckedId();
+    var tipMsg=status==1?'<p style="text-align:center;font-size:13px">确定审核通过？</p><p style="text-indent:2em">有短信验证码的申请可不需要手动审批通过。</p>':'<p style="text-align:center;font-size:13px">确定审核不通过？</p>';
     if(ids.length){
-        $.messager.confirm('提示','确定通过审批?',function(r){
+        $.messager.confirm('提示',tipMsg,function(r){
             if (r){
                 $.post(baseUrl + '/changeinbatch.json',{ids:ids,status:status},function(result){
                     if (result){

@@ -16,7 +16,9 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import cn.com.chaochuang.common.data.domain.LongIdEntity;
 import cn.com.chaochuang.common.user.domain.SysUser;
@@ -36,7 +38,7 @@ public class SysRegisterApply extends LongIdEntity {
      */
     private static final long serialVersionUID = -7326925437743879415L;
     /** 用户id */
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "userId")
     private SysUser           registerUser;
     /** 申请时间 */
@@ -46,6 +48,75 @@ public class SysRegisterApply extends LongIdEntity {
     /** 申请状态 */
     @Convert(converter = AppAuthStatusConverter.class)
     private AppAuthStatus     status;
+    /** 短信验证码 */
+    private String            smsCode;
+    /** 短信验证码发送时间 */
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date              smsCodeSendTime;
+    /** 移动设备类型 */
+    private String            deviceType;
+    /** 备注 */
+    private String            memo;
+
+    /**
+     * @return the smsCode
+     */
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    /**
+     * @param smsCode
+     *            the smsCode to set
+     */
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
+
+    /**
+     * @return the smsCodeSendTime
+     */
+    public Date getSmsCodeSendTime() {
+        return smsCodeSendTime;
+    }
+
+    /**
+     * @param smsCodeSendTime
+     *            the smsCodeSendTime to set
+     */
+    public void setSmsCodeSendTime(Date smsCodeSendTime) {
+        this.smsCodeSendTime = smsCodeSendTime;
+    }
+
+    /**
+     * @return the deviceType
+     */
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    /**
+     * @param deviceType
+     *            the deviceType to set
+     */
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    /**
+     * @return the memo
+     */
+    public String getMemo() {
+        return memo;
+    }
+
+    /**
+     * @param memo
+     *            the memo to set
+     */
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 
     /**
      * @return the applyTime

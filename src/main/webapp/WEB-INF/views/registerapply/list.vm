@@ -35,11 +35,14 @@
     <thead>
     <tr>
         <th data-options="field:'id',checkbox:true">选择</th>
-        <th data-options="field:'userName',width:200">姓名</th>
-        <th data-options="field:'account',width:200">账号</th>
-        <th data-options="field:'imeiCode',width:300">手机IMEI码</th>
+        <th data-options="field:'userName',width:100">姓名</th>
+        <th data-options="field:'account',width:100">账号</th>
+        <th data-options="field:'imeiCode',width:150">手机IMEI码</th>
+        <th data-options="field:'smsCode',width:100">短信验证码</th>
+        <th data-options="field:'deviceType',width:600">设备类型</th>
         <th data-options="field:'status',width:100,styler:function(value,row,index){if(value=='审批不通过'){return 'color:red'}else if(value == '审批通过'){return 'color:#06911D'}}">状态</th>
         <th data-options="field:'applyShowTime',width:200">申请时间</th>
+        <th data-options="field:'memo',width:200">备注</th>
     </tr>
     </thead>
 </table>

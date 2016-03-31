@@ -12,6 +12,8 @@ import java.util.Date;
 
 import org.dozer.Mapping;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.sysmanage.registerapply.reference.AppAuthStatus;
 
@@ -30,6 +32,7 @@ public class SysRegisterApplyShowBean {
     @Mapping("registerUser.account")
     private String        account;
     /** 申请时间 */
+    @JsonIgnore
     private Date          applyTime;
     /** 格式化申请时间 */
     private String        applyShowTime;
@@ -37,6 +40,76 @@ public class SysRegisterApplyShowBean {
     private String        imeiCode;
     /** 申请状态 */
     private AppAuthStatus status;
+    /** 短信验证码 */
+    private String        smsCode;
+    /** 短信验证码发送时间 */
+    @JsonIgnore
+    private Date          smsCodeSendTime;
+    private String        smsCodeSendShowTime;
+    /** 移动设备类型 */
+    private String        deviceType;
+    /** 备注 */
+    private String        memo;
+
+    /**
+     * @return the smsCode
+     */
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    /**
+     * @param smsCode
+     *            the smsCode to set
+     */
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
+
+    /**
+     * @return the smsCodeSendTime
+     */
+    public Date getSmsCodeSendTime() {
+        return smsCodeSendTime;
+    }
+
+    /**
+     * @param smsCodeSendTime
+     *            the smsCodeSendTime to set
+     */
+    public void setSmsCodeSendTime(Date smsCodeSendTime) {
+        this.smsCodeSendTime = smsCodeSendTime;
+    }
+
+    /**
+     * @return the deviceType
+     */
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    /**
+     * @param deviceType
+     *            the deviceType to set
+     */
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    /**
+     * @return the memo
+     */
+    public String getMemo() {
+        return memo;
+    }
+
+    /**
+     * @param memo
+     *            the memo to set
+     */
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 
     /**
      * @return the account
@@ -133,6 +206,13 @@ public class SysRegisterApplyShowBean {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the smsCodeSendShowTime
+     */
+    public String getSmsCodeSendShowTime() {
+        return smsCodeSendTime != null ? Tools.DATE_FORMAT.format(smsCodeSendTime) : "";
     }
 
 }
