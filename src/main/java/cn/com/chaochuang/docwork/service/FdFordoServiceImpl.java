@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
+import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
+import cn.com.chaochuang.common.fdfordo.service.FdFordoCompService;
 import cn.com.chaochuang.common.jpush.util.JPushUtils;
 import cn.com.chaochuang.common.user.domain.SysUser;
 import cn.com.chaochuang.common.user.repository.SysUserRepository;
@@ -42,10 +44,11 @@ import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> implements FdFordoService {
 
     @Autowired
-    private FdFordoRepository repository;
-
+    private FdFordoRepository  repository;
     @Autowired
-    private SysUserRepository userRepository;
+    private SysUserRepository  userRepository;
+    @Autowired
+    private FdFordoCompService fordoCompService;
 
     @Override
     public SimpleDomainRepository<FdFordo, Long> getRepository() {
@@ -101,6 +104,8 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             } else {
                 fdFordo.setStatus(FordoStatus.已读);
             }
+            // 向综合待办表中添加记录
+            this.fordoCompService.saveFdFordoComp(new FdFordoComp(fdFordo));
             fdFordo.setLocalData(LocalData.非本地数据);
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
@@ -118,7 +123,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
 
     /**
      * (non-Javadoc)
-     * 
+     *
      * @see cn.com.chaochuang.docwork.service.FdFordoService#selectUnLocalData(org.springframework.data.domain.Pageable)
      */
     @Override
