@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -104,18 +105,18 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             } else {
                 fdFordo.setStatus(FordoStatus.已读);
             }
-            // 向综合待办表中添加记录
-            this.fordoCompService.saveFdFordoComp(new FdFordoComp(fdFordo));
             fdFordo.setLocalData(LocalData.非本地数据);
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
-            this.repository.save(fdFordo);
+            this.repository.saveAndFlush(fdFordo);
+            // 向综合待办表中添加记录
+            FdFordoComp fdFordoComp = BeanCopyBuilder.buildObject(item,FdFordoComp.class);
+            fdFordoComp.setFordoId(fdFordo.getId());
+            fdFordoComp.setFordoSource(FordoSource.公文);
+            this.fordoCompService.saveFdFordoComp(fdFordoComp);
         }
     }
 
-    /**
-     * @see cn.com.chaochuang.docwork.service.FdFordoService#findByRmPendingId(java.lang.Long)
-     */
     @Override
     public FdFordo findByRmPendingItemId(String fordoId) {
         return repository.findByRmPendingItemId(fordoId);

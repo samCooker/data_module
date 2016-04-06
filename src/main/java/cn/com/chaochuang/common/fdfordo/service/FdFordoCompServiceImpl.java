@@ -17,11 +17,16 @@ import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
 import cn.com.chaochuang.common.data.service.SimpleLongIdCrudRestService;
 import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
 import cn.com.chaochuang.common.fdfordo.repository.FdFordoCompRepository;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 /**
  * @author LLM
  *
  */
+@Service
+@Transactional
 public class FdFordoCompServiceImpl extends SimpleLongIdCrudRestService<FdFordoComp> implements FdFordoCompService {
     @Autowired
     private FdFordoCompRepository repository;
@@ -34,7 +39,7 @@ public class FdFordoCompServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
     }
 
     /**
-     * @see cn.com.chaochuang.common.compfordo.service.FdFordoCompService#selectFdFordoCompByRecipient(java.lang.Long)
+     * @see cn.com.chaochuang.common.fdfordo.service.FdFordoCompService#selectFdFordoCompByRecipient(java.lang.Long)
      */
     @Override
     public List<FdFordoComp> selectFdFordoCompByRecipient(Long recipientId) {
@@ -48,11 +53,11 @@ public class FdFordoCompServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
     public void saveFdFordoComp(FdFordoComp fordo) {
         // 每个用户的综合待办记录的条数有限制，若用户的新待办超过规定条数则先删除最后一条再增加新记录
         List<FdFordoComp> datas = this.repository.findByRecipientIdOrderBySendTimeDesc(fordo.getRecipientId());
-        if (fordoCount.intValue() == datas.size()) {
+        if (fordoCount.intValue() <= datas.size()) {
             // 限定条数已经满要删除最后一条记录，才能添加
             this.repository.delete(datas.get(datas.size() - 1));
-            this.repository.save(fordo);
         }
+        this.repository.save(fordo);
     }
 
 }

@@ -37,6 +37,22 @@ public class CommonPendingHandleInfo {
     private String senderDeptName;
     /** 最后的发送时间 */
     private Date   lastSendTime;
+    /** 公文摘要*/
+    private String detail;
+
+    /**
+     * @return the detail
+     */
+    public String getDetail() {
+        return detail;
+    }
+
+    /**
+     * @param detail the detail to set
+     */
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 
     /**
      * @return the rmPendingId
