@@ -103,7 +103,7 @@ public class MobileOADataTaskService {
         isFordoRunning = true;
         try {
             // 获取当前待办表中公文待办中最大的数据导入时间值，若无法获取时间值则获取距离当前时间一个月的时间值
-            OAPendingHandleInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.公文);
+            OAPendingHandleInfo info = this.fdFordoService.selectMaxInputDate(FordoSource.oa);
             // 若lastOutputTime无效则不做下一步
             if (info.getLastSendTime() == null && info.getRmPendingItemId() == null) {
                 return;
@@ -111,7 +111,7 @@ public class MobileOADataTaskService {
             // 读取当前待办事宜表中最大的rmPendingId值，再调用transferOAService的getPendingItemInfo方法
             String json = this.transferOAService.selectPendingItemInfo((info.getLastSendTime() != null) ? Tools.DATE_TIME_FORMAT.format(info.getLastSendTime()) : "", info.getRmPendingItemId());
             // 将OA的待办记录写入待办事宜表
-            this.saveFdFordo(json, FordoSource.公文);
+            this.saveFdFordo(json, FordoSource.oa);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -232,7 +232,7 @@ public class MobileOADataTaskService {
      * 获取公文的附件，拉到本地存储
      */
     // @Scheduled(cron = "20/20 * * * * ?")
-    @Scheduled(cron = "3 0/1 * * * ?")
+    // @Scheduled(cron = "3 0/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -289,7 +289,7 @@ public class MobileOADataTaskService {
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
     // @Scheduled(cron = "40/40 * * * * ?")
-    @Scheduled(cron = "40 0/20 * * * ?")
+    //@Scheduled(cron = "40 0/20 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;

@@ -161,6 +161,7 @@ public class MobileAppDataTaskService {
             return;
         }
         try {
+            httpClient=HttpClientHelper.initHttpClient();
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("account", userName));
             params.add(new BasicNameValuePair("password", pwd));
@@ -238,31 +239,7 @@ public class MobileAppDataTaskService {
 
             JsonMapper mapper = JsonMapper.getInstance();
             WebServiceNodeInfo nodeInfo = mapper.readValue(dataUpdate.getContent(), WebServiceNodeInfo.class);
-            // 参数设置
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
-            params.add(new BasicNameValuePair("assignee", nodeInfo.getAssignee()));
-            params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
-            params.add(new BasicNameValuePair("nodeType", nodeInfo.getNodeType()));
-            params.add(new BasicNameValuePair("timeLimitFlag", nodeInfo.getTimeLimitFlag()));
-            params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
-            params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
-            params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
-            params.add(new BasicNameValuePair("noPendingHandle", nodeInfo.isNoPendingHandle() + ""));
-            String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
-            if (StringUtils.isNotBlank(json)) {
-                if (HttpClientHelper.RE_LOGIN.equals(json)) {
-                    loginSuperviseSys();
-                } else {
-                    if (DataUpdate.SUBMIT_SUCCESS.equals(json)) {
-                        // 删除DataUpdate对象
-                        dataUpdateService.delete(dataUpdate);
-                    } else {
-                        // 保存错误信息
-                        dataUpdateService.saveErrorInfo(dataUpdate, json);
-                    }
-                }
-            }
+            this.submitSuperviseByHttpClient(dataUpdate,nodeInfo);
         } catch (Exception ex) {
             // 保存错误信息
             dataUpdateService.saveErrorInfo(dataUpdate, ex.getClass().getName());
@@ -273,9 +250,40 @@ public class MobileAppDataTaskService {
     }
 
     /**
+     * 使用httpclient方式提交审批数据
+     * @param dataUpdate
+     * @param nodeInfo
+     */
+    private void submitSuperviseByHttpClient(DataUpdate dataUpdate, WebServiceNodeInfo nodeInfo) {
+        // 参数设置
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
+        params.add(new BasicNameValuePair("assignee", nodeInfo.getAssignee()));
+        params.add(new BasicNameValuePair("next", nodeInfo.getNext()));
+        params.add(new BasicNameValuePair("nodeType", nodeInfo.getNodeType()));
+        params.add(new BasicNameValuePair("timeLimitFlag", nodeInfo.getTimeLimitFlag()));
+        params.add(new BasicNameValuePair("nodeId", nodeInfo.getNodeId() + ""));
+        params.add(new BasicNameValuePair("pendingHandleId", nodeInfo.getPendingHandleId() + ""));
+        params.add(new BasicNameValuePair("userId", nodeInfo.getUserId() + ""));
+        params.add(new BasicNameValuePair("noPendingHandle", nodeInfo.isNoPendingHandle() + ""));
+        String json = HttpClientHelper.doPost(httpClient, baseUrl + submitUrl, params, HttpClientHelper.ENCODE_GBK);
+        if (StringUtils.isNotBlank(json)) {
+            if (HttpClientHelper.RE_LOGIN.equals(json)) {
+                loginSuperviseSys();
+            } else if(DataUpdate.SUBMIT_SUCCESS.equals(json)){
+                // 删除DataUpdate对象
+                dataUpdateService.delete(dataUpdate);
+            }else {
+                // 保存错误信息
+                dataUpdateService.saveErrorInfo(dataUpdate, json);
+            }
+        }
+    }
+
+    /**
      * 获取公文的附件，拉到本地存储
      */
-    @Scheduled(cron = "15/20 * * * * ?")
+    // @Scheduled(cron = "15/20 * * * * ?")
     // @Scheduled(cron = "5 0/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {

@@ -15,6 +15,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
+import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
+import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
+import cn.com.chaochuang.common.fdfordo.service.FdFordoCompService;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,28 +52,15 @@ import cn.com.chaochuang.docwork.reference.FordoStatus;
 @Service
 @Transactional
 public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordoAudit> implements FdFordoAuditService {
-    @PersistenceContext
-    private EntityManager                   entityManager;
+
     @Autowired
     private SysUserRepository               userRepository;
     @Autowired
     private FdFordoAuditRepository          repository;
     @Autowired
-    private AuditAppointRepository          appointRepository;
-    @Autowired
-    private AuditWatcherRepository          watcherRepository;
-    @Autowired
-    private AuditPrjContentRepository       prjContentRepository;
-    @Autowired
     private AuditTaskRepository             taskRepository;
     @Autowired
-    private AuditFlowNodeInfoRepository     nodeInfoRepository;
-    @Autowired
-    private AuditFlowNodeOpinionsRepository nodeOpinionsRepository;
-    @Autowired
-    private DataUpdateService               dataUpdateService;
-    @Autowired
-    private AppItemAttachService            attachService;
+    private FdFordoCompService fordoCompService;
 
     @Value("${getdata.timeinterval}")
     private String                          timeInterval;
@@ -137,7 +128,12 @@ public class FdFordoAuditServiceImpl extends SimpleLongIdCrudRestService<FdFordo
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
             fdFordo.setLocalData(LocalData.非本地数据);
-            this.repository.save(fdFordo);
+            this.repository.saveAndFlush(fdFordo);
+            // 向综合待办表中添加记录
+            FdFordoComp fdFordoComp = BeanCopyBuilder.buildObject(fdFordo,FdFordoComp.class);
+            fdFordoComp.setFordoId(fdFordo.getId());
+            fdFordoComp.setFordoSource(FordoSource.audit);
+            this.fordoCompService.saveFdFordoComp(fdFordoComp);
         }
     }
 

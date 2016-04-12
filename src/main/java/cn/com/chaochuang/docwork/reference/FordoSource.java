@@ -16,7 +16,7 @@ import cn.com.chaochuang.common.dictionary.support.DictionaryRefresher;
  *
  */
 public enum FordoSource implements IDictionary {
-    公文("00"), 行政审批("01"), 行政办案("02");
+    oa("00"), supervise("01"), aipcase("02"), voiceEvent("03"), complaint("04"), audit("05");
 
     private String key;
     private String value;

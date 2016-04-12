@@ -13,6 +13,10 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
+import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
+import cn.com.chaochuang.common.fdfordo.service.FdFordoCompService;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +45,8 @@ import cn.com.chaochuang.docwork.reference.FordoStatus;
 public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoApp> implements FdFordoAppService {
     @Autowired
     private SysUserRepository    userRepository;
-
+    @Autowired
+    private FdFordoCompService fordoCompService;
     @Value("${getdata.timeinterval}")
     private String               timeInterval;
 
@@ -98,22 +103,26 @@ public class FdFordoAppServiceImpl extends SimpleLongIdCrudRestService<FdFordoAp
             // 将rmUserInfoId转成rmUserId
             if (user != null) {
                 fdFordo.setRecipientId(user.getRmUserId());
-            }
-            if (item.getReadTime() == null) {
-                fdFordo.setStatus(FordoStatus.未读);
-                // 未读数据添加消息推送
-                // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
-                if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
-                    JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
+                if (item.getReadTime() == null) {
+                    fdFordo.setStatus(FordoStatus.未读);
+                    // 未读数据添加消息推送
+                    // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
+                    if (!Tools.isEmptyString(user.getRegistrationId())) {
+                        JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
+                    }
+                } else {
+                    fdFordo.setStatus(FordoStatus.已读);
                 }
-            } else {
-                fdFordo.setStatus(FordoStatus.已读);
             }
             fdFordo.setReadTime(item.getReadTime());
             fdFordo.setInputDate(currentDate);
             fdFordo.setLocalData(LocalData.非本地数据);
-
-            this.repository.save(fdFordo);
+            this.repository.saveAndFlush(fdFordo);
+            // 向综合待办表中添加记录
+            FdFordoComp fdFordoComp = BeanCopyBuilder.buildObject(fdFordo,FdFordoComp.class);
+            fdFordoComp.setFordoId(fdFordo.getId());
+            fdFordoComp.setFordoSource(FordoSource.supervise);
+            this.fordoCompService.saveFdFordoComp(fdFordoComp);
         }
     }
 

@@ -119,7 +119,7 @@ public class MobileAipCaseDataTaskService {
             String json = this.transferAipCaseService.selectPendingItemInfo(info.getLastSendTime(),
                             info.getRmPendingId());
             // 将案件办理的待办记录写入待办事宜表
-            this.saveFdFordo(json, FordoSource.行政办案);
+            this.saveFdFordo(json, FordoSource.aipcase);
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

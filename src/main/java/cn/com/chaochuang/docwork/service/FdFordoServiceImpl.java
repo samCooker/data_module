@@ -97,7 +97,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             if (item.getReadTime() == null) {
                 fdFordo.setStatus(FordoStatus.未读);
                 // 未读数据添加消息推送
-                SysUser user = userRepository.findOne(fdFordo.getRecipientId());
+                SysUser user = userRepository.findByRmUserId(fdFordo.getRecipientId());
                 // 若待办接收用户存在且消息推送注册号不为空则发送推送消息
                 if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
                     JPushUtils.pushByRegistrationID(user.getRegistrationId(), "您有一条新的待办事宜请查收：" + fdFordo.getTitle());
@@ -112,7 +112,7 @@ public class FdFordoServiceImpl extends SimpleLongIdCrudRestService<FdFordo> imp
             // 向综合待办表中添加记录
             FdFordoComp fdFordoComp = BeanCopyBuilder.buildObject(item,FdFordoComp.class);
             fdFordoComp.setFordoId(fdFordo.getId());
-            fdFordoComp.setFordoSource(FordoSource.公文);
+            fdFordoComp.setFordoSource(FordoSource.oa);
             this.fordoCompService.saveFdFordoComp(fdFordoComp);
         }
     }

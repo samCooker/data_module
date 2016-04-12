@@ -67,7 +67,7 @@ public class FdFordoComp extends LongIdEntity {
      */
     public FdFordoComp(FdFordo fdFordo) {
         this.fordoId = fdFordo.getId();
-        this.fordoSource = FordoSource.公文;
+        this.fordoSource = FordoSource.oa;
         this.title = fdFordo.getTitle();
         this.url = fdFordo.getUrl();
         this.sendTime = fdFordo.getSendTime();

@@ -14,6 +14,10 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import cn.com.chaochuang.common.beancopy.BeanCopyBuilder;
+import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
+import cn.com.chaochuang.common.fdfordo.service.FdFordoCompService;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +54,7 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
     @Autowired
     private DataUpdateService           dataUpdateService;
     @Autowired
-    private CaseTransactPersonalService caseTransactPersonalService;
+    private FdFordoCompService fordoCompService;
 
     @Override
     public SimpleDomainRepository<FdFordoCase, Long> getRepository() {
@@ -78,9 +82,13 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
                 fdFordoCase.setRecipientId(fordoInfo.getReceiverId());
                 fdFordoCase.setSenderDeptName(fordoInfo.getSenderDepName());
                 fdFordoCase.setLocalData(LocalData.非本地数据);
+                SysUser user = sysUserService.findByRmUserInfoId(fordoInfo.getReceiverId());
+                // 将rmUserInfoId转成rmUserId
+                if (user != null) {
+                    fdFordoCase.setRecipientId(user.getRmUserId());
+                }
                 if (fdFordoCase.getReadTime() == null) {
                     fdFordoCase.setStatus(FordoStatus.未读);
-                    SysUser user = sysUserService.findByRmUserInfoId(fordoInfo.getReceiverId());
                     if (user != null && !Tools.isEmptyString(user.getRegistrationId())) {
                         JPushUtils.pushByRegistrationID(user.getRegistrationId(),
                                         "您有一条新的待办事宜请查收：" + fordoInfo.getTitle());
@@ -89,7 +97,14 @@ public class FdFordoCaseServiceImpl extends SimpleLongIdCrudRestService<FdFordoC
                     fdFordoCase.setStatus(FordoStatus.已读);
                 }
                 fdFordoCase.setInputDate(new Date());
-                repository.save(fdFordoCase);
+                repository.saveAndFlush(fdFordoCase);
+
+                // 向综合待办表中添加记录
+                FdFordoComp fdFordoComp = BeanCopyBuilder.buildObject(fdFordoCase,FdFordoComp.class);
+                fdFordoComp.setRecipientId(fordoInfo.getReceiverId());
+                fdFordoComp.setFordoId(fdFordoCase.getId());
+                fdFordoComp.setFordoSource(FordoSource.audit);
+                this.fordoCompService.saveFdFordoComp(fdFordoComp);
             }
         }
 

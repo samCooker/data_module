@@ -76,11 +76,6 @@ public class HttpClientHelper {
 
     /**
      * 
-     * @param userName
-     * @param pwd
-     * @param url
-     * @return
-     * @throws Exception
      */
     public static boolean loginSys(CloseableHttpClient httpClient, String postUrl, List<NameValuePair> params,
                     String charset) throws Exception {
@@ -129,10 +124,9 @@ public class HttpClientHelper {
             int statusCode = response.getStatusLine().getStatusCode();
             if (HttpStatus.SC_OK == statusCode) {
                 return EntityUtils.toString(response.getEntity());
-            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-                return RE_LOGIN;
             } else {
-                throw new RuntimeException("服务器返回" + statusCode + "错误");
+                System.out.println("服务器返回" + statusCode + "错误");
+                return RE_LOGIN;
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -149,7 +143,6 @@ public class HttpClientHelper {
     /**
      * Get请求
      * 
-     * @param httpGet
      * @param params
      * @return
      */
@@ -171,10 +164,9 @@ public class HttpClientHelper {
             if (HttpStatus.SC_OK == statusCode) {
                 // 返回响应的字符串实体
                 return EntityUtils.toString(response.getEntity());
-            } else if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY) {
-                return RE_LOGIN;
             } else {
-                throw new RuntimeException("服务器返回" + statusCode);
+                System.out.println("服务器返回" + statusCode + "错误");
+                return RE_LOGIN;
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

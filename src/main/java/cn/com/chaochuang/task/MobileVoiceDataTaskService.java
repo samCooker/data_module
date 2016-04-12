@@ -127,7 +127,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 提交舆情事件的数据
      */
-    @Scheduled(cron = "21/21 * * * * ?")
+    //@Scheduled(cron = "21/21 * * * * ?")
     // @Scheduled(cron = "25 0/2 * * * ?")
     public void commintVoiceEventDataTask() {
         if (isGetVoiceEventSubmitRunning) {
@@ -170,7 +170,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情相关变更数据
      */
-    @Scheduled(cron = "15/15 * * * * ?")
+    //@Scheduled(cron = "15/15 * * * * ?")
     // @Scheduled(cron = "15 0/2 * * * ?")
     public void getDataChange() {
         if (isGetSysDataChangeRunning) {
@@ -197,7 +197,7 @@ public class MobileVoiceDataTaskService {
     /**
      * 获取舆情文件
      */
-    @Scheduled(cron = "25/25 * * * * ?")
+    //@Scheduled(cron = "25/25 * * * * ?")
     // @Scheduled(cron = "25 0/2 * * * ?")
     public void getVoiceInfoAttachTask() {
         if (isGetVoiceInfoAttachRunning) {

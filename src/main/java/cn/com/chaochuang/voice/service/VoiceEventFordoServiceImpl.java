@@ -13,6 +13,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import cn.com.chaochuang.common.fdfordo.domain.FdFordoComp;
+import cn.com.chaochuang.common.fdfordo.service.FdFordoCompService;
+import cn.com.chaochuang.docwork.reference.FordoSource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +55,8 @@ public class VoiceEventFordoServiceImpl extends SimpleLongIdCrudRestService<Voic
     private VoiceEventHandleRepository eventHandleRepository;
     @Autowired
     private IVoiceWebService           voiceWebService;
+    @Autowired
+    private FdFordoCompService fordoCompService;
     @Value("${getvoiceinfodata.timeinterval}")
     private String                     timeInterval;
 
@@ -177,7 +182,18 @@ public class VoiceEventFordoServiceImpl extends SimpleLongIdCrudRestService<Voic
                     // fordo.getTitle());
                 }
             }
-            repository.save(fordo);
+            repository.saveAndFlush(fordo);
+
+            // 向综合待办表中添加记录
+            FdFordoComp fdFordoComp = new FdFordoComp();
+            fdFordoComp.setRecipientId(fordo.getUserId());
+            fdFordoComp.setSenderName(fordo.getAssigneeName());
+            fdFordoComp.setSendTime(fordo.getAssigneeTime());
+            fdFordoComp.setTitle(fordo.getTitle());
+            fdFordoComp.setFordoId(fordo.getId());
+            fdFordoComp.setFordoSource(FordoSource.voiceEvent);
+            this.fordoCompService.saveFdFordoComp(fdFordoComp);
+
             //
             // List<VoiceEventHandle> eventHandleList =
             // eventHandleRepository.findByRmEventHandleId(fordoData.getEventHandleId());
