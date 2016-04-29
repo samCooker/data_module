@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
@@ -78,7 +79,7 @@ public class MobileAuditDataTaskService {
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
     // @Scheduled(cron = "15/15 * * * * ?")
-    // @Scheduled(cron = "15 0/2 * * * ?")
+    @Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -108,30 +109,6 @@ public class MobileAuditDataTaskService {
                 List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
                 this.fdFordoAuditService.insertFdFordos(datas);
             }
-
-            // 参数设置
-            // List<NameValuePair> params = new ArrayList<NameValuePair>();
-            // if (info.getLastSendTime() != null) {
-            // params.add(new BasicNameValuePair("lastOutputTime",
-            // Tools.DATE_TIME_FORMAT.format(info.getLastSendTime())));
-            // }
-            // if (info.getRmPendingId() != null) {
-            // params.add(new BasicNameValuePair("pendingHandleId", info.getRmPendingId()));
-            // }
-            // // 发送请求
-            // String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + getFordoDataUrl, params,
-            // HttpClientHelper.ENCODE_GBK);
-            // if (StringUtils.isNotBlank(json)) {
-            // if (HttpClientHelper.RE_LOGIN.equals(json)) {
-            // mobileAppDataTaskService.loginSuperviseSys();
-            // } else if (!HttpClientHelper.RE_LOGIN.equals(json) && !"FALSE".equals(json)) {
-            // // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            // JsonMapper mapper = JsonMapper.getInstance();
-            // JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
-            // List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
-            // this.fdFordoAuditService.insertFdFordos(datas);
-            // }
-            // }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
@@ -143,7 +120,7 @@ public class MobileAuditDataTaskService {
      * 提交审批项数据
      */
     // @Scheduled(cron = "10/15 * * * * ?")
-    // @Scheduled(cron = "25 0/2 * * * ?")
+    @Scheduled(cron = "25 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;

@@ -40,4 +40,10 @@
         address="${nnccapp.webservice.url}"
     >
     </jaxws:client>
+    <jaxws:client
+        id="ITransferDocexServiceClientFactory"
+        serviceClass="cn.com.chaochuang.webservice.server.ITransferDocexService"
+        address="${nnccdocex.webservice.url}"
+    >
+    </jaxws:client>
 </beans>
