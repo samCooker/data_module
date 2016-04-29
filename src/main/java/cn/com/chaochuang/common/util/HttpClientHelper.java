@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import cn.com.chaochuang.task.MobileAppDataTaskService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -29,37 +30,41 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @author Shicx
- *
  */
 public class HttpClientHelper {
 
     /**
      * 重新登录系统标识
      */
-    public static final String RE_LOGIN        = "relogin";
+    public static final String RE_LOGIN = "relogin";
     /**
      * 提交表单编码-gbk
-     * */
-    public static final String ENCODE_GBK      = "GBK";
+     */
+    public static final String ENCODE_GBK = "GBK";
     /**
      * 提交表单编码-utf-8
-     * */
-    public static final String ENCODE_UTF8     = "UTF-8";
+     */
+    public static final String ENCODE_UTF8 = "UTF-8";
     /**
      * 连接超时(ms)
-     * */
-    public static final int    CONN_TIME_OUT   = 20000;
+     */
+    public static final int CONN_TIME_OUT = 20000;
     /**
      * 读取超时(ms)
-     * */
-    public static final int    SOCKET_TIME_OUT = 30000;
+     */
+    public static final int SOCKET_TIME_OUT = 30000;
+    /**
+     * http client 日志
+     */
+    public static Logger httpClientLogger = Logger.getLogger("datacenter.http.client.logger");
 
     /**
      * 创建一个httpClient对象，并进行相关配置
-     * 
+     *
      * @return
      */
     public static CloseableHttpClient initHttpClient() {
@@ -70,15 +75,15 @@ public class HttpClientHelper {
         // 每个路由基础的连接数
         // cm.setDefaultMaxPerRoute(2);
         RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(new Integer(SOCKET_TIME_OUT))
-                        .setConnectTimeout(new Integer(CONN_TIME_OUT)).build();// 设置请求和传输超时时间
+                .setConnectTimeout(new Integer(CONN_TIME_OUT)).build();// 设置请求和传输超时时间
         return HttpClients.custom().setConnectionManager(cm).setDefaultRequestConfig(requestConfig).build();
     }
 
     /**
-     * 
+     *
      */
     public static boolean loginSys(CloseableHttpClient httpClient, String postUrl, List<NameValuePair> params,
-                    String charset) throws Exception {
+                                   String charset) throws Exception {
         HttpPost post = null;
         try {
             post = new HttpPost(postUrl);
@@ -103,15 +108,14 @@ public class HttpClientHelper {
 
     /**
      * 发送post请求
-     * 
+     *
      * @param httpClient
-     * @param charset
-     *            为空则使用gbk
+     * @param charset    为空则使用gbk
      * @param params
      * @return
      */
     public static String doPost(CloseableHttpClient httpClient, String postUrl, List<NameValuePair> params,
-                    String charset) {
+                                String charset) {
         HttpPost post = null;
         try {
             post = new HttpPost(postUrl);
@@ -122,10 +126,11 @@ public class HttpClientHelper {
                 return null;
             }
             int statusCode = response.getStatusLine().getStatusCode();
+            httpClientLogger.debug("发送post请求:"+postUrl+",返回" + statusCode);
             if (HttpStatus.SC_OK == statusCode) {
                 return EntityUtils.toString(response.getEntity());
             } else {
-                System.out.println("服务器返回" + statusCode + "错误");
+                httpClientLogger.error("服务器返回" + statusCode + "错误。返回信息："+EntityUtils.toString(response.getEntity()));
                 return RE_LOGIN;
             }
         } catch (ClientProtocolException e) {
@@ -142,7 +147,7 @@ public class HttpClientHelper {
 
     /**
      * Get请求
-     * 
+     *
      * @param params
      * @return
      */
@@ -161,11 +166,12 @@ public class HttpClientHelper {
                 return null;
             }
             int statusCode = response.getStatusLine().getStatusCode();
+            httpClientLogger.debug("发送get请求:"+getUrl+",返回" + statusCode);
             if (HttpStatus.SC_OK == statusCode) {
                 // 返回响应的字符串实体
                 return EntityUtils.toString(response.getEntity());
             } else {
-                System.out.println("服务器返回" + statusCode + "错误");
+                httpClientLogger.error("服务器返回" + statusCode + "错误。返回信息："+EntityUtils.toString(response.getEntity()));
                 return RE_LOGIN;
             }
         } catch (UnsupportedEncodingException e) {
@@ -182,13 +188,9 @@ public class HttpClientHelper {
 
     /**
      * Get请求
-     * 
-     * @param httpget
-     * @param params
-     * @return
      */
     public static CloseableHttpResponse doGetAndReturnResponse(CloseableHttpClient httpClient, HttpGet httpGet,
-                    List<NameValuePair> params) {
+                                                               List<NameValuePair> params) {
         try {
             // 设置参数
             String str = EntityUtils.toString(new UrlEncodedFormEntity(params));

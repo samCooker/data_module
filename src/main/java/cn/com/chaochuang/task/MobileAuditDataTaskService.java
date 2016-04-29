@@ -8,12 +8,18 @@
 
 package cn.com.chaochuang.task;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
+import cn.com.chaochuang.audit.service.FdFordoAuditService;
+import cn.com.chaochuang.common.util.HttpClientHelper;
+import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.ScheduleTaskHelper;
+import cn.com.chaochuang.common.util.Tools;
+import cn.com.chaochuang.datacenter.domain.DataUpdate;
+import cn.com.chaochuang.datacenter.reference.WorkType;
+import cn.com.chaochuang.datacenter.service.DataUpdateService;
+import cn.com.chaochuang.task.bean.AuditSubmitData;
+import cn.com.chaochuang.webservice.server.SuperviseWebService;
+import com.fasterxml.jackson.databind.JavaType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,18 +29,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import cn.com.chaochuang.audit.bean.AuditPendingHandleInfo;
-import cn.com.chaochuang.audit.service.FdFordoAuditService;
-import cn.com.chaochuang.common.util.HttpClientHelper;
-import cn.com.chaochuang.common.util.JsonMapper;
-import cn.com.chaochuang.common.util.Tools;
-import cn.com.chaochuang.datacenter.domain.DataUpdate;
-import cn.com.chaochuang.datacenter.reference.WorkType;
-import cn.com.chaochuang.datacenter.service.DataUpdateService;
-import cn.com.chaochuang.task.bean.AuditSubmitData;
-import cn.com.chaochuang.webservice.server.SuperviseWebService;
-
-import com.fasterxml.jackson.databind.JavaType;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author LLM
@@ -78,8 +76,8 @@ public class MobileAuditDataTaskService {
     /**
      * 向审批查验系统获取待办事宜数据 每5秒进行一次数据获取
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
-    @Scheduled(cron = "15 0/2 * * * ?")
+    @Scheduled(cron = "25/25 * * * * ?")
+    //@Scheduled(cron = "15 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -101,16 +99,18 @@ public class MobileAuditDataTaskService {
                 info.setRmPendingId("0");
             }
             String json = superviseWebService.selectAuditPendingHandleList(info.getLastSendTime(),
-                            new Long(info.getRmPendingId()));
-            if (StringUtils.isNotBlank(json)) {
+                    new Long(info.getRmPendingId()));
+            if (ScheduleTaskHelper.isFormalDataMsg(json,"审评查验获取待办")) {//远程系统出现异常时返回的字符串中包含 @@exception@@
                 // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
                 JsonMapper mapper = JsonMapper.getInstance();
                 JavaType javaType = mapper.constructParametricType(ArrayList.class, AuditPendingHandleInfo.class);
                 List<AuditPendingHandleInfo> datas = mapper.readValue(json, javaType);
                 this.fdFordoAuditService.insertFdFordos(datas);
+                ScheduleTaskHelper.taskLogger.debug("审评查验待办获取任务已开启，time:"+info.getLastSendTime()+" id:"+info.getRmPendingId()+",数据："+datas.size()+"条");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            ScheduleTaskHelper.taskLogger.error(Tools.traceToString(ex));
         } finally {
             isFordoRunning = false;
         }
@@ -119,8 +119,8 @@ public class MobileAuditDataTaskService {
     /**
      * 提交审批项数据
      */
-    // @Scheduled(cron = "10/15 * * * * ?")
-    @Scheduled(cron = "25 0/2 * * * ?")
+    @Scheduled(cron = "10/15 * * * * ?")
+    //@Scheduled(cron = "25 0/2 * * * ?")
     public void commintSuperviseDataTask() {
         if (isSubmitDataRunning) {
             return;
@@ -139,6 +139,8 @@ public class MobileAuditDataTaskService {
 
             JsonMapper mapper = JsonMapper.getInstance();
             AuditSubmitData nodeInfo = mapper.readValue(dataUpdate.getContent(), AuditSubmitData.class);
+
+            HttpClientHelper.httpClientLogger.debug("审评查验提交："+dataUpdate.getContent());
             // 参数设置
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("approveContent", nodeInfo.getApproveContent()));
@@ -160,7 +162,8 @@ public class MobileAuditDataTaskService {
                 }
             }
             String json = HttpClientHelper.doPost(getHttpClient(), baseUrl + submitUrl, params,
-                            HttpClientHelper.ENCODE_GBK);
+                    HttpClientHelper.ENCODE_GBK);
+            HttpClientHelper.httpClientLogger.debug("审评查验提交返回："+json);
             if (StringUtils.isNotBlank(json)) {
                 if (HttpClientHelper.RE_LOGIN.equals(json)) {
                     mobileAppDataTaskService.loginSuperviseSys();
@@ -170,13 +173,17 @@ public class MobileAuditDataTaskService {
                         dataUpdateService.delete(dataUpdate);
                     } else {
                         // 保存错误信息
-                        dataUpdateService.saveErrorInfo(dataUpdate, json);
+                        dataUpdateService.saveErrorInfo(dataUpdate, json.substring(0,json.length()>950?950:json.length()));
+                        HttpClientHelper.httpClientLogger.error("审评查验提交错误："+json);
                     }
                 }
             }
         } catch (Exception ex) {
+            // 保存错误信息,由于字段长度限制，对字符串进行截取
+            String error = Tools.traceToString(ex);
             // 保存错误信息
-            dataUpdateService.saveErrorInfo(dataUpdate, ex.getClass().getName());
+            dataUpdateService.saveErrorInfo(dataUpdate,error.substring(0,error.length()>950?950:error.length()));
+            ScheduleTaskHelper.taskLogger.error("审评查验提交任务异常："+error);
             ex.printStackTrace();
         } finally {
             isSubmitDataRunning = false;

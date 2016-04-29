@@ -8,25 +8,9 @@
 
 package cn.com.chaochuang.task;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.JavaType;
-
 import cn.com.chaochuang.aipcase.reference.LocalData;
 import cn.com.chaochuang.common.util.JsonMapper;
+import cn.com.chaochuang.common.util.ScheduleTaskHelper;
 import cn.com.chaochuang.common.util.Tools;
 import cn.com.chaochuang.commoninfo.service.PubInfoService;
 import cn.com.chaochuang.datacenter.domain.DataUpdate;
@@ -41,6 +25,21 @@ import cn.com.chaochuang.docwork.service.FdFordoService;
 import cn.com.chaochuang.task.bean.OAPendingHandleInfo;
 import cn.com.chaochuang.task.bean.PubInfoBean;
 import cn.com.chaochuang.webservice.server.ITransferOAService;
+import com.fasterxml.jackson.databind.JavaType;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author LLM
@@ -92,10 +91,10 @@ public class MobileOADataTaskService {
     // private int pageSize = 1;
 
     /**
-     * 向OA获取待办事宜数据 每5分钟进行一次数据获取
+     * 向OA获取待办事宜数据
      */
-    // @Scheduled(cron = "10/10 * * * * ?")
-    @Scheduled(cron = "10 0/2 * * * ?")
+    @Scheduled(cron = "15/15 * * * * ?")
+    ////@Scheduled(cron = "10 0/2 * * * ?")
     public void getFordoDataTask() {
         if (isFordoRunning) {
             return;
@@ -114,6 +113,7 @@ public class MobileOADataTaskService {
             this.saveFdFordo(json, FordoSource.oa);
         } catch (Exception ex) {
             ex.printStackTrace();
+            ScheduleTaskHelper.taskLogger.error("药监局OA待办获取异常："+Tools.traceToString(ex));
         } finally {
             isFordoRunning = false;
         }
@@ -126,24 +126,24 @@ public class MobileOADataTaskService {
      * @param fdSource
      */
     private void saveFdFordo(String jsonData, FordoSource fdSource) {
-        if (Tools.isEmptyString(jsonData)) {
-            return;
-        }
         try {
-            // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
-            JsonMapper mapper = JsonMapper.getInstance();
-            JavaType javaType = mapper.constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
-            List<OAPendingHandleInfo> datas = mapper.readValue(jsonData, javaType);
-            this.fdFordoService.insertFdFordos(datas, fdSource);
+            if (ScheduleTaskHelper.isFormalDataMsg(jsonData,"药监局OA获取待办")) {//远程系统出现异常时返回的字符串中包含 @@exception@@
+                // 将json字符串还原回PendingCommandInfo对象，再循环将对象插入FdFordo表
+                JsonMapper mapper = JsonMapper.getInstance();
+                JavaType javaType = mapper.constructParametricType(ArrayList.class, OAPendingHandleInfo.class);
+                List<OAPendingHandleInfo> datas = mapper.readValue(jsonData, javaType);
+                this.fdFordoService.insertFdFordos(datas, fdSource);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
+            ScheduleTaskHelper.taskLogger.error("药监局OA待办获取保存异常："+Tools.traceToString(ex));
         }
     }
 
     /**
      * 向OA获取公文数据 每1分钟进行一次数据获取(修改策略暂时无用)
      */
-    // @Scheduled(cron = "8 0/3 * * * ?")
+    // //@Scheduled(cron = "8 0/3 * * * ?")
     // public void getDocFileDataTask() {
     // if (isGetDocFileRunning) {
     // return;
@@ -189,8 +189,8 @@ public class MobileOADataTaskService {
     /**
      * 提交公文修改数据
      */
-    // @Scheduled(cron = "15/15 * * * * ?")
-    @Scheduled(cron = "20 0/2 * * * ?")
+    //@Scheduled(cron = "18/18 * * * * ?")
+    ////@Scheduled(cron = "20 0/2 * * * ?")
     public void commintDocFileDataTask() {
         if (isCommitDocFileRunning) {
             return;
@@ -215,7 +215,8 @@ public class MobileOADataTaskService {
                 this.dataUpdateService.delete(dataUpdate);
             } else {
                 dataUpdate.setExecuteFlag(ExecuteFlag.执行错误);
-                dataUpdate.setErrorInfo(backInfo);
+                dataUpdate.setErrorInfo(backInfo.substring(0,backInfo.length()>950?950:backInfo.length()));
+                ScheduleTaskHelper.taskLogger.error("药监局OA提交异常返回信息："+backInfo);
                 this.dataUpdateService.getRepository().save(dataUpdate);
             }
         } catch (Exception ex) {
@@ -223,6 +224,7 @@ public class MobileOADataTaskService {
             dataUpdate.setErrorInfo(ex.getClass().getName());
             this.dataUpdateService.getRepository().save(dataUpdate);
             ex.printStackTrace();
+            ScheduleTaskHelper.taskLogger.error("药监局OA提交任务异常："+Tools.traceToString(ex));
         } finally {
             isCommitDocFileRunning = false;
         }
@@ -231,8 +233,8 @@ public class MobileOADataTaskService {
     /**
      * 获取公文的附件，拉到本地存储
      */
-    // @Scheduled(cron = "20/20 * * * * ?")
-    // @Scheduled(cron = "3 0/1 * * * ?")
+    //@Scheduled(cron = "20/20 * * * * ?")
+    // //@Scheduled(cron = "3 0/1 * * * ?")
     public void getDocFileAttachTask() {
         if (isDownLoadAttachRunning) {
             return;
@@ -272,6 +274,7 @@ public class MobileOADataTaskService {
         } catch (Exception ex) {
             docFileAttachService.saveAttachForLocal(attach, LocalData.获取数据错误, null);
             ex.printStackTrace();
+            ScheduleTaskHelper.taskLogger.error("药监局OA待办附件异常："+Tools.traceToString(ex));
         } finally {
             if (bufferedOutputStream != null) {
                 try {
@@ -288,8 +291,8 @@ public class MobileOADataTaskService {
     /**
      * 向OA获取公告数据 每5分钟进行一次数据获取
      */
-    // @Scheduled(cron = "40/40 * * * * ?")
-    //@Scheduled(cron = "40 0/20 * * * ?")
+    // //@Scheduled(cron = "40/40 * * * * ?")
+    ////@Scheduled(cron = "40 0/20 * * * ?")
     public void getPubInfoDataTask() {
         if (isGetPubInfoDataRunning) {
             return;
@@ -326,7 +329,7 @@ public class MobileOADataTaskService {
     /**
      * 获取缺漏的正文附件方法
      */
-    // //@Scheduled(cron = "10/10 * * * * ?")
+    // ////@Scheduled(cron = "10/10 * * * * ?")
     // public void getSharewordAttach() {
     // if (isGetSharewordRunning) {
     // return;

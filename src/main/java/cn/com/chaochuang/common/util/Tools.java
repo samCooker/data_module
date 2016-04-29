@@ -8,6 +8,8 @@
 
 package cn.com.chaochuang.common.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -411,7 +413,7 @@ public abstract class Tools {
     /**
      * 判断天数是否为负值，如果为负数就返回0
      *
-     * @param date
+     * @param date1
      *            被减日期
      * @param date2
      *            要减日期
@@ -642,6 +644,19 @@ public abstract class Tools {
             pos = src.indexOf(target, pos + 1);
         }
         return count;
+    }
+
+    /**
+     * 将异常信息转成string返回。
+     * @param t
+     * @return
+     */
+    public static String traceToString(Throwable t) {
+        StringWriter stringWriter= new StringWriter();
+        PrintWriter writer= new PrintWriter(stringWriter);
+        t.printStackTrace(writer);
+        StringBuffer buffer= stringWriter.getBuffer();
+        return buffer.toString();
     }
 
 }
