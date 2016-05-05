@@ -42,4 +42,5 @@ public interface ITransferDocexService {
     @WebResult(name = "out", targetNamespace = "http://webservice.docexpub.doc.spower.com")
     @WebMethod
     String setDocexTransactInfo(String jsonStr);
+
 }
