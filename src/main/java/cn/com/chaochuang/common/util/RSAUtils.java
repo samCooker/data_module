@@ -8,15 +8,14 @@
 
 package cn.com.chaochuang.common.util;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.Cipher;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.security.Key;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-
-import javax.crypto.Cipher;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * @author LLM

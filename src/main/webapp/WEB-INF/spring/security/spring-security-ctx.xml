@@ -80,6 +80,10 @@
         pattern="/sessioninfo*.html"
         security="none" />
 
+    <http
+            pattern="/*.action"
+            security="none" />
+
     <!-- 允许上传 -->
     <http
         pattern="/**/upload.json"

@@ -8,13 +8,12 @@
 
 package cn.com.chaochuang.common.user.repository;
 
-import java.util.List;
-
+import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
+import cn.com.chaochuang.common.user.domain.SysDepartment;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
-import cn.com.chaochuang.common.user.domain.SysDepartment;
+import java.util.List;
 
 /**
  * @author LaoZhiYong

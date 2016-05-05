@@ -8,12 +8,11 @@
 
 package cn.com.chaochuang.common.user.bean;
 
-import java.io.Serializable;
-
-import org.springframework.util.Assert;
-
 import cn.com.chaochuang.common.security.CurrentUserInfo;
 import cn.com.chaochuang.common.user.domain.SysUser;
+import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * @author guig

@@ -8,9 +8,9 @@
 
 package cn.com.chaochuang.common.user.reference;
 
-import javax.persistence.AttributeConverter;
-
 import cn.com.chaochuang.common.dictionary.EnumDictConverter;
+
+import javax.persistence.AttributeConverter;
 
 /**
  * @author guig

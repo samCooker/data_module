@@ -8,9 +8,11 @@
 
 package cn.com.chaochuang.common.user.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import cn.com.chaochuang.common.security.UserInfo;
+import cn.com.chaochuang.common.user.bean.SimpleCurrentUserInfo;
+import cn.com.chaochuang.common.user.domain.SysUser;
+import cn.com.chaochuang.common.user.repository.SysManageUserRepository;
+import cn.com.chaochuang.common.user.repository.SysUserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,11 +22,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import cn.com.chaochuang.common.security.UserInfo;
-import cn.com.chaochuang.common.user.bean.SimpleCurrentUserInfo;
-import cn.com.chaochuang.common.user.domain.SysUser;
-import cn.com.chaochuang.common.user.repository.SysManageUserRepository;
-import cn.com.chaochuang.common.user.repository.SysUserRepository;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author guig
@@ -67,7 +66,7 @@ public class SimpleUserDetailsService implements UserDetailsService {
     /**
      * (non-Javadoc)
      *
-     * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
+     * @see UserDetailsService#loadUserByUsername(String)
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

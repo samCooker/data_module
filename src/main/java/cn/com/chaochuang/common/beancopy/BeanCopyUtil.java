@@ -8,9 +8,6 @@
 
 package cn.com.chaochuang.common.beancopy;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +15,9 @@ import org.dozer.DozerBeanMapper;
 import org.dozer.DozerBeanMapperSingletonWrapper;
 import org.dozer.Mapper;
 import org.dozer.util.DozerConstants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author guig

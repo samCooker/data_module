@@ -48,7 +48,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#get(int)
+     * @see List#get(int)
      */
     @Override
     public T get(int index) {
@@ -75,7 +75,7 @@ public class BeanCopyList<T> implements List<T> {
         /**
          * (non-Javadoc)
          *
-         * @see java.util.Iterator#hasNext()
+         * @see Iterator#hasNext()
          */
         @Override
         public boolean hasNext() {
@@ -85,7 +85,7 @@ public class BeanCopyList<T> implements List<T> {
         /**
          * (non-Javadoc)
          *
-         * @see java.util.Iterator#next()
+         * @see Iterator#next()
          */
         @Override
         public Object next() {
@@ -95,7 +95,7 @@ public class BeanCopyList<T> implements List<T> {
         /**
          * (non-Javadoc)
          *
-         * @see java.util.Iterator#remove()
+         * @see Iterator#remove()
          */
         @Override
         public void remove() {
@@ -107,7 +107,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#size()
+     * @see List#size()
      */
     @Override
     public int size() {
@@ -117,7 +117,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#isEmpty()
+     * @see List#isEmpty()
      */
     @Override
     public boolean isEmpty() {
@@ -135,7 +135,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#toArray()
+     * @see List#toArray()
      */
     @Override
     public Object[] toArray() {
@@ -147,7 +147,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#toArray(java.lang.Object[])
+     * @see List#toArray(Object[])
      */
     @Override
     public Object[] toArray(Object[] a) {
@@ -215,7 +215,7 @@ public class BeanCopyList<T> implements List<T> {
     /**
      * (non-Javadoc)
      *
-     * @see java.util.List#remove(int)
+     * @see List#remove(int)
      */
     @Override
     public T remove(int index) {

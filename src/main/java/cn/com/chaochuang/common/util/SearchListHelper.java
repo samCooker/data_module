@@ -8,12 +8,11 @@
 
 package cn.com.chaochuang.common.util;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-
 import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import cn.com.chaochuang.common.data.repository.SimpleDomainRepository;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * @author LaoZhiYong

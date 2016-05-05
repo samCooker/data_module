@@ -8,10 +8,10 @@
 
 package cn.com.chaochuang.common.user.tree;
 
+import cn.com.chaochuang.common.user.domain.SysDepartment;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.com.chaochuang.common.user.domain.SysDepartment;
 
 /**
  * @author LaoZhiYong

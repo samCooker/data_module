@@ -10,8 +10,6 @@ package cn.com.chaochuang.common.user.bean;
 
 import org.dozer.Mapping;
 
-import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegister;
-
 /**
  * @author LJX
  *
@@ -22,8 +20,6 @@ public class UserShowBean {
     private String     userName;
     /** 登录账号 */
     private String     account;
-    /** 是否注册app */
-    private IsRegister isRegister;
     @Mapping("department.depName")
     private String     depName;
 
@@ -70,21 +66,6 @@ public class UserShowBean {
      */
     public void setAccount(String account) {
         this.account = account;
-    }
-
-    /**
-     * @return the isRegister
-     */
-    public IsRegister getIsRegister() {
-        return isRegister;
-    }
-
-    /**
-     * @param isRegister
-     *            the isRegister to set
-     */
-    public void setIsRegister(IsRegister isRegister) {
-        this.isRegister = isRegister;
     }
 
     /**

@@ -7,15 +7,12 @@
  */
 package cn.com.chaochuang.common.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -23,12 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author Jyb
@@ -188,8 +179,8 @@ public abstract class AttachUtils {
      *             Exception
      */
     public static void copyFile(String file1, String file2) throws Exception {
-        java.io.File fileIn = new java.io.File(file1);
-        java.io.File fileOut = new java.io.File(file2);
+        File fileIn = new File(file1);
+        File fileOut = new File(file2);
         if (!fileOut.exists()) {
             fileOut.getParentFile().mkdirs();
             fileOut.createNewFile();

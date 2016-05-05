@@ -8,12 +8,12 @@
 
 package cn.com.chaochuang.common.user.domain;
 
+import cn.com.chaochuang.common.data.domain.LongIdEntity;
+
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import cn.com.chaochuang.common.data.domain.LongIdEntity;
 
 /**
  * @author Shicx

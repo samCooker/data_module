@@ -8,9 +8,9 @@
 
 package cn.com.chaochuang.common.beancopy;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.beanutils.PropertyUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author guig

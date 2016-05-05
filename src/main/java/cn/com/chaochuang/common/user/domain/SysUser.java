@@ -1,19 +1,10 @@
 package cn.com.chaochuang.common.user.domain;
 
-import java.util.Date;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
-import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegister;
-import cn.com.chaochuang.sysmanage.registerapply.reference.IsRegisterConverter;
+
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @LookUp
@@ -55,28 +46,10 @@ public class SysUser extends PersistEntity {
     private String            mdfCode;
     /** 排序号 */
     private Long              orderNum;
-    /** 是否注册app */
-    @Convert(converter = IsRegisterConverter.class)
-    private IsRegister        isRegister;
     /** 注册时间 */
     private Date              registerTime;
     /** 手机IMEI码 */
     private String            imeiCode;
-
-    /**
-     * @return the isRegister
-     */
-    public IsRegister getIsRegister() {
-        return isRegister;
-    }
-
-    /**
-     * @param isRegister
-     *            the isRegister to set
-     */
-    public void setIsRegister(IsRegister isRegister) {
-        this.isRegister = isRegister;
-    }
 
     /**
      * @return the registerTime

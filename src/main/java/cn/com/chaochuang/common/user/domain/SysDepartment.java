@@ -1,20 +1,11 @@
 package cn.com.chaochuang.common.user.domain;
 
-import java.util.Set;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
 import cn.com.chaochuang.common.data.domain.PersistEntity;
 import cn.com.chaochuang.common.lookup.annotation.LookUp;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @LookUp

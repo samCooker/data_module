@@ -8,13 +8,11 @@
 
 package cn.com.chaochuang.common.util;
 
-import java.io.Serializable;
-
-import javax.servlet.ServletRequest;
-
+import cn.com.chaochuang.common.data.persistence.SearchBuilder;
 import org.springframework.core.convert.ConversionService;
 
-import cn.com.chaochuang.common.data.persistence.SearchBuilder;
+import javax.servlet.ServletRequest;
+import java.io.Serializable;
 
 /**
  * @author guig

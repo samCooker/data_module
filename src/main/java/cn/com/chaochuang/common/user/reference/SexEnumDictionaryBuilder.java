@@ -8,9 +8,8 @@
 
 package cn.com.chaochuang.common.user.reference;
 
-import org.springframework.stereotype.Component;
-
 import cn.com.chaochuang.common.dictionary.EnumDictionaryBuilder;
+import org.springframework.stereotype.Component;
 
 /**
  * @author guig
