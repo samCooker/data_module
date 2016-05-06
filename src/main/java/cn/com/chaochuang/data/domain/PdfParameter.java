@@ -25,42 +25,38 @@ import javax.persistence.Entity;
 public class PdfParameter extends LongIdEntity { 
 
 	/***/
-	private Long pageZoom;
+	private Float pageZoom;
 	
 	/***/
-	private Long currentPageNo;
-	
+	private Integer currentPageNo;
+
 
 	/**
-	 * @param pageZoom
-	 *            the pageZoom to set
+	 * @return the currentPageNo
 	 */
-	public void setPageZoom(Long pageZoom){
-		this.pageZoom=pageZoom;
-	}
-	
-	/**
-     * @return the pageZoom
-     */
-	public Long getPageZoom(){
-		return pageZoom;
-	}
-	
-	/**
-	 * @param currentPageNo
-	 *            the currentPageNo to set
-	 */
-	public void setCurrentPageNo(Long currentPageNo){
-		this.currentPageNo=currentPageNo;
-	}
-	
-	/**
-     * @return the currentPageNo
-     */
-	public Long getCurrentPageNo(){
+	public Integer getCurrentPageNo() {
 		return currentPageNo;
 	}
-	
 
+	/**
+	 * @param currentPageNo the currentPageNo to set
+	 */
+	public void setCurrentPageNo(Integer currentPageNo) {
+		this.currentPageNo = currentPageNo;
+	}
+
+	/**
+	 * @return the pageZoom
+	 */
+	public Float getPageZoom() {
+		return pageZoom;
+	}
+
+	/**
+	 * @param pageZoom the pageZoom to set
+	 */
+	public void setPageZoom(Float pageZoom) {
+		this.pageZoom = pageZoom;
+	}
 }
 

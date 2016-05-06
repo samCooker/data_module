@@ -7,9 +7,24 @@ public class SaveBeanPdfPara {
 
     private Long id;
     /***/
-    private Long pageZoom;
+    private Float pageZoom;
+
     /***/
-    private Long currentPageNo;
+    private Integer currentPageNo;
+
+    /**
+     * @return the currentPageNo
+     */
+    public Integer getCurrentPageNo() {
+        return currentPageNo;
+    }
+
+    /**
+     * @param currentPageNo the currentPageNo to set
+     */
+    public void setCurrentPageNo(Integer currentPageNo) {
+        this.currentPageNo = currentPageNo;
+    }
 
     /**
      * @return the id
@@ -26,30 +41,16 @@ public class SaveBeanPdfPara {
     }
 
     /**
-     * @return the currentPageNo
-     */
-    public Long getCurrentPageNo() {
-        return currentPageNo;
-    }
-
-    /**
-     * @param currentPageNo the currentPageNo to set
-     */
-    public void setCurrentPageNo(Long currentPageNo) {
-        this.currentPageNo = currentPageNo;
-    }
-
-    /**
      * @return the pageZoom
      */
-    public Long getPageZoom() {
+    public Float getPageZoom() {
         return pageZoom;
     }
 
     /**
      * @param pageZoom the pageZoom to set
      */
-    public void setPageZoom(Long pageZoom) {
+    public void setPageZoom(Float pageZoom) {
         this.pageZoom = pageZoom;
     }
 }
