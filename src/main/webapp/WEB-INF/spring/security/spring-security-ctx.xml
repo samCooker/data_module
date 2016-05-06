@@ -81,7 +81,7 @@
         security="none" />
 
     <http
-            pattern="/*.action"
+            pattern="/**/*.action"
             security="none" />
 
     <!-- 允许上传 -->
