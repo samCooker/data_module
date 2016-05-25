@@ -1,2 +1,0 @@
-#set($layout="/layout/empty.vm")
-#pagemenu('left')

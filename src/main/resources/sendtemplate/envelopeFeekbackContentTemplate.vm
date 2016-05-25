@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<E_officialdocument>
+    <jhsbxx>
+        <xxzyID>dzgw</xxzyID>
+        <ywlsh>$!{envelopeContent.envelopeUuid}</ywlsh>
+        <mj></mj>
+        <jjcd></jjcd>
+        <qqf>$!{envelopeContent.sendOrg}</qqf>
+        <fkf>$!{envelopeContent.feedbackOrg}</fkf>
+        <jhdx>
+            <fsf>$!{envelopeContent.feedbackOrg}</fsf>
+            <fssj>$!{envelope.sendTimeFormat}</fssj>
+            <jsf>$!{envelopeContent.sendOrg}</jsf>
+        </jhdx>
+        <fkyqbsf>Z</fkyqbsf>
+        <fksjyq>-1</fksjyq>
+        <jhzt>$!{envelopeContent.status}</jhzt>
+        <aqxxx>$!{envelopeContent.digitalSignature}</aqxxx>
+    </jhsbxx>
+    <jhztxx>
+        <swhz>
+            <qsbm>$!{envelopeContent.signReceiveDept}</qsbm>
+            <qsr>$!{envelopeContent.signReceiveMan}</qsr>
+            <qssj>$!{envelopeContent.signReceiveDateFormat}</qssj>
+        </swhz>
+    </jhztxx>
+</E_officialdocument>
+

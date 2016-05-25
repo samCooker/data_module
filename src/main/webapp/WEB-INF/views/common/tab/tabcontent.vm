@@ -1,3 +1,0 @@
-<div id="$!__contentid"#if(!$__isavtive) style="display:none;"#end>
-$!bodyContent
-</div>

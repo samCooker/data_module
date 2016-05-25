@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-  <display-name>gxfda_mobile_datacenter</display-name>
-  <description>gxfda mobile application</description>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+  <display-name>Archetype Created Web Application</display-name>
+
+  <!--加载Spring XML配置文件 -->
   <context-param>
-    <param-name>defaultHtmlEscape</param-name>
-    <param-value>true</param-value>
-  </context-param>
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
+    <param-name>
+      contextConfigLocation
+    </param-name>
     <param-value>
-        WEB-INF/spring/**/*-ctx.xml
-        classpath*:META-INF/spring/*-ctx.xml
-        </param-value>
+      classpath*:spring/**/*-ctx.xml
+    </param-value>
   </context-param>
+
+  <!-- Spring 容器启动监听器 -->
+  <listener>
+    <description>在Web应用程序关闭时IntrospectorCleanupListener将会刷新JDK的JavaBeans的Introspector缓存。
+      在你的web.xml中注册这个listener来确保Web应用程序的类加载器以及其加载的类正确的释放资源。IntrospectorCleanupListener应该注册为web.xml中的第一个Listener，
+      在任何其他Listener之前注册，比如在Spring's ContextLoaderListener注册之前，才能确保IntrospectorCleanupListener在Web应用的生命周期适当时机生效。
+    </description>
+    <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+  </listener>
+  <listener>
+    <description>spring 配置文件加载监听器。</description>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- 设置编码 -->
   <filter>
+    <description>spring mvc框架解决中文乱码过滤器。</description>
     <filter-name>CharacterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
     <init-param>
@@ -25,49 +42,24 @@
       <param-value>true</param-value>
     </init-param>
   </filter>
-  <filter>
-    <filter-name>HttpMethodFilter</filter-name>
-    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
-  </filter>
-  <filter>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  <filter>
-    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
-    <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
-  </filter>
+
   <filter-mapping>
     <filter-name>CharacterEncodingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  <filter-mapping>
-    <filter-name>HttpMethodFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>SpringOpenEntityManagerInViewFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
-  </listener>
+  <!-- end -->
+
+  <!-- servlet -->
   <servlet>
     <servlet-name>mainentry</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>contextConfigLocation</param-name>
-      <param-value>
-            WEB-INF/spring/**/webmvc-config*.xml
-            classpath*:META-INF/spring/webmvc-config*.xml
-            </param-value>
+      <param-value>classpath*:/spring/dispatcher-servlet.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>throwExceptionIfNoHandlerFound</param-name>
+      <param-value>true</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -75,19 +67,9 @@
     <servlet-name>mainentry</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-  <session-config>
-    <session-timeout>30</session-timeout>
-  </session-config>
-  <error-page>
-    <exception-type>java.lang.Exception</exception-type>
-    <location>/uncaughtException</location>
-  </error-page>
-  <error-page>
-    <error-code>404</error-code>
-    <location>/resourceNotFound</location>
-  </error-page>
+
+  <!---->
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
   </welcome-file-list>
 </web-app>

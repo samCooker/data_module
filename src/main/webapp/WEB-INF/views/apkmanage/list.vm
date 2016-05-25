@@ -1,6 +1,0 @@
-<div id="tb" style="padding:2px 5px;">
-#parse("/apkmanage/tools.vm")
-</div>
-#parse("/apkmanage/table.vm")
-#parse("/apkmanage/apkinfo.js.html")
-

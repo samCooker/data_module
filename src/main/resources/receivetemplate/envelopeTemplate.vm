@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<envelope>
+    <header identifier="">
+        <type>cooperate</type>
+        <business_id>$!{envelopeUuid}</business_id>
+        <receiver>
+            <secondary_unit_identifier>007566461-W-2</secondary_unit_identifier>
+        </receiver>
+    </header>
+    <content>
+        <identifier>007566461-W-2014G001000000003</identifier>
+        <deadline type="workday">1</deadline>
+        <opinion>$!{title}</opinion>
+        <files>
+            <file>
+                <path>$!{contentFileName}</path>
+                <md5>$!{contentFileMd5}</md5>
+            </file>
+        </files>
+    </content>
+</envelope>

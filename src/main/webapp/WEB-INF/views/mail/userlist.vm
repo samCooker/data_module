@@ -1,8 +1,0 @@
-<div id="tb" style="padding:2px 5px;">
-#parse("/mail/query.vm")
-<hr>
-#parse("/mail/tools.vm")
-</div>
-#parse("/mail/table.vm")
-#parse("/mail/mail.js.html")
-
