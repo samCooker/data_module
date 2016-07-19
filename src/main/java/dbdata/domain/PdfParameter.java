@@ -6,7 +6,7 @@
  * History:     2016年05月05日  (Shicx) 1.0 Create
  */
 
-package data.domain;
+package dbdata.domain;
 
 import springcommon.jpa.IdEntity;
 

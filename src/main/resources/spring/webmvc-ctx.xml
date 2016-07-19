@@ -15,7 +15,7 @@
 	">
 
 	<!-- 使用注解自动注册bean，在该文件中不扫描@Controller -->
-	<con:component-scan base-package="data.**.service">
+	<con:component-scan base-package="dbdata.**.service">
 		<con:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</con:component-scan>
 
@@ -26,8 +26,12 @@
 
 	<!-- 配置Spring Data Jpa, 扫描base-package下所有继承于Repository<T,ID>的接口 -->
 	<jpa:repositories
-			base-package="data.**.repository"
+			base-package="dbdata.**.repository"
 			transaction-manager-ref="transactionManager"
 			entity-manager-factory-ref="entityManagerFactory" />
 
+	<!-- 文件解析器 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="5242880" /><!-- 5MB -->
+	</bean>
 </beans>

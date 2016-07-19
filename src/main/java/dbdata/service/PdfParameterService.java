@@ -6,11 +6,11 @@
  * History:     2016年05月05日  (Shicx) 1.0 Create
  */
 
-package data.service;
+package dbdata.service;
 
 
-import data.bean.SaveBeanPdfPara;
-import data.domain.PdfParameter;
+import dbdata.bean.SaveBeanPdfPara;
+import dbdata.domain.PdfParameter;
 import springcommon.jpa.CrudRestService;
 
 import java.util.List;

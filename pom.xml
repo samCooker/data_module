@@ -130,7 +130,7 @@
         </dependency>
         <!-- spring framework end -->
 
-        <!-- spring framework data jpa begin -->
+        <!-- spring framework dbdata jpa begin -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
@@ -157,7 +157,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- spring framework data jpa end -->
+        <!-- spring framework dbdata jpa end -->
 
         <!--httpClient 相关jar包-->
         <dependency>
@@ -332,6 +332,13 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.32</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.zeroturnaround/zt-zip -->
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>1.9</version>
         </dependency>
 
     </dependencies>

@@ -25,7 +25,7 @@
 	<mvc:default-servlet-handler />
 
 	<!-- 使用注解自动注册bean，在该文件中只扫描@Controller -->
-	<con:component-scan base-package="data.**.web" >
+	<con:component-scan base-package="dbdata.**.web" >
 		<con:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 	</con:component-scan>
 
