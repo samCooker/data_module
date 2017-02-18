@@ -22,7 +22,8 @@
 	<!-- 使用注解控制事务 -->
 	<tx:annotation-driven
 			transaction-manager="transactionManager"
-			proxy-target-class="true" />
+			proxy-target-class="true"
+	/>
 
 	<!-- 配置Spring Data Jpa, 扫描base-package下所有继承于Repository<T,ID>的接口 -->
 	<jpa:repositories
@@ -33,5 +34,13 @@
 	<!-- 文件解析器 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="5242880" /><!-- 5MB -->
+	</bean>
+
+	<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<set>
+				<bean class="common.utils.DateConverter" />
+			</set>
+		</property>
 	</bean>
 </beans>

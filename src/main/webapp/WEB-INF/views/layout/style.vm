@@ -1,0 +1,9 @@
+<link href="$link.getContextURL()/plugins/style/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="$link.getContextURL()/plugins/style/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+<link href="$link.getContextURL()/plugins/style/animate.css" rel="stylesheet">
+
+<link href="$link.getContextURL()/style/main-custom.css" rel="stylesheet">
+
+<link href="$link.getContextURL()/style/style.css" rel="stylesheet">
+<link href="$link.getContextURL()/style/style-hplus.css" rel="stylesheet">
+<link href="$link.getContextURL()/style/style-responsive.css" rel="stylesheet">

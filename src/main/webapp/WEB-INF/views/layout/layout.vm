@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <meta name="renderer" content="webkit">
+        #parse("/layout/style.vm")
+        #parse("/layout/pre-script.vm")
+    </head>
+    <body $!bodyattr>
+        $screen_content
+    </body>
+    #parse("/layout/last-script.vm")
+    #if($!cx_jssrc)
+    <script src="$link.getContextURL()$cx_jssrc"></script>
+    #end
+</html>

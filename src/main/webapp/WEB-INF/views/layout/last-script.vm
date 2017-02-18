@@ -1,0 +1,16 @@
+##js 插件
+<script src="$link.getContextURL()/plugins/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="$link.getContextURL()/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="$link.getContextURL()/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="$link.getContextURL()/plugins/layer/layer.min.js"></script>
+<script src="$link.getContextURL()/plugins/pace/pace.min.js"></script>
+
+<script src="$link.getContextURL()/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="$link.getContextURL()/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="$link.getContextURL()/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<script src="$link.getContextURL()/plugins/layer/laydate/laydate.js"></script>
+
+<!-- 自定义js -->
+<script src="$link.getContextURL()/js/hplus.js?v=4.1.0"></script>
+<script src="$link.getContextURL()/js/contabs.js"></script>

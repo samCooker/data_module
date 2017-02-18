@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tools>
+    <data type="boolean" key="CUSTOM_TOOLS_AVAILABLE" value="true" />
+
+    <data type="string" key="__headtitle" value="稽查办案系统"/>
+
+    <toolbox scope="application" createSession="false" >
+        <tool class="cn.com.chaochuang.common.security.util.UserTool" />
+    </toolbox>
+
+    <toolbox scope="request" createSession="false" >
+        <tool class="common.velocity.LinkTool" />
+    </toolbox>
+
+</tools>

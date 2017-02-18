@@ -1,0 +1,2 @@
+##js 插件
+<script src="$link.getContextURL()/plugins/js/jquery.min.js?v=2.1.4"></script>

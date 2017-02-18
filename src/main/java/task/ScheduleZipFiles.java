@@ -39,7 +39,7 @@ public class ScheduleZipFiles {
     @Value("${outbox.unzip.file.place.path}")
     private String outboxUnzipFilePlacePath;
 
-    @Scheduled(cron = "15/15 * * * * ?")
+//    @Scheduled(cron = "15/15 * * * * ?")
     public void zipInboxFiles(){
         try {
             if (isZipFileTaskRunning) {
@@ -79,7 +79,7 @@ public class ScheduleZipFiles {
         }
     }
 
-    @Scheduled(cron = "25/25 * * * * ?")
+//    @Scheduled(cron = "25/25 * * * * ?")
     public void unzipOutboxFiles(){
         try {
             if (isUnZipFileTaskRunning) {

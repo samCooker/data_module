@@ -1,20 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <envelope>
-    <header identifier="">
+    <header identifier="e634476c974e42c695a8e426266445e4-1">
         <type>cooperate</type>
         <business_id>$!{envelopeUuid}</business_id>
         <receiver>
-            <secondary_unit_identifier>007566461-W-2</secondary_unit_identifier>
+            <secondary_unit_identifier>007566461-N-1</secondary_unit_identifier>
+            <controller_identifier>EX/GX-5f537a785bbe4ea4b9413b97dcdb8b99</controller_identifier>
         </receiver>
+        <sender>
+            <secondary_unit_identifier>007565768-N-1</secondary_unit_identifier>
+            <controller_identifier>EX/GX-a4a550224b0c44a7b9219f8792358303</controller_identifier>
+        </sender>
+        <classification>007565768-N-2014G001000000003</classification>
     </header>
     <content>
-        <identifier>007566461-W-2014G001000000003</identifier>
-        <deadline type="workday">1</deadline>
-        <opinion>$!{title}</opinion>
+        <identifier>007565768-N-2014G001000000003</identifier>
         <files>
             <file>
-                <path>$!{contentFileName}</path>
-                <md5>$!{contentFileMd5}</md5>
+                <path>sursen.xml</path>
+                <md5>1b83b2f943a4b60aed017956f3b30996</md5>
+                <size>1842</size>
+            </file>
+            <file>
+                <path>sursentemp.gw</path>
+                <md5>33eb8e583b49d869f3530b1e4ca052ac</md5>
+                <size>49880</size>
+            </file>
+            <file>
+                <path>sursentemp.gd</path>
+                <md5>dbb714a821f494bc0547f2851aff0240</md5>
+                <size>50066</size>
+            </file>
+            <file>
+                <path>sursentemp.tif</path>
+                <md5>dd65114c16fe4b2b19b62d15fa431bc5</md5>
+                <size>209882</size>
+            </file>
+            <file>
+                <path>桂政办发（2016）159号.pdf</path>
+                <md5>fbfe27d2f87b72a082256d91105eeefc</md5>
+                <size>319009</size>
             </file>
         </files>
     </content>

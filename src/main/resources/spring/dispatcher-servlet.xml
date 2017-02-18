@@ -15,14 +15,20 @@
 	<mvc:default-servlet-handler />
 
 	<!-- begin 此处设置用来直接访问静态资源文件 -->
-		<!--<mvc:resources location="/favicon.ico" mapping="/favicon.ico" />-->
+		<mvc:resources location="/favicon.ico" mapping="/favicon.ico" />
 	<!-- end -->
 
+	<!-- 主界面入口 -->
+	<mvc:view-controller path="/" view-name="redirect:/menu/desktop.do" />
+
 	<!-- 启动Spring MVC的注解功能 -->
-	<mvc:annotation-driven />
+	<mvc:annotation-driven conversion-service="conversionService"/>
 
 	<!-- 使用spring框架来处理静态文件。加入如下代码，spring会用默认的servlet来响应静态文件 -->
 	<mvc:default-servlet-handler />
+
+	<!--加入这个是为了能在控制器中注入定义的值（同properties-ctx.xml）-->
+	<con:property-placeholder location="classpath*:properties/setting-*.properties" />
 
 	<!-- 使用注解自动注册bean，在该文件中只扫描@Controller -->
 	<con:component-scan base-package="dbdata.**.web" >

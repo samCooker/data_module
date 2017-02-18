@@ -1,0 +1,738 @@
+/* 字体大小: 主要是表格 */
+body {
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+/* 树形字体大小 */
+.ztree * {
+    font-size: 16px !important;
+}
+
+/* 主页面高度*/
+#content-main {
+    /* height: calc(100% - 140px); 取消原footer留下的空白  */
+    height: calc(100% - 101px);
+}
+@media (max-width: 768px) {
+    #content-main {
+        height: calc(100% - 52px);
+    }
+}
+
+/* 首页自定义桌面 */
+.desk {
+    /* margin-top: 25px; */
+    margin-top: 0!important;
+
+    /* 2016-11-11 add */
+    padding: 25px 0 0 0 ;
+
+}
+
+/* 菜单栏收缩按钮 */
+.menu-collapse {
+    display: none;
+}
+.collapse-container {
+    border-radius: 50%;
+    background-color: #efefef;
+    height: 64px;
+    width: 64px;
+    position: absolute;
+    left: 53px;
+    cursor: pointer;
+    top: 0;
+}
+.collapse-container>i.collapse-icon {
+    font-size: 40px;
+    position: relative;
+    top: 11px;
+    left: -2px;
+}
+
+/* 首页头像 */
+.img-circle {
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+}
+
+/* 首页 ‘关闭操作’ 和 ‘退出’ 等按钮  */
+.roll-right.btn-group button {
+    width: 100px;
+}
+.roll-right.btn-group {
+    right: 80px;
+    width: 100px;
+    padding: 0;
+}
+.roll-right.J_tabRight {
+    right: 180px;
+}
+.roll-right.J_tabExit {
+    height: 40px;
+    width: 80px;
+    outline: none;
+}
+/* 下拉菜单菜单字体 */
+.dropdown-menu > li > a {
+    font-size: 14px;
+}
+.nav.navbar-top-links a {
+    font-size: 16px;
+}
+.footer {
+    height: 35px;
+}
+/** 默认按钮由灰色改为白色 */
+.btn-default {
+    color: inherit;
+    background: white;
+    border: 1px solid #e7eaec;
+}
+
+.i-checks {
+    padding-left: 0;
+}
+
+.ibox-content {
+    background-color: #fff;
+    color: inherit;
+    padding: 15px 20px 20px;
+    border-color: #e7eaec;
+    -webkit-border-image: none;
+    -o-border-image: none;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 1px 0;
+}
+
+/** 分页按钮颜色 */
+.pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+    z-index: 2;
+    color: #fff;
+    background-color: #1AB394!important;
+    border-color: #1AB394!important;
+    cursor: default;
+}
+
+/* 当页面尺寸太小时 不显示“每页显示记录”下拉选项 */
+@media (max-width: 630px) {
+    .pull-left.pagination-detail {
+       display: none;
+    }
+}
+
+/* .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+    z-index: 2;
+    color: #fff;
+    background-color: #58abc3;
+    border-color: #58abc3;
+    cursor: default;
+} */
+
+.control-label {
+    font-size: 16px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: normal;
+}
+
+
+/* summernote富文本编辑器边框颜色
+.note-editor.note-frame {
+    border: 1px solid #dddddd!important;
+}
+ */
+
+/** 以下是搜索栏样式 */
+
+.query-panel {
+    border: none;
+    margin: -10px 0 0 0;
+    position: absolute;
+    z-index: 999999;
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+.search-body {
+    display: none;
+    background-color: #fff;
+}
+
+.button-field {
+    height: 0;
+    border-top: 1px solid #e4e4e4;
+    position: relative;
+    width: 100%;
+    top: -1px;
+    display: none;
+}
+
+.button-toggle {
+    border-top: none;
+    bottom: -25px;
+    border-bottom: 1px solid #efefef;
+    border-right: 1px solid #efefef;
+    border-left: 1px solid #efefef;
+    cursor: pointer;
+    position: absolute;
+    left: 45%;
+    background: #fff;
+    text-align: center;
+    color: #333;
+    height: 26px;
+    line-height: 16px;
+    padding: 3px 15px;
+    border-radius: 0 0 5px 5px;
+}
+
+#tb {
+    display: none;
+}
+
+.query-btn-col>button {
+    margin: 8px 0;
+}
+
+/* 查询下拉框中的按钮margin-right */
+.query-btn-col button {
+    margin-right:10px;
+}
+
+/*遮罩层*/
+.mask-layer {
+    display:none;
+    width:100%;
+    height:100%;
+    background-color:gray;
+    left:0;
+    opacity:0.5;
+    position:absolute;
+    top:0;
+    z-index:3;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    -khtml-opacity:0.5;
+}
+
+/* 详情页面普通信息 */
+.div-input {
+    font-size: 16px;
+    margin-bottom: 0;
+    padding-top: 7px;
+}
+
+/* 编辑页面 */
+.form-group {
+    margin-bottom: 8px;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+/* 表单标题颜色 */
+.control-label {
+    color: #A7A7A7;
+}
+
+/* 表单页面 分割虚线改实线 */
+.hr-line-dashed {
+    border-top: 1px solid #e7eaec;
+    margin: 3px 0 8px 0;
+}
+
+/* input-group 按钮高度*/
+.input-group>span.input-group-btn>button {
+    height: 34px;
+    padding: 3px 10px;
+}
+
+/* bootstrap select */
+.bootstrap-select button.btn.dropdown-toggle {
+    padding: 4px 12px 3px;
+    border-radius: 1px;
+}
+
+.bootstrap-select button.btn.dropdown-toggle:hover, .bootstrap-select button.btn.dropdown-toggle:focus,
+ .bootstrap-select button.btn.dropdown-toggle:active{
+    background-color: #fff;
+    color: #333;
+}
+@media (max-width: 768px) {
+    .hr-line-dashed-hidden {
+        border-top: 1px solid #e7eaec;
+        color: #ffffff;
+        background-color: #ffffff;
+        height: 1px;
+        margin: 3px 15px 8px;
+    }
+}
+
+/* 日期控件 */
+.layer-date {
+    background-color: #fff!important;
+    border: 1px solid #e5e6e7!important;
+    margin-top: -2px;
+}
+
+/* 表单panel边距 */
+.panel-body-form {
+    margin: -10px;
+}
+
+@media (max-width: 768px) { /* panel 工具栏 */
+    .ibox-tools {
+        float: right;
+        text-align: right;
+        display: inline-block;
+    }
+}
+
+/* 邮件 */
+.mail-address-row {
+     max-width:200px!important;
+     overflow:hidden;
+     white-space:nowrap;
+     text-overflow:ellipsis;
+}
+
+.mail-body-min-height {
+    min-height:260px;
+}
+
+.mail-attach-p-margin {
+    margin-bottom:-15px;
+}
+
+/* 详情页附件div的 margin-top */
+.attach-detail-div .filelistmulti {
+    margin-top: -15px !important;
+}
+
+/* 隐藏分页信息 */
+@media (max-width: 930px) {
+    .fixed-table-pagination .pagination-info {
+        /*margin-left: -196px; !* 隐藏部分信息 *!*/
+    }
+}
+
+@media (max-width: 730px) {
+    .fixed-table-pagination .pagination-info {
+        display: none;
+    }
+}
+
+/* ztree字体颜色 */
+.ztree li a {
+    color: #676a6c!important;
+}
+
+.tree-div {
+    height: 100%;
+    overflow: auto;
+    padding: 15px;
+}
+
+/* tagsinput 样式  （仅保留下边框, 高度与普通input相似） */
+.tagsinput {
+    width: 100% !important;
+    min-height: 34px !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 10px;
+    border: none !important;
+    border-bottom: 1px solid #e5e6e7 !important;
+}
+
+.no-border {
+    border: 0!important;
+}
+
+/* 各种边距 */
+.no-padding-bottom {
+    padding-bottom: 0;
+}
+
+.margin-5 {
+    margin: 5px;
+}
+
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.padding-5 {
+    padding: 5px;
+}
+
+.padding-10 {
+    padding: 10px;
+}
+/* 边距end */
+
+/* 隐藏滚动条*/
+.overflow-y-hidden {
+    overflow-y: hidden!important;
+}
+
+.overflow-x-hidden {
+    overflow-x: hidden!important;
+}
+
+.overflow-hidden {
+    overflow: hidden
+}
+/* 隐藏滚动条 end*/
+
+/* 用户编辑选择角色框 */
+.character-checkbox-col {
+    width: 200px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background-color: #f3f3f4;
+    display: inline-block;
+    height: 34px;
+    padding: 0 12px;
+    font-size: 16px;
+    margin: 0 5px 10px 0;
+}
+
+
+.service-checkbox-col {
+    width: 160px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background-color: #f3f3f4;
+    display: inline-block;
+    height: 34px;
+    padding: 0 10px;
+    font-size: 16px;
+    margin: 0 5px 10px 0;
+}
+
+.height-100 {
+    height: 100%;
+}
+
+/* 表格相关 */
+
+.table-wrapper { /* 所有包含bootstrap-table 的容器都要  */
+    height: 100%;
+}
+
+#table-panel { /* table父div */
+    padding: 0 15px;
+    overflow: hidden;
+}
+
+.table-layout {
+    table-layout: fixed; /* 保障表格td不会因内容过多撑开 */
+}
+
+table.table-layout>tbody>tr>td {
+    Word-break: break-word; /* 内容换行 */
+}
+
+.cc-operateColum {
+    display: inline-block;
+}
+
+/* 内部邮件表格，固定mailbox高度 */
+.mail-box-table {
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 120px;
+}
+
+
+/* 弹窗选择页面样式 */
+.value-span {
+    max-width:160px;
+    /* white-space:nowrap; */
+    text-overflow:ellipsis;
+}
+
+.operater-span {
+    width: 19px;
+    height: 19px;
+    float: right;
+    text-align: center;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.operater-span:hover {
+    border: 1px solid #ddd;
+}
+
+.operater-span:active {
+    border: 1px solid #ddd;
+    background-color: #ddd;
+}
+
+.bg-grey {
+    background-color: #f3f3f3;
+}
+
+/* 头像居中 */
+.pic-align-center {
+    text-align: center
+}
+
+/* 首页用户信息 */
+.nav-header .text-muted {
+    margin: 5px;
+}
+
+/* index.vm 顶部 */
+.navbar-header {
+    width: 40%;
+}
+
+
+/* 编辑页面按钮区 */
+
+.edit-btn-area {
+    position: fixed;
+    bottom: 5px;
+    right: 0;
+    z-index: 100;
+}
+
+.operate-btn {
+    display:inline-block;
+    height: auto;
+    width: auto;
+    border-radius: 3px;
+    background: #1ab394;
+    padding: 6px 16px;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.operate-btn:hover {
+    color: white;
+    background: #18a689;
+}
+
+
+.operate-btn:active {
+    color: white;
+    background: #204d74;
+}
+
+.operate-btn i {
+    margin-right: 5px;
+}
+
+.operate-btn.close-btn,.btn-area-open a {
+    border-radius: 3px 0 0 3px;
+    padding: 6px;
+}
+.operate-btn.close-btn i,.btn-area-open i {
+    margin-right: 0;
+}
+
+.btn-area-open {
+    display:none;
+    position: fixed;
+    bottom: 5px;
+    right: 0;
+    z-index: 100;
+}
+
+.tabs-page-padding {
+
+    padding: 15px 0;
+
+}
+
+
+/* 列表页按钮区域（移动端适用） */
+.list-btn {
+    position: fixed;
+    bottom: 25%;
+    right: 5px;
+    z-index: 100;
+}
+
+.list-btn>.toggle {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: 20px;
+    opacity: 0.8;
+}
+
+.list-btn>.toggle.open{
+    opacity: 1;
+}
+
+.list-btn>.toggle>i {
+    height: 40px;
+    width: 40px;
+    position: relative;
+    right: 13px;
+}
+
+.list-btn>a, .list-btn>button{
+    display: block;
+    margin: 0 0 5px 0;
+}
+
+/* tab内 panel、表单等样式 */
+.tab-pane {
+    padding: 10px;
+    height: 100%;
+}
+.tab-content {
+    background-color: #fff;
+    height: calc(100% - 44px);
+    overflow: auto;
+}
+fieldset {
+    margin-bottom: 10px!important;
+}
+fieldset>.control-label {
+    text-align: right;
+}
+fieldset>div>.form-control {
+    margin: 0 0 5px;
+}
+legend {
+    margin-bottom: 10px;
+}
+
+
+/* 移动端导航菜单 */
+.navbar-header {
+    display: none;
+}
+body.fixed-sidebar.mini-navbar.mobile-terminal .navbar-static-side {
+    width: 0;
+}
+.navbar-header.mobile-terminal {
+    display: block;
+    width: auto;
+}
+body.fixed-sidebar.mobile-terminal>div#wrapper>div#page-wrapper {
+    margin-left: 0!important;
+}
+
+body.mobile-terminal>div#wrapper>nav.navbar-static-side {
+    display:none;
+}
+.nav-close.mobile-terminal {
+    display: block;
+}
+
+/* 头像下面的文字颜色*/
+.nav-header .text-muted {
+    color: #A2BDD6;
+}
+
+/* 顶部各个子系统按钮字体颜色 */
+.nav.navbar-right > li > a {
+    color: #8A8B8B;
+}
+
+/* 首页tab字体颜色 */
+.page-tabs a {
+    color: #8A8B8B;
+}
+.content-tabs .roll-nav, .page-tabs-list {
+    color: #8A8B8B;
+}
+
+/* 导航菜单 acitve状态 */
+a.J_menuItem.active {
+    background: url(../images/side-hover.png) no-repeat 209px;
+}
+
+/* 列表页全文检索 */
+.search-bar {
+    margin-left: -15px;
+    max-width: 240px;
+}
+.search-bar>div.input-group-btn>button {
+    height: 36px;
+    z-index: 1;
+}
+.search-bar>.has-feedback>input {
+    height: 36px;
+    z-index: 2;
+}
+.search-bar>.has-feedback>.form-control-feedback {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #ABABAB;
+    pointer-events: all;
+    z-index: 3;
+    cursor: pointer;
+    display: none;
+}
+.columns.columns-right.btn-group>button, .columns.columns-right.btn-group>div.keep-open.btn-group>button {
+    height: 36px;
+}
+
+/* 案例、案由、法规中 最近、常用选择按钮 */
+.custom-search {
+    margin-left: 5px;
+}
+
+.custom-search > .input-group > select {
+    height: 36px;
+}
+
+/* 正文 锚定样式 */
+.catelog-box {
+    position: absolute;
+}
+
+.catelog-box ul {
+    list-style-type: none;
+    padding: 0 5px 5px 15px;
+}
+
+.catelog-box ul li > span, .catelog-box ul li > span{
+    margin-right: 5px;
+}
+
+.catelog-sub {/* 二级目录 */
+    display: none;
+}
+
+.open .catelog-sub {/* 目录展开 */
+    display: block;
+}
+
+.catelog-box li.active > a {/* 目录选中 */
+    color: #333;
+    background-color: #efefef;
+}
+
+.docs-content {/* 正文容器 */
+    padding: 15px;
+    height: 100%;
+    overflow: auto;
+}
+
+.catelog-container {/* 目录容器 */
+    height: 100%;
+    overflow: hidden;
+    padding: 5px 0 5px 10px;
+}

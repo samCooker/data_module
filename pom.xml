@@ -32,6 +32,13 @@
     </properties>
 
     <dependencies>
+        <!-- ccframe -->
+        <dependency>
+            <groupId>cn.com.chaochuang</groupId>
+            <artifactId>framework-common</artifactId>
+            <version>4.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -335,11 +342,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.zeroturnaround/zt-zip -->
-        <dependency>
-            <groupId>org.zeroturnaround</groupId>
-            <artifactId>zt-zip</artifactId>
-            <version>1.9</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.zeroturnaround</groupId>-->
+            <!--<artifactId>zt-zip</artifactId>-->
+            <!--<version>1.9</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 

@@ -1,0 +1,50 @@
+#set($bodyattr="class='gray-bg'")
+<div class="animated fadeInRight table-wrapper">
+    <div class="panel panel-default" id="queryPanel">
+        <div class="panel-body" id="searchBody">
+            <form id="queryForm" class="form-horizontal" method="post" onsubmit="return false;"> ## 阻止表单提交  否则某些情况下会导致整个页面刷新
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">当事人</label>
+
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="fillEntpContacter" placeholder="按当事人名称查询" data-trigger="hover" data-toggle="tooltip" data-original-title="当事人名称" value="">
+                    </div>
+                    <label class="col-sm-2 control-label">法人/负责人</label>
+
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" name="fillEntpCorpname" placeholder="按法人/负责人名称查询" data-trigger="hover" data-toggle="tooltip" data-original-title="法人/负责人名称" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">登记时间</label>
+                    <div class="col-sm-4">
+                        <input class="layer-date laydate-icon form-control" readonly name="recordTimeFrom" id="i-recordTime-from" type="text" value="$!dateTool.format('yyyy-MM-dd', $!foodTrain.trainDate)" onclick="laydate({elem: '#i-recordTime-from',issure:false})" placeholder="开始时间"/>
+                    </div>
+                    <label class="col-sm-2 control-label">登记时间</label>
+                    <div class="col-sm-4">
+                        <input class="layer-date laydate-icon form-control" readonly name="recordTimeTo" id="i-recordTime-to" type="text" value="$!dateTool.format('yyyy-MM-dd', $!foodTrain.trainDate)" onclick="laydate({elem: '#i-recordTime-to',issure:false})" placeholder="结束时间"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12 query-btn-col text-center">
+                        <button type="button" class="btn btn-primary" onclick="caseQuery.search()">查询</button>
+                        <button type="button" class="btn btn-primary" onclick="caseQuery.reset()">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table id="tb-data-aipcase">
+            <thead>
+            <tr>
+                <th data-field="id">ID</th>
+                <th data-field="fillEntpContacter">当事人</th>
+                <th data-field="fillEntpCorpname">法人/负责人</th>
+                <th data-field="recordTimeFmt">登记时间</th>
+                <th data-formatter="caseQuery.columnFmter">操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+#set($cx_jssrc="/js/aipcase/case-query.js")
